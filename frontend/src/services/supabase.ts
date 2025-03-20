@@ -65,6 +65,17 @@ export async function fetchAllEvents() {
   const { data, error } = await supabase.from("events").select("*");
 
   return { data, error };
+};
+
+// Fetch events created by the logged-in user
+export async function fetchUserEvents(userId: string) {
+  const { data, error } = await supabase
+    .from("events")
+    .select("*")
+    .eq("created_by", userId);
+
+  return { data, error };
 }
+
 
 

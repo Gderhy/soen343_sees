@@ -1,46 +1,55 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { supabase, deleteEvent, fetchAllEvents } from "../../services/supabase";
+import { useNavigate } from "react-router-dom";
+import { supabase, fetchAllEvents } from "../../services/supabase";
 import "./Events.css";
 
 const Events: React.FC = () => {
+  const navigate = useNavigate();
   const [events, setEvents] = useState<any[]>([]);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [filteredEvents, setFilteredEvents] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     async function fetchEvents() {
-      const { data, error } = await fetchAllEvents(); 
+      const { data, error } = await fetchAllEvents();
       if (error) {
         alert(error.message);
       }
-      if (data) setEvents(data);
-    }
-    fetchEvents();
-
-    async function fetchUser() {
-      const { data: userData } = await supabase.auth.getUser();
-      if (userData?.user) {
-        setUserId(userData.user.id);
+      if (data) {
+        setEvents(data);
+        setFilteredEvents(data);
       }
     }
-    fetchUser();
+    fetchEvents();
   }, []);
 
-  const handleDelete = async (eventId: string) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this event?");
-    if (!confirmDelete) return;
+  // Handle search input
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
 
-    const { error } = await deleteEvent(eventId);
-    if (error) {
-      alert(error.message);
+    if (!query) {
+      setFilteredEvents(events);
     } else {
-      setEvents(events.filter((event) => event.id !== eventId));
+      const filtered = events.filter((event) => event.title.toLowerCase().includes(query));
+      setFilteredEvents(filtered);
     }
   };
 
   return (
     <div className="container">
-      <h1>Upcoming Events</h1>
+      {/* Header with Centered Title & Right-Aligned Search */}
+      <div className="header-container">
+        <h1>Upcoming Events</h1>
+        <input
+          type="text"
+          placeholder="Search events..."
+          value={searchQuery}
+          onChange={handleSearch}
+          className="search-input"
+        />
+      </div>
+
       <table className="events-table">
         <thead>
           <tr>
@@ -48,37 +57,21 @@ const Events: React.FC = () => {
             <th>Description</th>
             <th>Date</th>
             <th>Location</th>
-            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {events.length > 0 ? (
-            events.map((event) => (
-              <tr key={event.id}>
+          {filteredEvents.length > 0 ? (
+            filteredEvents.map((event) => (
+              <tr key={event.id} onClick={() => navigate(`/event/${event.id}`)}>
                 <td>{event.title}</td>
                 <td>{event.description}</td>
                 <td>{new Date(event.event_date).toLocaleDateString()}</td>
                 <td>{event.location}</td>
-                <td>
-                  <Link to={`/event/${event.id}`} className="details-link">
-                    View
-                  </Link>
-                  {userId === event.created_by && (
-                    <>
-                      <Link to={`/edit-event/${event.id}`} className="edit-link">
-                        Edit
-                      </Link>
-                      <button onClick={() => handleDelete(event.id)} className="delete-button">
-                        Delete
-                      </button>
-                    </>
-                  )}
-                </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan={5}>No events available.</td>
+              <td colSpan={5}>No events found.</td>
             </tr>
           )}
         </tbody>
