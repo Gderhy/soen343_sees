@@ -12,8 +12,6 @@ const Header: React.FC = () => {
     setDropdownOpen(false);
   };
 
-  console.log(user);
-
   return (
     <header className="header">
       <Link to="/" className="logo">
