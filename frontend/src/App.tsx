@@ -5,16 +5,19 @@ import Login from "./pages/Login/Login";
 import Register from "./pages/Login/Register";
 import Header from "./components/Header/Header";
 import { AuthProvider } from "./contexts/AuthContext";
+import CreateEvent from "./pages/CreateEvent/CreateEvent";
 
 const App: React.FC = () => {
   return (
     <AuthProvider>
         <Header />
         <Routes>
+          <Route path="*" element={<Home />} />
           <Route path="/" element={<Home />} />
           <Route path="/events" element={<Events />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/create-event" element={<CreateEvent />} />
         </Routes>
     </AuthProvider>
   );
