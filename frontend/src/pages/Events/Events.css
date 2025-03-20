@@ -52,3 +52,44 @@ h1 {
     padding: 8px;
   }
 }
+
+/* === Action Buttons === */
+.details-link,
+.edit-link,
+.delete-button {
+  padding: 6px 10px;
+  margin: 2px;
+  font-size: 14px;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background 0.3s ease-in-out;
+}
+
+.details-link {
+  background: #007bff;
+  color: white;
+}
+
+.edit-link {
+  background: #ffc107;
+  color: black;
+}
+
+.delete-button {
+  background: #dc3545;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.details-link:hover {
+  background: #0056b3;
+}
+
+.edit-link:hover {
+  background: #d39e00;
+}
+
+.delete-button:hover {
+  background: #b02a37;
+}
