@@ -14,11 +14,18 @@ export const createEvent = async (title: string, description: string, event_date
 
   const { data, error } = await supabase
     .from("events")
-    .insert([{ title, description, event_date, location, created_by: userData.user.id }]);
+    .insert([{ title, description, event_date, location, created_by: userData.user.id }])
+    .select("*")
+    .single();
 
   return { data, error };
 };
 
+export async function getEventById(eventId: string) {
+  const { data, error } = await supabase.from("events").select("*").eq("id", eventId).single();
+
+  return { data, error };
+}
 
 
 

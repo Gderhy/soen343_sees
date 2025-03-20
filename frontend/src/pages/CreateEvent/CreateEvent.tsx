@@ -1,8 +1,12 @@
 import { useState } from "react";
 import "./CreateEvent.css";
 import { createEvent } from "../../services/supabase";
+import { useNavigate } from "react-router-dom";
 
 const CreateEvent: React.FC = () => {
+
+  const navigate = useNavigate();
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
@@ -17,11 +21,7 @@ const CreateEvent: React.FC = () => {
     if (error) {
       console.error(error);
     } else {
-      console.log(data);
-      setTitle("");
-      setDescription("");
-      setDate("");
-      setLocation("");
+      navigate(`/event/${data.id}`);
     }
   };
 
