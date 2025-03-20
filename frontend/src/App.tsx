@@ -9,21 +9,31 @@ import CreateEvent from "./pages/EditCreateEvent/CreateEvent";
 import EventDetail from "./pages/EventDetail/EventDetail";
 import EditEvent from "./pages/EditCreateEvent/EditEvent";
 import ManageMyEvents from "./pages/ManageMyEvents/ManageMyEvents";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute"; 
 
 const App: React.FC = () => {
   return (
     <AuthProvider>
       <Header />
       <Routes>
-        <Route path="*" element={<Home />} />
         <Route path="/" element={<Home />} />
         <Route path="/events" element={<Events />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/create-event" element={<CreateEvent />} />
         <Route path="/event/:id" element={<EventDetail />} />
-        <Route path="/edit-event/:id" element={<EditEvent />} />
-        <Route path="/manage-my-events" element={<ManageMyEvents />} />
+
+        {/* Routes that require authentication */}
+        <Route element={<ProtectedRoute redirectTo="/login" />}>
+          <Route path="/create-event" element={<CreateEvent />} />
+          <Route path="/edit-event/:id" element={<EditEvent />} />
+          <Route path="/manage-my-events" element={<ManageMyEvents />} />
+        </Route>
+
+        {/* Routes only for unauthenticated users */}
+        <Route element={<ProtectedRoute redirectTo="/" />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Route>
+
+        <Route path="*" element={<Home />} />
       </Routes>
     </AuthProvider>
   );
