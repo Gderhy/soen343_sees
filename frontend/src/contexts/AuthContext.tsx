@@ -1,8 +1,8 @@
 import { AuthError, User } from "@supabase/supabase-js";
 import { createContext, useState, useContext, ReactNode, useEffect } from "react";
-import { supabase } from "../services/supabase";
+import { supabase, getUserRole } from "../services/supabase/supabase";
 import { useNavigate } from "react-router-dom";
-import { SignInProps, SignUpProps } from "../types";
+import { RoleType, SignInProps, SignUpProps } from "../types";
 
 interface AuthContextType {
   login: ({ email, password }: SignInProps) => Promise<{ error: AuthError | null }>;
@@ -14,13 +14,15 @@ interface AuthContextType {
     phone,
     password,
   }: SignUpProps) => Promise<{ error: AuthError | null }>;
+  role: RoleType;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
+  const [user, setUser] = useState<User | null>(null);
+  const [role, setRole] = useState<RoleType>("authenticated");
 
   // Check for existing session on initial load
   useEffect(() => {
@@ -33,6 +35,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.error("Error fetching session:", error);
       } else if (session) {
         setUser(session.user);
+        const { role, error } = await getUserRole();
+        if (error) {
+          console.error("Error fetching user role:", error);
+        } else if (role) {
+          setRole(role);
+        }
       }
     };
 
@@ -86,10 +94,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, signUp }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ user, login, logout, signUp, role }}>
+      {children}
+    </AuthContext.Provider>
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {

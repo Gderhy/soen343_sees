@@ -39,6 +39,12 @@ nav {
   background: white;
   padding: 5px 10px;
   border-radius: 20px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s;
+}
+
+.user-info:hover {
+  background: #f1f1f1;
 }
 
 .user-avatar {
@@ -62,7 +68,8 @@ nav {
   background: white;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  width: 100%;
+  width: 180px;
+  /* Fixed width */
   display: flex;
   flex-direction: column;
   padding: 10px 0px;
@@ -76,12 +83,24 @@ nav {
   transition: background 0.3s;
   text-align: left;
   display: block;
+  cursor: pointer;
 }
 
 .dropdown-item:hover {
   background: #f4f4f4;
 }
 
+/* Admin Dashboard Link */
+.admin-dashboard {
+  font-weight: bold;
+  color: #007bff;
+}
+
+.admin-dashboard:hover {
+  background: #e6f0ff;
+}
+
+/* Logout Button */
 .logout {
   color: red;
   border: none;
@@ -110,6 +129,7 @@ nav {
   background: #0056b3;
 }
 
+/* Navigation Links */
 .nav-link {
   color: white;
   text-decoration: none;

@@ -4,7 +4,7 @@ import "./Header.css";
 import { useAuth } from "../../contexts/AuthContext";
 
 const Header: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user, role, logout } = useAuth(); // ✅ Get user role
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -46,6 +46,14 @@ const Header: React.FC = () => {
                 <Link to="/settings" className="dropdown-item">
                   Settings
                 </Link>
+
+                {/* Admin Dashboard (Only for Admins) */}
+                {role === "admin" && (
+                  <Link to="/admin-dashboard" className="dropdown-item admin-dashboard">
+                    Admin Dashboard
+                  </Link>
+                )}
+
                 <button onClick={handleLogout} className="dropdown-item logout">
                   Sign Out
                 </button>
