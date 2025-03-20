@@ -77,5 +77,63 @@ export async function fetchUserEvents(userId: string) {
   return { data, error };
 }
 
+// RSVP to an event
+export async function rsvpToEvent(eventId: string) {
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData?.user) {
+    return { error: "User not authenticated." };
+  }
+
+  const { data, error } = await supabase
+    .from("event_attendance")
+    .insert([{ user_id: userData.user.id, event_id: eventId }]);
+
+  return { data, error };
+}
+
+// Remove RSVP from an event
+export async function removeRsvp(eventId: string) {
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData?.user) {
+    return { error: "User not authenticated." };
+  }
+
+  const { data, error } = await supabase
+    .from("event_attendance")
+    .delete()
+    .eq("user_id", userData.user.id)
+    .eq("event_id", eventId);
+
+  return { data, error };
+}
+
+// Check if user has RSVP'd to an event
+export async function checkUserRsvp(eventId: string) {
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData?.user) {
+    return { data: null };
+  }
+
+  const { data, error } = await supabase
+    .from("event_attendance")
+    .select("*")
+    .eq("user_id", userData.user.id)
+    .eq("event_id", eventId)
+    .single();
+
+  return { data, error };
+}
+
+// Get attendees for a specific event
+export async function getEventAttendees(eventId: string) {
+  const { data, error } = await supabase
+    .from("event_attendance")
+    .select("user_id")
+    .eq("event_id", eventId); // ✅ Correctly filter by eventId
+
+  return { data, error };
+}
+
+
 
 

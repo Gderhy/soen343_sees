@@ -26,3 +26,44 @@ p {
   color: red;
   text-align: center;
 }
+
+.rsvp-button {
+  padding: 10px 15px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  background: #28a745;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.rsvp-button:hover {
+  background: #218838;
+}
+
+.rsvp-button.attending {
+  background: #dc3545;
+}
+
+.rsvp-button.attending:hover {
+  background: #b02a37;
+}
+
+.modify-button {
+  padding: 10px 15px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  background: #ffc107;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background 0.3s ease-in-out;
+}
+
+.modify-button:hover {
+  background: #d39e00;
+}
