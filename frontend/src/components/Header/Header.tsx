@@ -20,6 +20,13 @@ const Header: React.FC = () => {
         SEES
       </Link>
       <nav>
+        <Link to="/events" className="nav-link">
+          Events
+        </Link>
+        <Link to="/manage-my-events" className="nav-link">
+          Manage My Events
+        </Link>
+
         {user ? (
           <div className="user-dropdown">
             {/* Avatar & Name (Clickable for Dropdown) */}

@@ -8,6 +8,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import CreateEvent from "./pages/EditCreateEvent/CreateEvent";
 import EventDetail from "./pages/EventDetail/EventDetail";
 import EditEvent from "./pages/EditCreateEvent/EditEvent";
+import ManageMyEvents from "./pages/ManageMyEvents/ManageMyEvents";
 
 const App: React.FC = () => {
   return (
@@ -22,6 +23,7 @@ const App: React.FC = () => {
         <Route path="/create-event" element={<CreateEvent />} />
         <Route path="/event/:id" element={<EventDetail />} />
         <Route path="/edit-event/:id" element={<EditEvent />} />
+        <Route path="/manage-my-events" element={<ManageMyEvents />} />
       </Routes>
     </AuthProvider>
   );
