@@ -4,7 +4,7 @@ import "./Header.css";
 import { useAuth } from "../../contexts/AuthContext";
 
 const Header: React.FC = () => {
-  const { user, role, logout } = useAuth(); // ✅ Get user role
+  const { user, systemRole, logout } = useAuth(); // ✅ Get user role
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -48,7 +48,7 @@ const Header: React.FC = () => {
                 </Link>
 
                 {/* Admin Dashboard (Only for Admins) */}
-                {role === "admin" && (
+                {systemRole === "admin" && (
                   <Link to="/admin-dashboard" className="dropdown-item admin-dashboard">
                     Admin Dashboard
                   </Link>

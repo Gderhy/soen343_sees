@@ -10,6 +10,7 @@ import EventDetail from "./pages/EventDetail/EventDetail";
 import EditEvent from "./pages/EditCreateEvent/EditEvent";
 import ManageMyEvents from "./pages/ManageMyEvents/ManageMyEvents";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
 
 const App: React.FC = () => {
   return (
@@ -31,6 +32,11 @@ const App: React.FC = () => {
         <Route element={<ProtectedRoute redirectTo="/" requireAuth={false} />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+        </Route>
+
+        {/* Admin Routes */}
+        <Route element={<ProtectedRoute redirectTo="/" requiredSystemRole="admin" />}>
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
         </Route>
 
         <Route path="*" element={<Home />} />

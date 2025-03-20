@@ -10,3 +10,5 @@ export type SignUpProps = {
   password: string;
 };
 
+export type SystemRole = "admin" | "stakeholder" | "user" | null;
+export type EventRole = "organizer" | "attendee" | null;

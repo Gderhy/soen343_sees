@@ -1,78 +1,83 @@
-import { AuthError, User } from "@supabase/supabase-js";
+import { AuthError, Session, User } from "@supabase/supabase-js";
 import { createContext, useState, useContext, ReactNode, useEffect } from "react";
-import { supabase, getUserRole } from "../services/supabase/supabase";
+import { supabase, getSystemRole } from "../services/supabase/supabase";
 import { useNavigate } from "react-router-dom";
-import { RoleType, SignInProps, SignUpProps } from "../types";
+import { SystemRole, SignInProps, SignUpProps } from "../types";
 
 interface AuthContextType {
-  login: ({ email, password }: SignInProps) => Promise<{ error: AuthError | null }>;
-  logout: () => void;
   user: User | null;
-  signUp: ({
-    fullName,
-    email,
-    phone,
-    password,
-  }: SignUpProps) => Promise<{ error: AuthError | null }>;
-  role: RoleType;
+  session: Session | null;
+  systemRole: SystemRole;
+  login: ({ email, password }: SignInProps) => Promise<{ error: AuthError | null }>;
+  logout: () => Promise<void>;
+  signUp: ({ fullName, email, phone, password }: SignUpProps) => Promise<{ error: AuthError | null }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
+  const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [role, setRole] = useState<RoleType>("authenticated");
+  const [systemRole, setSystemRole] = useState<SystemRole>("user");
 
-  // Check for existing session on initial load
+  // ✅ Handle auth state changes
   useEffect(() => {
-    const checkSession = async () => {
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession();
-      if (error) {
-        console.error("Error fetching session:", error);
-      } else if (session) {
-        setUser(session.user);
-        const { role, error } = await getUserRole();
-        if (error) {
-          console.error("Error fetching user role:", error);
-        } else if (role) {
-          setRole(role);
-        }
+    const fetchSession = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) console.error("Error fetching session:", error);
+      else {
+        setSession(session);
+        setUser(session?.user || null);
+
+        const { systemRole, error } = await getSystemRole(session?.user?.id || "");
+        if (error) console.error("Error fetching system role:", error);
+        else setSystemRole(systemRole);
       }
     };
 
-    checkSession();
+    fetchSession();
+
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setUser(session?.user || null);
+    });
+    
+     // ✅ Fix the cleanup function
+    return () => {
+      if (data?.subscription) {
+        data.subscription.unsubscribe();
+      }
+    };
   }, []);
 
+  // ✅ Login function
   const login = async ({ email, password }: SignInProps) => {
-    if (user) {
-      navigate("/");
-      return { error: null };
-    }
-
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (data?.session) {
+      setSession(data.session);
       setUser(data.session.user);
+      navigate("/");
     }
 
     return { error };
   };
 
+  // ✅ Logout function
   const logout = async () => {
     await supabase.auth.signOut();
+    setSession(null);
     setUser(null);
     navigate("/login");
   };
 
+  // ✅ Sign-up function with role assignment
   const signUp = async ({ fullName, email, phone, password }: SignUpProps) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { fullName, phone } }, // phone does not link to user (has to do with activating phone number)
+      options: { data: { fullName, phone } },
     });
 
     if (error) {
@@ -80,31 +85,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return { error };
     }
 
-    if (data.session) {
-      // If a session is returned, the user is logged in automatically (email confirmation disabled)
-      setUser(data.session.user);
-      navigate("/"); // Navigate to the home page or dashboard
-    } else {
-      // If no session is returned, email confirmation is enabled
-      alert("Please check your email to confirm your account.");
-      navigate("/login"); // Redirect to the login page
+    if (data.user) {
+      await supabase.from("system_roles").insert([{ user_id: data.user.id, role: "user" }]);
     }
 
     return { error: null };
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, signUp, role }}>
+    <AuthContext.Provider value={{ user, session, systemRole, login, logout, signUp }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
+// ✅ Custom hook to use AuthContext
 // eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
+  if (!context) throw new Error("useAuth must be used within an AuthProvider");
   return context;
 };
