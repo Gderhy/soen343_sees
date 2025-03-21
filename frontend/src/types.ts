@@ -23,8 +23,15 @@ export interface Event {
   id: string;
   title: string;
   description: string;
-  event_date: string;
+  event_datetime: string;
   location: string;
   status: EventStatusType;
   created_by: string;
+}
+
+export interface Stakeholder {
+  id: string;
+  full_name: string;
+  email: string;
+  phone: string;
 }

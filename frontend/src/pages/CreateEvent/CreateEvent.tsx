@@ -1,25 +1,18 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { createEvent } from "../../services/supabase/supabase";
 import "./CreateEvent.css";
+import { fetchAllStakeholders, createEvent } from "../../services/backend/user";
+import { Stakeholder } from "../../types";
+import { useAuth } from "../../contexts/AuthContext";
 
-interface Stakeholder {
-  id: string;
-  fullName: string;
-}
-
-// Temporary mock — replace with your fetch call later
-const mockStakeholders: Stakeholder[] = [
-  { id: "stake1", fullName: "Stakeholder One" },
-  { id: "stake2", fullName: "Stakeholder Two" },
-];
 
 const CreateEvent: React.FC = () => {
   const navigate = useNavigate();
+  const { user} = useAuth();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [date, setDate] = useState("");
+  const [eventDatetime, setEventDatetime] = useState("");
   const [location, setLocation] = useState("");
 
   const [allStakeholders, setAllStakeholders] = useState<Stakeholder[]>([]);
@@ -28,9 +21,18 @@ const CreateEvent: React.FC = () => {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    // TODO: replace with real fetch from your backend
-    setAllStakeholders(mockStakeholders);
-    setFilteredStakeholders(mockStakeholders);
+    const fetchStakeholders = async () => {
+      const { data, error } = await fetchAllStakeholders();
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      setAllStakeholders(data);
+      setFilteredStakeholders(data);
+    };
+
+    fetchStakeholders();
   }, []);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,7 +41,7 @@ const CreateEvent: React.FC = () => {
     setFilteredStakeholders(
       allStakeholders.filter(
         (s) =>
-          s.fullName.toLowerCase().includes(q) &&
+          s.full_name.toLowerCase().includes(q) &&
           !selectedStakeholders.some((sel) => sel.id === s.id)
       )
     );
@@ -57,15 +59,21 @@ const CreateEvent: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const stakeholderIds = selectedStakeholders.map((s) => s.id);
+    const userId = user?.id || "";
 
-    const { data, error } = await createEvent(title, description, date, location);
+    const { data, error } = await createEvent(
+      userId,
+      title,
+      description,
+      eventDatetime,
+      location,
+      stakeholderIds
+    );
     if (error) {
       console.error(error);
       return;
     }
-
-    console.log("Stakeholders to attach:", stakeholderIds);
-    navigate(`/event/${data.id}`);
+    navigate(`/event/${data}`);
   };
 
   return (
@@ -85,7 +93,12 @@ const CreateEvent: React.FC = () => {
           onChange={(e) => setDescription(e.target.value)}
           required
         />
-        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
+        <input
+          type="datetime-local"
+          value={eventDatetime}
+          onChange={(e) => setEventDatetime(e.target.value)}
+          required
+        />
         <input
           type="text"
           placeholder="Location"
@@ -99,7 +112,7 @@ const CreateEvent: React.FC = () => {
           <div className="chips">
             {selectedStakeholders.map((s) => (
               <span key={s.id} className="chip">
-                {s.fullName}{" "}
+                {s.full_name}{" "}
                 <button type="button" onClick={() => removeStakeholder(s.id)}>
                   ×
                 </button>
@@ -116,7 +129,7 @@ const CreateEvent: React.FC = () => {
             <ul className="suggestions">
               {filteredStakeholders.map((s) => (
                 <li key={s.id} onClick={() => addStakeholder(s)}>
-                  {s.fullName}
+                  {s.full_name}
                 </li>
               ))}
             </ul>
