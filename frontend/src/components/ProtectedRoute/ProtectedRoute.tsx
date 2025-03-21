@@ -9,7 +9,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ redirectTo, requireAuth = true, requiredSystemRole = "user" }) => {
-  const { user,  systemRole } = useAuth();
+  const { user, getUserSystemRole } = useAuth();
 
   if (requireAuth && !user) {
     return <Navigate to={redirectTo} />; // Redirect if login is required but the user is not authenticated
@@ -19,7 +19,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ redirectTo, requireAuth
     return <Navigate to="/" />; // Redirect if the user is logged in but trying to access a guest-only page
   }
 
-  if (systemRole !== requiredSystemRole) {
+  if ( getUserSystemRole() !== requiredSystemRole) {
     return <Navigate to="/" />; // Redirect if the user is not an admin
   }
 

@@ -144,19 +144,23 @@ export async function getEventAttendees(eventId: string) {
 }
 
 // Check if a user is an admin
-export const getSystemRole = async (userId: string): Promise<{
+export const getSystemRole = async (): Promise<{
   systemRole: SystemRole;
   error: AuthError | PostgrestError | null;
 }> => {
-  // ✅ Fetch the system role assigned to the user (Only one role per user)
-  const { data, error: roleError } = await supabase
-    .from("system_roles") // ✅ Correct table name
-    .select("role")
-    .eq("user_id", userId)
-    .single(); // ✅ A user should only have one role
+
+  const { data: { session }, error: roleError } = await supabase.auth.getSession();
+
+  if(roleError) {
+    return { systemRole: null, error: roleError };
+  }
+
+  const systemRole: SystemRole = session?.user?.user_metadata?.systemRole ||  "user";
+
+  console.log("System Role: ", systemRole);
 
   return {
-    systemRole: data?.role || "user", // ✅ Default to "user" if no role is found
+    systemRole,
     error: roleError,
   };
 };
@@ -177,4 +181,3 @@ export const isUserOrganizer = async (eventId: string) => {
 
   return { isOrganizer: data?.role === "organizer", error: organizerError };
 };
-

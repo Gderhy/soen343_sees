@@ -1,16 +1,31 @@
 import { AuthError, Session, User } from "@supabase/supabase-js";
-import { createContext, useState, useContext, ReactNode, useEffect } from "react";
-import { supabase, getSystemRole } from "../services/supabase/supabase";
+import {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  useEffect,
+} from "react";
+import { supabase } from "../services/supabase/supabase";
 import { useNavigate } from "react-router-dom";
-import { SystemRole, SignInProps, SignUpProps } from "../types";
+import { SignInProps, SignUpProps, SystemRole } from "../types";
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
-  systemRole: SystemRole;
-  login: ({ email, password }: SignInProps) => Promise<{ error: AuthError | null }>;
+  login: ({
+    email,
+    password,
+  }: SignInProps) => Promise<{ error: AuthError | null }>;
   logout: () => Promise<void>;
-  signUp: ({ fullName, email, phone, password }: SignUpProps) => Promise<{ error: AuthError | null }>;
+  signUp: ({
+    fullName,
+    email,
+    phone,
+    password,
+    systemRole,
+  }: SignUpProps) => Promise<{ error: AuthError | null }>;
+  getUserSystemRole: () => SystemRole;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,20 +34,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [systemRole, setSystemRole] = useState<SystemRole>("user");
 
-  // ✅ Handle auth state changes
   useEffect(() => {
     const fetchSession = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (error) console.error("Error fetching session:", error);
-      else {
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
+
+      if (error) {
+        console.error("Error fetching session:", error);
+      } else {
         setSession(session);
         setUser(session?.user || null);
-
-        const { systemRole, error } = await getSystemRole(session?.user?.id || "");
-        if (error) console.error("Error fetching system role:", error);
-        else setSystemRole(systemRole);
       }
     };
 
@@ -42,8 +56,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(session);
       setUser(session?.user || null);
     });
-    
-     // ✅ Fix the cleanup function
+
     return () => {
       if (data?.subscription) {
         data.subscription.unsubscribe();
@@ -51,9 +64,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  // ✅ Login function
   const login = async ({ email, password }: SignInProps) => {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
     if (data?.session) {
       setSession(data.session);
@@ -64,7 +79,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return { error };
   };
 
-  // ✅ Logout function
   const logout = async () => {
     await supabase.auth.signOut();
     setSession(null);
@@ -72,12 +86,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     navigate("/login");
   };
 
-  // ✅ Sign-up function with role assignment
-  const signUp = async ({ fullName, email, phone, password, systemRole="user" }: SignUpProps) => {
-    const { data, error } = await supabase.auth.signUp({
+  const signUp = async ({
+    fullName,
+    email,
+    phone,
+    password,
+    systemRole = "user",
+  }: SignUpProps) => {
+    const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { fullName, phone, systemRole } },
+      options: {
+        data: { fullName, phone, systemRole },
+      },
     });
 
     if (error) {
@@ -85,15 +106,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return { error };
     }
 
-    if (data.user) {
-      await supabase.from("system_roles").insert([{ user_id: data.user.id, role: "user" }]);
-    }
-
     return { error: null };
   };
 
+  const getUserSystemRole = () => {
+    return (user?.user_metadata?.systemRole || "user") as SystemRole ;
+  };
+
   return (
-    <AuthContext.Provider value={{ user, session, systemRole, login, logout, signUp }}>
+    <AuthContext.Provider
+      value={{ user, session, login, logout, signUp, getUserSystemRole }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -103,6 +126,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 // eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth must be used within an AuthProvider");
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
   return context;
 };

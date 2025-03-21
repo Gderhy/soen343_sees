@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
 // ✅ Replace with your Service Role Key (⚠️ Keep this secret, never expose in frontend)
-const SERVICE_ROLE_KEY = import.meta.env.VITE_SERVICE_ROLE_KEY;
+const SERVICE_ROLE_KEY = import.meta.env.VITE_SERVICE_ROLE_KEY; 
 
 // ✅ Create a Supabase client for admin actions
 const supabaseAdmin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
@@ -13,10 +13,6 @@ const supabaseAdmin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
 
 // ✅ Function to fetch all users (Admins only)
 export async function fetchUsers() {
-  // const { data, error } = await supabaseAdmin
-  //   .from("auth.users")
-  //   .select("id, email, raw_user_meta_data");
-
   const {data, error} = await supabaseAdmin.auth.admin.listUsers();
 
   console.log(data.users);

@@ -4,13 +4,15 @@ import "./Header.css";
 import { useAuth } from "../../contexts/AuthContext";
 
 const Header: React.FC = () => {
-  const { session, systemRole, logout } = useAuth(); // ✅ Use session instead of user
+  const { session, getUserSystemRole, logout } = useAuth(); // ✅ Use session instead of user
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleLogout = async () => {
     await logout();
     setDropdownOpen(false);
   };
+
+  const systemRole = getUserSystemRole();
 
   return (
     <header className="header">
@@ -19,7 +21,7 @@ const Header: React.FC = () => {
         <Link to="/events" className="nav-link">Events</Link>
 
         {/* Normal users & organizers can manage their events */}
-        {(systemRole === "user" || systemRole === "organizer") && (
+        {(systemRole === "user" ) && (
           <Link to="/manage-my-events" className="nav-link">Manage My Events</Link>
         )}
 
