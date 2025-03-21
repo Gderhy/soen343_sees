@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./CreateEvent.css";
-import { createEvent } from "../../services/supabase";
+import { createEvent } from "../../services/supabase/supabase";
 import { useNavigate } from "react-router-dom";
 
 const CreateEvent: React.FC = () => {

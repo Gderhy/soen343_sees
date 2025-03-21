@@ -6,8 +6,8 @@ import {
   removeRsvp,
   checkUserRsvp,
   getEventAttendees,
-} from "../../services/supabase";
-import { supabase } from "../../services/supabase"; // ✅ Import Supabase for authentication
+  isUserOrganizer,
+} from "../../services/supabase/supabase";
 import "./EventDetail.css";
 
 const EventDetail: React.FC = () => {
@@ -16,7 +16,7 @@ const EventDetail: React.FC = () => {
   const [event, setEvent] = useState<any>(null);
   const [isAttending, setIsAttending] = useState(false);
   const [attendees, setAttendees] = useState<number>(0);
-  const [isOwner, setIsOwner] = useState(false);
+  const [isOrganizer, setIsOrganizer] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -24,6 +24,8 @@ const EventDetail: React.FC = () => {
     if (!id) return;
 
     async function fetchEventData() {
+      if(!id) return;
+      
       const { data, error } = await getEventById(id);
       if (error) {
         setError("Event not found.");
@@ -37,11 +39,8 @@ const EventDetail: React.FC = () => {
       const { data: attendeesData } = await getEventAttendees(id);
       setAttendees(attendeesData?.length || 0);
 
-      // Check if logged-in user is the event owner
-      const { data: userData } = await supabase.auth.getUser();
-      if (userData?.user?.id === data?.created_by) {
-        setIsOwner(true);
-      }
+      const { isOrganizer } = await isUserOrganizer(id);
+      setIsOrganizer(isOrganizer);
 
       setLoading(false);
     }
@@ -88,11 +87,19 @@ const EventDetail: React.FC = () => {
         {isAttending ? "Cancel RSVP" : "RSVP to Event"}
       </button>
 
-      {/* Modify Event Button (Only for Owner) */}
-      {isOwner && (
-        <button onClick={() => navigate(`/edit-event/${id}`)} className="modify-button">
-          Modify Event
-        </button>
+      {/* Organizer Tools */}
+      {isOrganizer && (
+        <>
+          <button onClick={() => navigate(`/edit-event/${id}`)} className="modify-button">
+            Modify Event
+          </button>
+          <button
+            onClick={() => navigate(`/manage-attendees/${id}`)}
+            className="manage-attendees-button"
+          >
+            Manage Attendees
+          </button>
+        </>
       )}
     </div>
   );

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase, fetchUserEvents, deleteEvent } from "../../services/supabase";
+import { supabase, fetchUserEvents, deleteEvent } from "../../services/supabase/supabase";
 import "./ManageMyEvents.css";
 
 const ManageMyEvents: React.FC = () => {

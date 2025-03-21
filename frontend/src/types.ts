@@ -8,6 +8,7 @@ export type SignUpProps = {
   email: string;
   phone: string;
   password: string;
+  systemRole?: SystemRole;
 };
 
 export type SystemRole = "admin" | "stakeholder" | "user" | null;

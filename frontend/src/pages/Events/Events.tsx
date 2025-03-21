@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase, fetchAllEvents } from "../../services/supabase";
+import { fetchAllEvents } from "../../services/supabase/supabase";
 import "./Events.css";
 
 const Events: React.FC = () => {

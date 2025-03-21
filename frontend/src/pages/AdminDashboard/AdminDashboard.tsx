@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchUsers, updateUserRole, deleteUser } from "../../services/supabase/adminServices";
+import { fetchUsers, updateUserRole, deleteUser } from "../../services/supabase/admin";
 import "./AdminDashboard.css";
 
 const AdminDashboard: React.FC = () => {
@@ -12,7 +12,7 @@ const AdminDashboard: React.FC = () => {
       if (error) {
         alert("Error fetching users: " + error.message);
       } else {
-        setUsers(data);
+        if (data) setUsers(data);
       }
       setLoading(false);
     }
@@ -23,6 +23,7 @@ const AdminDashboard: React.FC = () => {
   const handleRoleChange = async (userId: string, newRole: string) => {
     const { error } = await updateUserRole(userId, newRole);
     if (error) {
+      
       alert("Error updating role: " + error.message);
     } else {
       setUsers(users.map((user) => (user.id === userId ? { ...user, role: newRole } : user)));

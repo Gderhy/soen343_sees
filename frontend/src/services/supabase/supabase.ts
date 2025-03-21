@@ -1,11 +1,17 @@
-import { createClient } from "@supabase/supabase-js";
+import { AuthError, createClient, PostgrestError } from "@supabase/supabase-js";
+import { SystemRole } from "../../types";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Function to create an event
-export const createEvent = async (title: string, description: string, event_date: string, location: string) => {
+export const createEvent = async (
+  title: string,
+  description: string,
+  event_date: string,
+  location: string
+) => {
   const { data: userData } = await supabase.auth.getUser();
 
   if (!userData?.user) {
@@ -29,7 +35,13 @@ export async function getEventById(eventId: string) {
 }
 
 // Update an existing event
-export async function updateEvent(eventId: string, title: string, description: string, event_date: string, location: string) {
+export async function updateEvent(
+  eventId: string,
+  title: string,
+  description: string,
+  event_date: string,
+  location: string
+) {
   const { data: userData } = await supabase.auth.getUser();
   if (!userData?.user) {
     return { error: "User not authenticated." };
@@ -65,14 +77,11 @@ export async function fetchAllEvents() {
   const { data, error } = await supabase.from("events").select("*");
 
   return { data, error };
-};
+}
 
 // Fetch events created by the logged-in user
 export async function fetchUserEvents(userId: string) {
-  const { data, error } = await supabase
-    .from("events")
-    .select("*")
-    .eq("created_by", userId);
+  const { data, error } = await supabase.from("events").select("*").eq("created_by", userId);
 
   return { data, error };
 }
@@ -134,6 +143,38 @@ export async function getEventAttendees(eventId: string) {
   return { data, error };
 }
 
+// Check if a user is an admin
+export const getSystemRole = async (userId: string): Promise<{
+  systemRole: SystemRole;
+  error: AuthError | PostgrestError | null;
+}> => {
+  // ✅ Fetch the system role assigned to the user (Only one role per user)
+  const { data, error: roleError } = await supabase
+    .from("system_roles") // ✅ Correct table name
+    .select("role")
+    .eq("user_id", userId)
+    .single(); // ✅ A user should only have one role
 
+  return {
+    systemRole: data?.role || "user", // ✅ Default to "user" if no role is found
+    error: roleError,
+  };
+};
 
+// Check if a user is an organizer for an event
+export const isUserOrganizer = async (eventId: string) => {
+  const { data: userData, error } = await supabase.auth.getUser();
+  if (error || !userData?.user) {
+    return { isOrganizer: false, error };
+  }
+
+  const { data, error: organizerError } = await supabase
+    .from("event_roles") // ✅ Correct table name
+    .select("role")
+    .eq("user_id", userData.user.id)
+    .eq("event_id", eventId)
+    .single(); // ✅ A user should only have one role per event
+
+  return { isOrganizer: data?.role === "organizer", error: organizerError };
+};
 

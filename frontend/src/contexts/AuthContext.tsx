@@ -73,11 +73,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // ✅ Sign-up function with role assignment
-  const signUp = async ({ fullName, email, phone, password }: SignUpProps) => {
+  const signUp = async ({ fullName, email, phone, password, systemRole="user" }: SignUpProps) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { fullName, phone } },
+      options: { data: { fullName, phone, systemRole } },
     });
 
     if (error) {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getEventById, updateEvent } from "../../services/supabase";
+import { getEventById, updateEvent } from "../../services/supabase/supabase";
 import "./CreateEvent.css"; // Reuse the styles from CreateEvent
 
 const EditEvent: React.FC = () => {
