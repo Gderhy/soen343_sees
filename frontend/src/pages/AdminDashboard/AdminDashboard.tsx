@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { fetchUsers, updateUserMetaData, deleteUser } from "../../services/supabase/admin";
 import "./AdminDashboard.css";
 import { User, UserMetadata } from "@supabase/supabase-js";
+import CreateUserModal from "../../components/AdminDashboard/Modals/CreateUserModal";
 
 const AdminDashboard: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     async function loadUsers() {
@@ -55,6 +57,7 @@ const AdminDashboard: React.FC = () => {
   return (
     <div className="admin-container">
       <h1>Admin Dashboard</h1>
+      <button onClick={() => setShowModal(true)}>➕ Create New User</button>
       <table className="user-table">
         <thead>
           <tr>
@@ -88,6 +91,13 @@ const AdminDashboard: React.FC = () => {
           )})}
         </tbody>
       </table>
+      <CreateUserModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onUserCreated={() => {
+          // Optional: refresh user list
+        }}
+      />
     </div>
   );
 };

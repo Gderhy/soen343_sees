@@ -1,0 +1,45 @@
+/* CreateUserModal.css */
+.modal-backdrop {
+  position: fixed; /* Change to fixed to cover the entire screen */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7); /* Increase opacity to 0.7 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.modal input,
+.modal select {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.cancel-button {
+  background: red;
+  color: #f0f0f0;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+}
+
+.cancel-button:hover {
+  background: darkred;
+}

@@ -35,3 +35,35 @@ export async function deleteUser(userId: string) {
   const { error } = await supabaseAdmin.auth.admin.deleteUser(userId);
   return { success: !error, error };
 }
+
+// ✅ Function to create a user 
+export async function createUserAsAdmin({
+  email,
+  password,
+  fullName,
+  phone,
+  systemRole = "user",
+}: {
+  email: string;
+  password: string;
+  fullName: string;
+  phone: string;
+  systemRole?: string;
+}) {
+  const { data, error } = await supabaseAdmin.auth.admin.createUser({
+    email,
+    password,
+    email_confirm: true,
+    user_metadata: {
+      fullName,
+      systemRole,
+      phone,
+    },
+  });
+
+  if (error) {
+    console.error("Failed to create user:", error);
+  }
+
+  return { data, error };
+}
