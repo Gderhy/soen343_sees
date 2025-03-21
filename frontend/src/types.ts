@@ -13,3 +13,12 @@ export type SignUpProps = {
 
 export type SystemRole = "admin" | "stakeholder" | "user" | null;
 export type EventRole = "organizer" | "attendee" | null;
+
+export interface Event {
+  id: string;
+  title: string;
+  description: string;
+  event_date: string;
+  location: string;
+  status: "active" | "cancelled" | "postponed";
+}
