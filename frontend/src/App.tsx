@@ -11,6 +11,8 @@ import EditEvent from "./pages/EditCreateEvent/EditEvent";
 import ManageMyEvents from "./pages/ManageMyEvents/ManageMyEvents";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
+import RegisterStakeholder from "./pages/RegisterStakeholder/RegisterStakeholder";
+
 
 const App: React.FC = () => {
   return (
@@ -32,13 +34,15 @@ const App: React.FC = () => {
         <Route element={<ProtectedRoute redirectTo="/" requireAuth={false} />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/register-stakeholder" element={<RegisterStakeholder />} />
         </Route>
 
         {/* Admin Routes */}
         <Route element={<ProtectedRoute redirectTo="/" requiredSystemRole="admin" />}>
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
         </Route>
-
+        
+        {/* Catch all route */}
         <Route path="*" element={<Home />} />
       </Routes>
     </AuthProvider>
