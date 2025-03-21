@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { fetchUsers, updateUserRole, deleteUser } from "../../services/supabase/admin";
+import { fetchUsers, updateUserMetaData, deleteUser } from "../../services/supabase/admin";
 import "./AdminDashboard.css";
+import { User, UserMetadata } from "@supabase/supabase-js";
 
 const AdminDashboard: React.FC = () => {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -13,6 +14,7 @@ const AdminDashboard: React.FC = () => {
         alert("Error fetching users: " + error.message);
       } else {
         if (data) setUsers(data);
+        console.log(data);
       }
       setLoading(false);
     }
@@ -20,13 +22,19 @@ const AdminDashboard: React.FC = () => {
     loadUsers();
   }, []);
 
-  const handleRoleChange = async (userId: string, newRole: string) => {
-    const { error } = await updateUserRole(userId, newRole);
+  const handleRoleChange = async (user: User, newRole: string) => {
+  
+    const updatedUserMetaData: UserMetadata = {
+      ...user.user_metadata,
+      systemRole: newRole,
+    };
+
+    const { error } = await updateUserMetaData(user.id, updatedUserMetaData);
+
     if (error) {
-      
-      alert("Error updating role: " + error.message);
+      alert("Error updating user role: " + error.message);
     } else {
-      setUsers(users.map((user) => (user.id === userId ? { ...user, role: newRole } : user)));
+      setUsers(users.map((u) => (u.id === user.id ? { ...u, user_metadata: updatedUserMetaData } : u)));
     }
   };
 
@@ -56,13 +64,15 @@ const AdminDashboard: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => (
+          {users.map((user) => {
+            const userSystemRole = user?.user_metadata?.systemRole;
+            return (
             <tr key={user.id}>
               <td>{user.email}</td>
               <td>
                 <select
-                  value={user.role}
-                  onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                  value={userSystemRole}
+                  onChange={(e) => handleRoleChange(user, e.target.value)}
                 >
                   <option value="user">User</option>
                   <option value="organizer">Organizer</option>
@@ -75,7 +85,7 @@ const AdminDashboard: React.FC = () => {
                 </button>
               </td>
             </tr>
-          ))}
+          )})}
         </tbody>
       </table>
     </div>

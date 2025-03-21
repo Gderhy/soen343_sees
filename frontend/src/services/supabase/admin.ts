@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { AuthError, createClient, User, UserMetadata } from "@supabase/supabase-js";
 
 // ✅ Replace with your Supabase project URL
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -12,21 +12,25 @@ const supabaseAdmin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
 });
 
 // ✅ Function to fetch all users (Admins only)
-export async function fetchUsers() {
-  const {data, error} = await supabaseAdmin.auth.admin.listUsers();
+export const fetchUsers = async (): Promise<{ data: User[] | null; error: AuthError | null }> => {
+  const { data, error } = await supabaseAdmin.auth.admin.listUsers();
 
-  console.log(data.users);
-  return { data: data.users, error };
+  console.log(data?.users);
+  return { data: data?.users || null, error };
 }
 
-// ✅ Function to update user role
-export async function updateUserRole(userId: string, newRole: string) {
-  const { error } = await supabaseAdmin
-    .from("system_roles") // ✅ Updates user role in system_roles instead
-    .update({ role: newRole })
-    .eq("user_id", userId);
+export async function updateUserMetaData(userId: string, metadata: UserMetadata) {
+  const { data, error } = await supabaseAdmin.auth.admin.updateUserById(userId, {
+    user_metadata: metadata,
+  });
 
-  return { success: !error, error };
+  if (error) {
+    console.error("Failed to update user metadata:", error);
+  } else {
+    console.log("Updated user:", data);
+  }
+
+  return { data, error };
 }
 
 // ✅ Function to delete user
