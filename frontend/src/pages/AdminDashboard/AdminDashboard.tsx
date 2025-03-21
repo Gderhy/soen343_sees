@@ -22,7 +22,7 @@ const AdminDashboard: React.FC = () => {
     }
 
     loadUsers();
-  }, []);
+  }, [showModal]);
 
   const handleRoleChange = async (user: User, newRole: string) => {
   
