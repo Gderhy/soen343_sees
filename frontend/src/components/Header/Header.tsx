@@ -32,6 +32,13 @@ const Header: React.FC = () => {
           </Link>
         )}
 
+        {/* Stakeholder Portal (To be implemented later) */}
+        {systemRole === "stakeholder" && (
+          <Link to="/stakeholder-portal" className="nav-link admin-nav">
+            Stakeholder Portal
+          </Link>
+        )}
+
         {session ? ( // ✅ Check if session exists instead of user
           <div className="user-dropdown">
             {/* Avatar & Name (Clickable for Dropdown) */}
@@ -49,14 +56,6 @@ const Header: React.FC = () => {
               <div className="dropdown-menu">
                 <Link to="/profile" className="dropdown-item">Profile</Link>
                 <Link to="/settings" className="dropdown-item">Settings</Link>
-
-                {/* Stakeholder Portal (To be implemented later) */}
-                {systemRole === "stakeholder" && (
-                  <Link to="/stakeholder-portal" className="dropdown-item stakeholder-dashboard">
-                    Stakeholder Portal (Coming Soon)
-                  </Link>
-                )}
-
                 <button onClick={handleLogout} className="dropdown-item logout">Sign Out</button>
               </div>
             )}
