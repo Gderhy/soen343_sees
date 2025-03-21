@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { createUserAsAdmin } from "../../../services/supabase/admin";
 import "./CreateUserModal.css";
+import { createUser } from "../../../services/backend/admin";
 
 interface Props {
   isOpen: boolean;
@@ -18,7 +18,7 @@ const CreateUserModal: React.FC<Props> = ({ isOpen, onClose, onUserCreated }) =>
 
   const handleCreateUser = async () => {
     setLoading(true);
-    const { error } = await createUserAsAdmin({
+    const { error } = await createUser({
       email,
       password,
       phone,
@@ -31,7 +31,7 @@ const CreateUserModal: React.FC<Props> = ({ isOpen, onClose, onUserCreated }) =>
       onClose();
       onUserCreated?.();
     } else {
-      alert("Error creating user: " + error.message);
+      alert("Error creating user: " + error);
     }
 
     setLoading(false);
@@ -68,9 +68,9 @@ const CreateUserModal: React.FC<Props> = ({ isOpen, onClose, onUserCreated }) =>
           onChange={(e) => setPassword(e.target.value)}
         />
         <select value={systemRole} onChange={(e) => setSystemRole(e.target.value)}>
-          <option value="user">User</option>
+          <option value={"user"}>User</option>
+          <option value="organizer">Organizer</option>
           <option value="admin">Admin</option>
-          <option value="stakeholder">Stakeholder</option>
         </select>
 
         <div className="modal-actions">
