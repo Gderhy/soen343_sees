@@ -47,7 +47,7 @@ const RegisterStakeholder: React.FC = () => {
       <form onSubmit={handleRegister} className="stakeholder-form">
         <input
           type="text"
-          placeholder="Full Name"
+          placeholder="Institution/Organization Name"
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
           required
