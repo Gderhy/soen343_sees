@@ -1,9 +1,6 @@
 import { AuthError, createClient, User, UserMetadata } from "@supabase/supabase-js";
 
-// ✅ Replace with your Supabase project URL
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-
-// ✅ Replace with your Service Role Key (⚠️ Keep this secret, never expose in frontend)
 const SERVICE_ROLE_KEY = import.meta.env.VITE_SERVICE_ROLE_KEY; 
 
 // ✅ Create a Supabase client for admin actions
