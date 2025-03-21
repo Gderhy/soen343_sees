@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./StakeholderPortal.css";
 
 import ViewEvents from "../../components/Stakeholder/ViewEvents/ViewEvents";
+import PendingEvents from "../../components/Stakeholder/PendingEvents/PendingEvents";
 
 const StakeholderPortal: React.FC = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -39,6 +40,10 @@ const StakeholderPortal: React.FC = () => {
             {/* Future integration: Build a messaging/chat interface */}
           </div>
         );
+      case "pending-events":
+        return (
+          <PendingEvents />
+        );
       default:
         return null;
     }
@@ -71,6 +76,12 @@ const StakeholderPortal: React.FC = () => {
           onClick={() => setActiveTab("communications")}
         >
           Communications
+        </button>
+        <button
+          className={`tab ${activeTab === "pending-events" ? "active" : ""}`}
+          onClick={() => setActiveTab("pending-events")}
+        >
+          Pending events
         </button>
       </div>
       <div className="content">{renderTabContent()}</div>

@@ -6,6 +6,7 @@ const app = express();
 
 // Import Routes
 const adminRoutes = require("./src/routes/adminRoutes");
+const stakeholderRoutes = require("./src/routes/stakeholderRoutes");
 
 // Middleware
 app.use(cors());
@@ -13,6 +14,7 @@ app.use(express.json());
 
 // Routes
 app.use("/api/admin", adminRoutes);
+app.use("/api/stakeholder", stakeholderRoutes);
 
 // Test Route
 app.get("/", (req, res) => {

@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
 import "./ViewEvents.css";
 
-import { mockEvents } from "./mockData";
 import { Event } from "../../../types";
+import { fetchAllStakeHolderEvents } from "../../../services/backend/stakeholder";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const ViewEventsGrid: React.FC = () => {
-  const [events, setEvents] = useState<Event[]>(mockEvents);
-  const [filteredEvents, setFilteredEvents] = useState<Event[]>(mockEvents);
+  const { user } = useAuth();
+
+  const [events, setEvents] = useState<Event[]>([]);
+  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
 
   // Filter states
   const [searchQuery, setSearchQuery] = useState("");
@@ -14,6 +17,24 @@ const ViewEventsGrid: React.FC = () => {
   const [endDate, setEndDate] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  useEffect(() => {
+    // Fetch events from API
+    const fetchEvents = async () => {
+      const stakeholderId = user?.id || "";
+
+      const { data, error } = await fetchAllStakeHolderEvents(stakeholderId);
+
+      if (error) {
+        console.error("Error fetching events: ", error);
+      } else if (data) {
+        setEvents(data);
+        setFilteredEvents(data);
+      }
+    };
+    fetchEvents();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     let filtered = events;

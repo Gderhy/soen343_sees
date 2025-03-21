@@ -1,0 +1,67 @@
+/* src/pages/PendingEvents/PendingEvents.css */
+.pending-events-container {
+  max-width: 90%;
+  margin: 40px auto;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.pending-events-container h1 {
+  color: #007bff;
+  margin-bottom: 20px;
+}
+
+.pending-events-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pending-events-table th,
+.pending-events-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+
+.pending-events-table th {
+  background-color: #007bff;
+  color: white;
+  font-size: 18px;
+}
+
+.pending-events-table tbody tr:hover {
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
+
+.approve-button,
+.deny-button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 5px;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+.approve-button {
+  background-color: #28a745;
+  color: white;
+}
+
+.approve-button:hover {
+  background-color: #218838;
+}
+
+.deny-button {
+  background-color: #dc3545;
+  color: white;
+}
+
+.deny-button:hover {
+  background-color: #b02a37;
+}

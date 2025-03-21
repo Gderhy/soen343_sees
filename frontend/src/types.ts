@@ -14,11 +14,17 @@ export type SignUpProps = {
 export type SystemRole = "admin" | "stakeholder" | "user" | null;
 export type EventRole = "organizer" | "attendee" | null;
 
+// Make sure to update the db schema to match the new Event type
+export type EventStatusType = "pending" | "active" | "denied" | "cancelled" | "postponed"; 
+// Make sure to update the db schema to match the new Event type
+export type StakeholderEventStatusType = "pending" | "denied" | "approved";
+// Make sure to update the db schema to match the new Event type
 export interface Event {
   id: string;
   title: string;
   description: string;
   event_date: string;
   location: string;
-  status: "active" | "cancelled" | "postponed";
+  status: EventStatusType;
+  created_by: string;
 }

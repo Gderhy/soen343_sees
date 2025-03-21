@@ -1,6 +1,8 @@
 import { UserMetadata } from '@supabase/supabase-js';
 import axios from 'axios';
 
+//TODO: Implement the try catch
+
 export const fetchAllUsers = async () => {
   const response = await axios.get("http://localhost:5000/api/admin/users");
   
