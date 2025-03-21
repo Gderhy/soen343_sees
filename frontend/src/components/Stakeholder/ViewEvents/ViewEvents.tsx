@@ -44,9 +44,105 @@ const mockEvents: Event[] = [
     location: "Montreal",
     status: "postponed",
   },
+  {
+    id: "1",
+    title: "Tech Conference 2023",
+    description: "A conference about emerging tech trends.",
+    event_date: "2023-04-20",
+    location: "Montreal",
+    status: "active",
+  },
+  {
+    id: "2",
+    title: "Art Workshop",
+    description: "A creative art workshop for beginners.",
+    event_date: "2023-05-05",
+    location: "Toronto",
+    status: "cancelled",
+  },
+  {
+    id: "3",
+    title: "Science Expo",
+    description: "Showcasing breakthrough scientific discoveries.",
+    event_date: "2023-06-15",
+    location: "Vancouver",
+    status: "active",
+  },
+  {
+    id: "4",
+    title: "Business Seminar",
+    description: "Strategies for modern business growth.",
+    event_date: "2023-07-10",
+    location: "Montreal",
+    status: "postponed",
+  },
+  {
+    id: "1",
+    title: "Tech Conference 2023",
+    description: "A conference about emerging tech trends.",
+    event_date: "2023-04-20",
+    location: "Montreal",
+    status: "active",
+  },
+  {
+    id: "2",
+    title: "Art Workshop",
+    description: "A creative art workshop for beginners.",
+    event_date: "2023-05-05",
+    location: "Toronto",
+    status: "cancelled",
+  },
+  {
+    id: "3",
+    title: "Science Expo",
+    description: "Showcasing breakthrough scientific discoveries.",
+    event_date: "2023-06-15",
+    location: "Vancouver",
+    status: "active",
+  },
+  {
+    id: "4",
+    title: "Business Seminar",
+    description: "Strategies for modern business growth.",
+    event_date: "2023-07-10",
+    location: "Montreal",
+    status: "postponed",
+  },
+  {
+    id: "1",
+    title: "Tech Conference 2023",
+    description: "A conference about emerging tech trends.",
+    event_date: "2023-04-20",
+    location: "Montreal",
+    status: "active",
+  },
+  {
+    id: "2",
+    title: "Art Workshop",
+    description: "A creative art workshop for beginners.",
+    event_date: "2023-05-05",
+    location: "Toronto",
+    status: "cancelled",
+  },
+  {
+    id: "3",
+    title: "Science Expo",
+    description: "Showcasing breakthrough scientific discoveries.",
+    event_date: "2023-06-15",
+    location: "Vancouver",
+    status: "active",
+  },
+  {
+    id: "4",
+    title: "Business Seminar",
+    description: "Strategies for modern business growth.",
+    event_date: "2023-07-10",
+    location: "Montreal",
+    status: "postponed",
+  },
 ];
 
-const ViewEvents: React.FC = () => {
+const ViewEventsGrid: React.FC = () => {
   const [events, setEvents] = useState<Event[]>(mockEvents);
   const [filteredEvents, setFilteredEvents] = useState<Event[]>(mockEvents);
 
@@ -92,9 +188,9 @@ const ViewEvents: React.FC = () => {
   }, [searchQuery, startDate, endDate, locationFilter, statusFilter, events]);
 
   return (
-    <div className="view-events-container">
-      <h1>View Events</h1>
+    <div className="view-events-grid">
       <div className="filters">
+        <h2>Filters</h2>
         <input
           type="text"
           placeholder="Search by title..."
@@ -127,11 +223,11 @@ const ViewEvents: React.FC = () => {
         </select>
       </div>
 
-      <div className="events-list">
-        {filteredEvents.length ? (
+      <div className="events-grid">
+        {filteredEvents.length > 0 ? (
           filteredEvents.map((event) => (
             <div key={event.id} className="event-card">
-              <h2>{event.title}</h2>
+              <h3>{event.title}</h3>
               <p>{event.description}</p>
               <p>
                 <strong>Date:</strong> {new Date(event.event_date).toLocaleDateString()}
@@ -152,4 +248,4 @@ const ViewEvents: React.FC = () => {
   );
 };
 
-export default ViewEvents;
+export default ViewEventsGrid;
