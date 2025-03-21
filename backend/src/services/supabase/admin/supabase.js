@@ -27,8 +27,8 @@ async function deleteUser(userId) {
   return { success: !error, error };
 }
 
-// Create a user as admin
-async function createUserAsAdmin({ email, password, fullName, phone, systemRole = "user" }) {
+// Create a user 
+async function createUser({ email, password, fullName, phone, systemRole = "user" }) {
   const { data, error } = await supabaseAdmin.auth.admin.createUser({
     email,
     password,
@@ -45,5 +45,5 @@ module.exports = {
   fetchUsers,
   updateUserMetaData,
   deleteUser,
-  createUserAsAdmin,
+  createUser,
 };

@@ -6,13 +6,33 @@ const {
   fetchUsers,
   updateUserMetaData,
   deleteUser,
-  createUserAsAdmin,
+  createUser,
 } = require("../services/supabase/admin/supabase");
 
 // GET /api/users - Fetch all users (Admins only)
 router.get("/users", async (req, res) => {
   try {
     const { data, error } = await fetchUsers();
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/users - Create a new user (Admins only)
+router.post("/users", async (req, res) => {
+  const { email, password, fullName, phone, systemRole } = req.body;
+  try {
+    const { data, error } = await createUser({
+      email,
+      password,
+      fullName,
+      phone,
+      systemRole,
+    });
     if (error) {
       return res.status(500).json({ error: error.message });
     }
