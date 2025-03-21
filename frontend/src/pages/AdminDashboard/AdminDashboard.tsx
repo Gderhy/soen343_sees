@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { fetchUsers, updateUserMetaData, deleteUser } from "../../services/supabase/admin";
+import { fetchAllUsers } from "../../services/backend/admin";
 import "./AdminDashboard.css";
 import { User, UserMetadata } from "@supabase/supabase-js";
 import CreateUserModal from "../../components/AdminDashboard/Modals/CreateUserModal";
+import { deleteUser, updateUserMetaData } from "../../services/backend/admin";
 
 const AdminDashboard: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -11,12 +12,12 @@ const AdminDashboard: React.FC = () => {
 
   useEffect(() => {
     async function loadUsers() {
-      const { data, error } = await fetchUsers();
+      const { data, error } = await fetchAllUsers();
       if (error) {
-        alert("Error fetching users: " + error.message);
+        alert("Error fetching users: " + error);
       } else {
+        console.log("data", data);
         if (data) setUsers(data);
-        console.log(data);
       }
       setLoading(false);
     }
@@ -31,10 +32,12 @@ const AdminDashboard: React.FC = () => {
       systemRole: newRole,
     };
 
+    console.log("updatedUserMetaData", updatedUserMetaData);
+
     const { error } = await updateUserMetaData(user.id, updatedUserMetaData);
 
     if (error) {
-      alert("Error updating user role: " + error.message);
+      alert("Error updating user role: " + error);
     } else {
       setUsers(users.map((u) => (u.id === user.id ? { ...u, user_metadata: updatedUserMetaData } : u)));
     }
@@ -46,7 +49,7 @@ const AdminDashboard: React.FC = () => {
 
     const { error } = await deleteUser(userId);
     if (error) {
-      alert("Error deleting user: " + error.message);
+      alert("Error deleting user: " + error);
     } else {
       setUsers(users.filter((user) => user.id !== userId));
     }
@@ -78,7 +81,7 @@ const AdminDashboard: React.FC = () => {
                   onChange={(e) => handleRoleChange(user, e.target.value)}
                 >
                   <option value="user">User</option>
-                  <option value="organizer">Organizer</option>
+                  <option value="stakeholder">Stakeholder</option>
                   <option value="admin">Admin</option>
                 </select>
               </td>

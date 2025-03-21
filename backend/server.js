@@ -5,16 +5,14 @@ const cors = require("cors");
 const app = express();
 
 // Import Routes
-const eventsRouter = require("./src/routes/events");
-const usersRouter = require("./src/routes/users");
+const adminRoutes = require("./src/routes/adminRoutes");
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use("/users", usersRouter);
-app.use("/events", eventsRouter);
+app.use("/api/admin", adminRoutes);
 
 // Test Route
 app.get("/", (req, res) => {
