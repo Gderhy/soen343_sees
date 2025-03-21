@@ -12,7 +12,7 @@ import ManageMyEvents from "./pages/ManageMyEvents/ManageMyEvents";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
 import RegisterStakeholder from "./pages/RegisterStakeholder/RegisterStakeholder";
-
+import StakeholderPortal from "./pages/StakeholderPortal/StakeholderPortal";
 
 const App: React.FC = () => {
   return (
@@ -40,6 +40,11 @@ const App: React.FC = () => {
         {/* Admin Routes */}
         <Route element={<ProtectedRoute redirectTo="/" requiredSystemRole="admin" />}>
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        </Route>
+
+        {/* Stakeholder Routes */}
+        <Route element={<ProtectedRoute redirectTo="/" requiredSystemRole="stakeholder" />}>
+          <Route path="/stakeholder-portal" element={<StakeholderPortal />} />
         </Route>
         
         {/* Catch all route */}
