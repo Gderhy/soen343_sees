@@ -5,7 +5,7 @@ import Login from "./pages/Login/Login";
 import Register from "./pages/Login/Register";
 import Header from "./components/Header/Header";
 import { AuthProvider } from "./contexts/AuthContext";
-import CreateEvent from "./pages/EditCreateEvent/CreateEvent";
+import CreateEvent from "./pages/CreateEvent/CreateEvent";
 import EventDetail from "./pages/EventDetail/EventDetail";
 import EditEvent from "./pages/EditCreateEvent/EditEvent";
 import ManageMyEvents from "./pages/ManageMyEvents/ManageMyEvents";
