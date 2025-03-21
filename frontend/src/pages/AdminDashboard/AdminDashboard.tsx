@@ -51,6 +51,7 @@ const AdminDashboard: React.FC = () => {
     if (error) {
       alert("Error deleting user: " + error);
     } else {
+      alert("User deleted successfully.");
       setUsers(users.filter((user) => user.id !== userId));
     }
   };
