@@ -7,6 +7,7 @@ import "./PendingEvents.css";
 import { Event } from "../../../types";
 import { useAuth } from "../../../contexts/AuthContext";
 
+// TODO: destructure the events object correctly in the backend...
 interface ReceivedEvents {
   events: Event;
 }
