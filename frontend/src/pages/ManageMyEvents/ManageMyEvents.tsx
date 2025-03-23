@@ -57,6 +57,7 @@ const ManageMyEvents: React.FC = () => {
     if (error) {
       alert(error);
     } else {
+      alert("Event deleted successfully.");
       setEvents(events.filter((event) => event.id !== eventId));
       setFilteredEvents(filteredEvents.filter((event) => event.id !== eventId));
     }

@@ -54,8 +54,7 @@ export const createEvent = async (
 export const deleteEvent = async (eventId: string) => {
   try {
     const response = await axios.delete(`http://localhost:5000/api/user/event/${eventId}`);
-    console.log("ssd", response.data);
-
+    
     if (response.status !== 200) {
       return { error: response.statusText };
     }
