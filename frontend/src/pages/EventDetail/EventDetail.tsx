@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
-  rsvpToEvent,
   removeRsvp,
   checkUserRsvp,
   getEventAttendees,
   isUserOrganizer,
 } from "../../services/supabase/supabase";
 import { fetchEventById } from "../../services/backend/all";
+import { rsvpToEvent } from "../../services/backend/user";
 import "./EventDetail.css";
 import { Event, defaultEvent } from "../../types";
 
@@ -25,8 +25,11 @@ const EventDetail: React.FC = () => {
     if (!id) return;
 
     async function fetchEventData() {
-      if(!id) return;
-      
+      if (!id) {
+        navigate("/events");
+        return;
+      }
+
       const { data, error } = await fetchEventById(id);
       if (error) {
         setError("Event not found.");
@@ -47,7 +50,7 @@ const EventDetail: React.FC = () => {
     }
 
     fetchEventData();
-  }, [id]);
+  }, [id, navigate]);
 
   const handleRsvp = async () => {
     if (!id) return;

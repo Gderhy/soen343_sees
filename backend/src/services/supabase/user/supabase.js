@@ -88,7 +88,7 @@ const updateEvent = async (userId, obj) => {
       .from("event_organizers")
       .select("*")
       .eq("organizer_id", userId)
-      .eq("event_id", event.id); 
+      .eq("event_id", event.id);
 
     if (organizerError !== null) {
       return { error: organizerError.message }; // Return the error message
@@ -102,7 +102,7 @@ const updateEvent = async (userId, obj) => {
     const { data, error } = await supabase
       .from("events")
       .update(event) // Use event instead of obj
-      .eq("id", event.id); 
+      .eq("id", event.id);
 
     if (error) {
       return { error: error.message }; // Return the error message
@@ -114,11 +114,32 @@ const updateEvent = async (userId, obj) => {
   }
 };
 
+const rsvpToEvent = async (obj) => {
+  try {
+    const entry = {
+      event_id: obj.eventId,
+      user_id: obj.userId,
+      status: "accepted", // TODO: implement a way to accept or decline on managers portal
+    };
+
+    const { data, error } = await supabase.from("event_attendance").insert(entry);
+
+    if (error) {
+      return { error: error.message };
+    }
+
+    return { data, error: null };
+  } catch (err) {
+    return { error: err.message };
+  };
+};
+
 module.exports = {
   fetchStakeholders,
   createEvent,
   fetchUsersEvents,
   deleteEvent,
   updateEvent,
+  rsvpToEvent,
   // ... other functions
 };

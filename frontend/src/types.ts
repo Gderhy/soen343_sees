@@ -44,3 +44,5 @@ export interface Stakeholder {
   email: string;
   phone: string;
 }
+
+export type EventAttendanceStatus = "pending" | "accepted" | "declined";

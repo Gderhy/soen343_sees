@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Event } from "../../types";
+import { getUserId } from "../supabase/supabase";
 
 export const fetchAllStakeholders = async () => {
   try {
@@ -54,7 +55,7 @@ export const createEvent = async (
 export const deleteEvent = async (eventId: string) => {
   try {
     const response = await axios.delete(`http://localhost:5000/api/user/event/${eventId}`);
-    
+
     if (response.status !== 200) {
       return { error: response.statusText };
     }
@@ -107,5 +108,25 @@ export const updateEvent = async (userId: string, event: Event) => {
     console.log("updateEvent", err);
     return { data: null, error: err };
   }
-}
+};
 
+export const rsvpToEvent = async (eventId: string) => {
+  try {
+    const response = await axios.post(`http://localhost:5000/api/user/rsvp`, {
+      userId : await getUserId(),
+      eventId,
+    });
+
+    if (response.status !== 200) {
+      return { data: null, error: response.statusText };
+    }
+
+    if (response.data.error) {
+      return { data: null, error: response.data.error };
+    }
+
+    return { data: response.data, error: null };
+  } catch (err) {
+    return { data: null, error: err };
+  }
+};

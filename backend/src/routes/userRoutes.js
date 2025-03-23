@@ -8,6 +8,7 @@ const {
   deleteEvent,
   fetchUsersEvents,
   updateEvent,
+  rsvpToEvent,
 } = require("../services/supabase/user/supabase");
 
 // GET /api/user/stakeholders
@@ -73,6 +74,9 @@ router.delete("/event/:eventId", async (req, res) => {
   }
 });
 
+// PUT /api/user/:userId/event
+// Update an event
+// Private for users
 router.put("/:userId/event/", async (req, res) => {
   try {
     const userId = req.params.userId;
@@ -85,6 +89,23 @@ router.put("/:userId/event/", async (req, res) => {
 
     console.log("Event updated successfully:", req.body.event.id);
     res.json({ message: `Event ${req.body.event.id} updated successfully` });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/user/rsvp
+// Allow for users to rsvp to events
+// Private for users
+router.post("/rsvp", async (req, res) => {
+  try {
+    const { data, error } = await rsvpToEvent(req.body);
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    console.log("RSVP successful for user: ", req.body.userId);
+    res.json({ message: "RSVP successful" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
