@@ -118,7 +118,7 @@ const ViewEventsGrid: React.FC = () => {
                 <strong>Location:</strong> {event.location}
               </p>
               <p>
-                <strong>Status:</strong> {event.status}
+                <strong>Status:</strong> {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
               </p>
             </div>
           ))
