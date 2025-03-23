@@ -22,7 +22,6 @@ const ViewEventsGrid: React.FC = () => {
     // Fetch events from API
     const fetchEvents = async () => {
       const stakeholderId = user?.id || "";
-
       const { data, error } = await fetchAllStakeHolderEvents(stakeholderId);
 
       if (error) {
@@ -33,7 +32,7 @@ const ViewEventsGrid: React.FC = () => {
       }
     };
     fetchEvents();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -48,11 +47,11 @@ const ViewEventsGrid: React.FC = () => {
 
     // Filter by start date
     if (startDate) {
-      filtered = filtered.filter((event) => event.event_date >= startDate);
+      filtered = filtered.filter((event) => event.event_datetime >= startDate);
     }
     // Filter by end date
     if (endDate) {
-      filtered = filtered.filter((event) => event.event_date <= endDate);
+      filtered = filtered.filter((event) => event.event_datetime <= endDate);
     }
 
     // Filter by location (case-insensitive match)
@@ -113,7 +112,7 @@ const ViewEventsGrid: React.FC = () => {
               <h3>{event.title}</h3>
               <p>{event.description}</p>
               <p>
-                <strong>Date:</strong> {new Date(event.event_date).toLocaleDateString()}
+                <strong>Date:</strong> {new Date(event.event_datetime).toLocaleDateString()}
               </p>
               <p>
                 <strong>Location:</strong> {event.location}

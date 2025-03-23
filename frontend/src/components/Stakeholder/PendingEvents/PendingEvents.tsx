@@ -4,7 +4,7 @@ import {
   updateStakeholderEventStatus,
 } from "../../../services/backend/stakeholder";
 import "./PendingEvents.css";
-import { Event, StakeholderEventStatusType } from "../../../types";
+import { Event } from "../../../types";
 import { useAuth } from "../../../contexts/AuthContext";
 
 interface ReceivedEvents {

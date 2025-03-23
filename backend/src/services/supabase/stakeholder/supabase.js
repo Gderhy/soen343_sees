@@ -25,11 +25,8 @@ const updateStakeholderEventStatus = async (stakeholderId, eventId, status) => {
     if (error) {
       return { error };
     }
-
-    console.log("Calling handleEventStatus");
     const { error: handleEventStatusError } = handleEventStatus(eventId, status);
-    console.log("handleEventStatusError: ", handleEventStatusError);
-    
+
     if (handleEventStatusError) {
       return { error: handleEventStatusError };
     }
@@ -37,11 +34,21 @@ const updateStakeholderEventStatus = async (stakeholderId, eventId, status) => {
     return { data, error };
   } catch (err) {
     return { error: err.message };
-  };
+  }
+};
+
+const fetchStakeholdersEvent = async (stakeholderId) => {
+  const { data, error } = await supabase
+    .from("event_stakeholders")
+    .select("events (*)")
+    .eq("stakeholder_id", stakeholderId);
+
+  return { data: data.map(item=> item.events), error };
 };
 
 module.exports = {
   fetchStakeholdersPendingEvents,
   updateStakeholderEventStatus,
+  fetchStakeholdersEvent,
   // ... other functions
 };
