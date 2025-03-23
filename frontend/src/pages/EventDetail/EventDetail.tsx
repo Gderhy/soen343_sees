@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getEventAttendees } from "../../services/supabase/supabase";
-import { fetchEventById } from "../../services/backend/all";
+import { fetchEventById, getEventAttendeesCount } from "../../services/backend/all";
 import { rsvpToEvent, removeRsvp, checkRsvp, isUserOrganizer } from "../../services/backend/user";
 import "./EventDetail.css";
 import { Event, defaultEvent } from "../../types";
@@ -43,11 +42,11 @@ const EventDetail: React.FC = () => {
       }
 
       // Fetch attendees
-      const { data: attendeesData, error: attendeesError } = await getEventAttendees(id);
+      const { attendees, error: attendeesError } = await getEventAttendeesCount(id);
       if (attendeesError) {
         console.error("Error fetching attendees:", attendeesError);
       } else {
-        setAttendees(attendeesData?.length || 0);
+        setAttendees(attendees || 0);
       }
 
       // Check if the user is an organizer

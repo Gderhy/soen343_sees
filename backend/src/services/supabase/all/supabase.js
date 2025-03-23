@@ -18,4 +18,21 @@ const fetchEvent = async (eventId) => {
   }
 };
 
-module.exports = { fetchAllEvents, fetchEvent };
+const fetchEventAttendeeCount = async (eventId) => {
+  try {
+    const { count, error } = await supabaseAdmin
+      .from("event_attendance")
+      .select("*", { count: "exact", head: true })
+      .eq("event_id", eventId);
+
+    if (error) {
+      return { error };
+    }
+
+    return { count, error: null };
+  } catch (err) {
+    return { error: err.message };
+  }
+};
+
+module.exports = { fetchAllEvents, fetchEvent, fetchEventAttendeeCount };

@@ -1,8 +1,11 @@
 const express = require("express");
 const router = express.Router();
 
-const { fetchAllEvents , fetchEvent} = require("../services/supabase/all/supabase");
-
+const {
+  fetchAllEvents,
+  fetchEvent,
+  fetchEventAttendeeCount,
+} = require("../services/supabase/all/supabase");
 
 // GET /api/events
 // Fetch all events
@@ -36,6 +39,23 @@ router.get("/events/:eventId", async (req, res) => {
 
     console.log("Event fetched successfully: ", eventId);
     res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get("/events/:eventId/attendees-count", async (req, res) => {
+  try {
+    const eventId = req.params.eventId;
+    const { count, error } = await fetchEventAttendeeCount(eventId);
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    console.log(`Event: ${eventId} attendance count: ${count} fetched successfully`);
+    
+    res.json(count);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

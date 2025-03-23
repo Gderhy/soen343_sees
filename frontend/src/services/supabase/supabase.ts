@@ -7,14 +7,14 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Get attendees for a specific event
 // TODO: GOTTA GO TO BACKEND
-export async function getEventAttendees(eventId: string) {
-  const { data, error } = await supabase
-    .from("event_attendance")
-    .select("user_id")
-    .eq("event_id", eventId); // ✅ Correctly filter by eventId
+// export async function getEventAttendees(eventId: string) {
+//   const { data, error } = await supabase
+//     .from("event_attendance")
+//     .select("user_id")
+//     .eq("event_id", eventId); // ✅ Correctly filter by eventId
 
-  return { data, error };
-}
+//   return { data, error };
+// }
 
 // Returns the system role
 // Keep this function in frontend
