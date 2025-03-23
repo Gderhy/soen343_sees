@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const fetchALlActiveEvents = async () => {
+export const fetchAllActiveEvents = async () => {
   try {
     const response = await axios.get("http://localhost:5000/api/events");
 
