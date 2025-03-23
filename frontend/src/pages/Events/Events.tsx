@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchALlActiveEvents } from "../../services/backend/all";
 import "./Events.css";
+import { Event } from "../../types";
 
 const Events: React.FC = () => {
   const navigate = useNavigate();
-  const [events, setEvents] = useState<any[]>([]);
-  const [filteredEvents, setFilteredEvents] = useState<any[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
