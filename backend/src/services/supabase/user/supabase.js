@@ -41,26 +41,37 @@ const createEvent = async (obj) => {
   const organizersEvents = {
     event_id: data[0].id,
     organizer_id: obj.userId,
-  }
+  };
 
   const queryReponse2 = await supabase.from("event_organizers").insert(organizersEvents);
 
   if (queryReponse2.error !== null) {
     return { error: queryReponse2.error };
   }
-  
+
   return { eventId: data[0].id, error };
 };
 
 const fetchUsersEvents = async (userId) => {
-  const { data, error } = await supabase
-    .from("events")
-    .select("id, title, description, event_datetime, location")
-    .eq("created_by", userId);
+  try {
+    const { data, error } = await supabase
+      .from("event_organizers")
+      .select("events (*)")
+      .eq("organizer_id", userId);
 
-  return { data, error };
-}
+    if (error) {
+      console.error("Error fetching user's events:", error);
+      return { error };
+    }
 
+    // Destructure the events from the array
+    const events = data.map((item) => item.events);
+
+    return { data: events, error: null };
+  } catch (err) {
+    return { error: err };
+  }
+};
 const deleteEvent = async (eventId) => {
   const { data, error } = await supabase.from("events").delete().eq("id", eventId);
   return { data, error };

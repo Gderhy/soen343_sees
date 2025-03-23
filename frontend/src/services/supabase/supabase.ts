@@ -36,21 +36,14 @@ export async function updateEvent(
   return { data, error };
 }
 
-// Fetch all events
-// TODO: GOTTA GO TO BACKEND
-// export async function fetchAllEvents() {
-//   const { data, error } = await supabase.from("events").select("*");
+
+// // Fetch events created by the logged-in user
+// // TODO: GOTTA GO TO BACKEND
+// export async function fetchUserEvents(userId: string) {
+//   const { data, error } = await supabase.from("events").select("*").eq("created_by", userId);
 
 //   return { data, error };
 // }
-
-// Fetch events created by the logged-in user
-// TODO: GOTTA GO TO BACKEND
-export async function fetchUserEvents(userId: string) {
-  const { data, error } = await supabase.from("events").select("*").eq("created_by", userId);
-
-  return { data, error };
-}
 
 // RSVP to an event
 // TODO: GOTTA GO TO BACKEND

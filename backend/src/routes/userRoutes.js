@@ -2,8 +2,16 @@
 
 const express = require("express");
 const router = express.Router();
-const { fetchStakeholders, createEvent, deleteEvent } = require("../services/supabase/user/supabase");
+const {
+  fetchStakeholders,
+  createEvent,
+  deleteEvent,
+  fetchUsersEvents,
+} = require("../services/supabase/user/supabase");
 
+// GET /api/user/stakeholders
+// Fetch all stakeholders from the database
+// Public -- TODO: need to move to all users
 router.get("/stakeholders", async (req, res) => {
   try {
     const { data, error } = await fetchStakeholders();
@@ -17,8 +25,12 @@ router.get("/stakeholders", async (req, res) => {
   }
 });
 
+// POST /api/user/event
+// Create an event
+// Private for users
 router.post("/event", async (req, res) => {
   try {
+    // Pass the request body to the createEvent function which contains the event details
     const { eventId, error } = await createEvent(req.body);
     if (error) {
       return res.status(500).json({ error: error.message });
@@ -30,14 +42,16 @@ router.post("/event", async (req, res) => {
   }
 });
 
-router.get("/event", async (req, res) => {
+// GET /api/user/:userId/event
+// Fetch all events for a user
+router.get("/:userId/events", async (req, res) => {
   try {
-    const userId = req.query.userId;
-    const { data, error } = await fetchEvents(userId);
+    const userId = req.params.userId;
+    const { data, error } = await fetchUsersEvents(userId);
     if (error) {
       return res.status(500).json({ error: error.message });
     }
-    console.log("User's events fetched successfully: ", data);
+    console.log("Events fetched successfully for user: ", userId);
     res.json(data);
   } catch (err) {
     res.status(500).json({ error: err.message });

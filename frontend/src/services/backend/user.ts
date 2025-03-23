@@ -16,9 +16,16 @@ export const fetchAllStakeholders = async () => {
   } catch (err) {
     return { data: null, error: err };
   }
-}
+};
 
-export const createEvent = async (userId: string, title: string, description: string, eventDatetime: string, location: string, stakeholdersIds: string[]) => {
+export const createEvent = async (
+  userId: string,
+  title: string,
+  description: string,
+  eventDatetime: string,
+  location: string,
+  stakeholdersIds: string[]
+) => {
   try {
     const response = await axios.post("http://localhost:5000/api/user/event", {
       userId,
@@ -28,7 +35,7 @@ export const createEvent = async (userId: string, title: string, description: st
       location,
       stakeholdersIds,
     });
-    
+
     if (response.status !== 200) {
       return { data: null, error: response.statusText };
     }
@@ -41,8 +48,7 @@ export const createEvent = async (userId: string, title: string, description: st
   } catch (err) {
     return { data: null, error: err };
   }
-}
-
+};
 
 export const deleteEvent = async (eventId: string) => {
   try {
@@ -57,16 +63,15 @@ export const deleteEvent = async (eventId: string) => {
       return { error: response.data.error };
     }
 
-
     return { error: null };
   } catch (err) {
     return { data: null, error: err };
   }
-}
+};
 
-export const fetchAllEvents = async () => {
+export const fetchUsersEvents = async (userId: string) => {
   try {
-    const response = await axios.get("http://localhost:5000/api/user/events");
+    const response = await axios.get(`http://localhost:5000/api/user/${userId}/events`);
 
     if (response.status !== 200) {
       return { data: null, error: response.statusText };
@@ -80,4 +85,4 @@ export const fetchAllEvents = async () => {
   } catch (err) {
     return { data: null, error: err };
   }
-}
+};

@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase, fetchUserEvents } from "../../services/supabase/supabase";
-import { deleteEvent } from "../../services/backend/user";
+import { supabase } from "../../services/supabase/supabase";
+import { deleteEvent, fetchUsersEvents } from "../../services/backend/user";
 import "./ManageMyEvents.css";
+import { Event } from "../../types";
 
 const ManageMyEvents: React.FC = () => {
   const navigate = useNavigate();
-  const [events, setEvents] = useState<any[]>([]);
-  const [filteredEvents, setFilteredEvents] = useState<any[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const eventsPerPage = 5; // Number of events per page
@@ -21,7 +22,7 @@ const ManageMyEvents: React.FC = () => {
     }
 
     async function fetchEvents(userId: string) {
-      const { data, error } = await fetchUserEvents(userId);
+      const { data, error } = await fetchUsersEvents(userId);
       if (error) {
         alert(error.message);
       }
