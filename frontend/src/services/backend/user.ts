@@ -130,3 +130,49 @@ export const rsvpToEvent = async (eventId: string) => {
     return { data: null, error: err };
   }
 };
+
+export const removeRsvp = async (eventId: string) => {
+  try {
+    const response = await axios.delete(`http://localhost:5000/api/user/rsvp`, {
+      data: {
+        userId : await getUserId(),
+        eventId,
+      }
+    });
+
+    console.log("removeRsvp", response);
+
+    if (response.status !== 200) {
+      return { data: null, error: response.statusText };
+    }
+
+    if (response.data.error) {
+      return { data: null, error: response.data.error };
+    }
+
+    return { data: response.data, error: null };
+  } catch (err) {
+    return { data: null, error: err };
+  }
+};
+
+export const checkRsvp = async (eventId: string) => {
+  try {
+    const response = await axios.post(`http://localhost:5000/api/user/check-rsvp`, {
+      userId : await getUserId(),
+      eventId,
+    });
+
+    if (response.status !== 200) {
+      return { data: null, error: response.statusText };
+    }
+
+    if (response.data.error) {
+      return { data: null, error: response.data.error };
+    }
+
+    return { data: response.data, error: null };
+  } catch (err) {
+    return { data: null, error: err };
+  }
+};

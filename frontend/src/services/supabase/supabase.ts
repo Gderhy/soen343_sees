@@ -1,60 +1,9 @@
 import { AuthError, createClient, PostgrestError } from "@supabase/supabase-js";
 import { SystemRole } from "../../types";
-import { data } from "react-router-dom";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// RSVP to an event
-// TODO: GOTTA GO TO BACKEND
-// export async function rsvpToEvent(eventId: string) {
-//   const { data: userData } = await supabase.auth.getUser();
-//   if (!userData?.user) {
-//     return { error: "User not authenticated." };
-//   }
-
-//   const { data, error } = await supabase
-//     .from("event_attendance")
-//     .insert([{ user_id: userData.user.id, event_id: eventId }]);
-
-//   return { data, error };
-// }
-
-// Remove RSVP from an event
-// TODO: GOTTA GO TO BACKEND
-export async function removeRsvp(eventId: string) {
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData?.user) {
-    return { error: "User not authenticated." };
-  }
-
-  const { data, error } = await supabase
-    .from("event_attendance")
-    .delete()
-    .eq("user_id", userData.user.id)
-    .eq("event_id", eventId);
-
-  return { data, error };
-}
-
-// Check if user has RSVP'd to an event
-// TODO: GOTTA GO TO BACKEND
-export async function checkUserRsvp(eventId: string) {
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData?.user) {
-    return { data: null };
-  }
-
-  const { data, error } = await supabase
-    .from("event_attendance")
-    .select("*")
-    .eq("user_id", userData.user.id)
-    .eq("event_id", eventId)
-    .single();
-
-  return { data, error };
-}
 
 // Check if user is the organizer of an event
 // TODO: GOTTA GO TO BACKEND
@@ -85,6 +34,7 @@ export async function getEventAttendees(eventId: string) {
 }
 
 // Returns the system role
+// Keep this function in frontend
 export const getSystemRole = async (): Promise<{
   systemRole: SystemRole;
   error: AuthError | PostgrestError | null;

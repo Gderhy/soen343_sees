@@ -134,6 +134,43 @@ const rsvpToEvent = async (obj) => {
   };
 };
 
+const deleteRsvp = async (obj) => {
+  try {
+    const { data, error } = await supabase
+      .from("event_attendance")
+      .delete()
+      .eq("event_id", obj.eventId)
+      .eq("user_id", obj.userId);
+
+    if (error) {
+      return { error: error.message };
+    }
+
+    return { data, error: null };
+  } catch (err) {
+    return { error: err.message };
+  }
+};
+
+const checkRsvp = async (userId, eventId) => {
+  try {
+    const { data, error } = await supabase
+      .from("event_attendance")
+      .select("*")
+      .eq("event_id",eventId)
+      .eq("user_id", userId);
+
+    if (error) {
+      return { error: error.message };
+    }
+
+    return { data, error: null };
+  } catch (err) {
+    return { error: err.message };
+  }
+};
+
+
 module.exports = {
   fetchStakeholders,
   createEvent,
@@ -141,5 +178,7 @@ module.exports = {
   deleteEvent,
   updateEvent,
   rsvpToEvent,
+  deleteRsvp,
+  checkRsvp,
   // ... other functions
 };

@@ -1,13 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  removeRsvp,
-  checkUserRsvp,
-  getEventAttendees,
-  isUserOrganizer,
-} from "../../services/supabase/supabase";
+import { getEventAttendees, isUserOrganizer } from "../../services/supabase/supabase";
 import { fetchEventById } from "../../services/backend/all";
-import { rsvpToEvent } from "../../services/backend/user";
+import { rsvpToEvent, removeRsvp, checkRsvp } from "../../services/backend/user";
 import "./EventDetail.css";
 import { Event, defaultEvent } from "../../types";
 
@@ -30,21 +25,38 @@ const EventDetail: React.FC = () => {
         return;
       }
 
-      const { data, error } = await fetchEventById(id);
-      if (error) {
+      // Fetch event details
+      const { data, error: eventError } = await fetchEventById(id);
+      if (eventError) {
         setError("Event not found.");
+        setLoading(false);
+        return;
+      }
+      setEvent(data);
+
+      // Check if the user has RSVP'd
+      const { data: rsvpData, error: rsvpError } = await checkRsvp(id);
+      if (rsvpError) {
+        console.error("Error checking RSVP:", rsvpError);
       } else {
-        setEvent(data);
+        setIsAttending(!!rsvpData);
       }
 
-      const { data: rsvpData } = await checkUserRsvp(id);
-      setIsAttending(!!rsvpData);
+      // Fetch attendees
+      const { data: attendeesData, error: attendeesError } = await getEventAttendees(id);
+      if (attendeesError) {
+        console.error("Error fetching attendees:", attendeesError);
+      } else {
+        setAttendees(attendeesData?.length || 0);
+      }
 
-      const { data: attendeesData } = await getEventAttendees(id);
-      setAttendees(attendeesData?.length || 0);
-
-      const { isOrganizer } = await isUserOrganizer(id);
-      setIsOrganizer(isOrganizer);
+      // Check if the user is an organizer
+      const { isOrganizer: organizerStatus, error: organizerError } = await isUserOrganizer(id);
+      if (organizerError) {
+        console.error("Error checking organizer status:", organizerError);
+      } else {
+        setIsOrganizer(organizerStatus);
+      }
 
       setLoading(false);
     }
@@ -55,14 +67,31 @@ const EventDetail: React.FC = () => {
   const handleRsvp = async () => {
     if (!id) return;
 
-    if (isAttending) {
-      await removeRsvp(id);
-      setIsAttending(false);
-      setAttendees((prev) => prev - 1);
-    } else {
-      await rsvpToEvent(id);
-      setIsAttending(true);
-      setAttendees((prev) => prev + 1);
+    try {
+      if (isAttending) {
+        // Remove RSVP
+        const { error: removeError } = await removeRsvp(id);
+        if (removeError) {
+          console.error("Error removing RSVP:", removeError);
+          setError("Failed to cancel RSVP.");
+        } else {
+          setIsAttending(false);
+          setAttendees((prev) => prev - 1);
+        }
+      } else {
+        // Add RSVP
+        const { error: rsvpError } = await rsvpToEvent(id);
+        if (rsvpError) {
+          console.error("Error adding RSVP:", rsvpError);
+          setError("Failed to RSVP.");
+        } else {
+          setIsAttending(true);
+          setAttendees((prev) => prev + 1);
+        }
+      }
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      setError("An unexpected error occurred.");
     }
   };
 
