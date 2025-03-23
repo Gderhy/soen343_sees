@@ -65,7 +65,8 @@ const Events: React.FC = () => {
               <tr key={event.id} onClick={() => navigate(`/event/${event.id}`)}>
                 <td>{event.title}</td>
                 <td>{event.description}</td>
-                <td>{new Date(event.event_date).toLocaleDateString()}</td>
+                {/* TODO: Fix date */}
+                <td>{event.event_datetime}</td>
                 <td>{event.location}</td>
               </tr>
             ))
