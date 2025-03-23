@@ -170,6 +170,24 @@ const checkRsvp = async (userId, eventId) => {
   }
 };
 
+const checkIfUserIsOrganizer = async (userId, eventId) => {
+  try {
+    const { data, error } = await supabase
+      .from("event_organizers")
+      .select("*")
+      .eq("organizer_id", userId)
+      .eq("event_id", eventId);
+
+    if (error) {
+      return { error: error.message };
+    }
+
+    return { data, error: null };
+  } catch (err) {
+    return { error: err.message };
+  }
+};
+
 
 module.exports = {
   fetchStakeholders,
@@ -180,5 +198,6 @@ module.exports = {
   rsvpToEvent,
   deleteRsvp,
   checkRsvp,
+  checkIfUserIsOrganizer,
   // ... other functions
 };

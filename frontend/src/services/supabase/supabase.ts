@@ -5,23 +5,6 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Check if user is the organizer of an event
-// TODO: GOTTA GO TO BACKEND
-export async function isUserOrganizer(eventId: string) {
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData?.user) {
-    return { isOrganizer: false };
-  }
-
-  const { data, error } = await supabase
-    .from("events")
-    .select("created_by")
-    .eq("id", eventId)
-    .single();
-
-  return { isOrganizer: data?.created_by === userData.user.id, error };
-}
-
 // Get attendees for a specific event
 // TODO: GOTTA GO TO BACKEND
 export async function getEventAttendees(eventId: string) {

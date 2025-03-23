@@ -11,6 +11,7 @@ const {
   rsvpToEvent,
   deleteRsvp,
   checkRsvp,
+  checkIfUserIsOrganizer,
 } = require("../services/supabase/user/supabase");
 
 // GET /api/user/stakeholders
@@ -113,7 +114,6 @@ router.post("/rsvp", async (req, res) => {
   }
 });
 
-
 // DELETE /api/user/rsvp
 // Allow for users to delete their RSVP to events
 // Private for users
@@ -146,12 +146,36 @@ router.post("/check-rsvp", async (req, res) => {
       return res.status(500).json({ error: error.message });
     }
 
-    if (data.length === 0) {
-      return res.status(404).json({ message: "User has not RSVP'd to this event" });
+    const hasRsvp = data.length > 0;
+
+    console.log(`User: ${userId} has RSVP'd to this event: ${eventId}? ${hasRsvp}`);
+
+    const message = hasRsvp ? "User has RSVP'd to this event" : "User has not RSVP'd to this event";
+    res.json({ message, hasRsvp });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post("/is-organizer", async (req, res) => {
+  try {
+    const { userId, eventId } = req.body;
+    if (!userId || !eventId) {
+      return res.status(400).json({ error: "Missing required fields" });
     }
 
-    console.log(`User: ${userId} has RSVP'd to this event: ${eventId}`);
-    res.json({ message: "User has RSVP'd to this event" });
+    const { data, error } = await checkIfUserIsOrganizer(userId, eventId);
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    const isOrganizer = data.length > 0;
+    const message = isOrganizer
+      ? "User is an organizer of this event"
+      : "User is not an organizer of this event";
+
+    console.log(message);
+    res.json({ message, isOrganizer });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

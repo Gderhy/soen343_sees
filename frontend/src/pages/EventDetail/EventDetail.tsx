@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getEventAttendees, isUserOrganizer } from "../../services/supabase/supabase";
+import { getEventAttendees } from "../../services/supabase/supabase";
 import { fetchEventById } from "../../services/backend/all";
-import { rsvpToEvent, removeRsvp, checkRsvp } from "../../services/backend/user";
+import { rsvpToEvent, removeRsvp, checkRsvp, isUserOrganizer } from "../../services/backend/user";
 import "./EventDetail.css";
 import { Event, defaultEvent } from "../../types";
 
@@ -10,11 +10,11 @@ const EventDetail: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [event, setEvent] = useState<Event>(defaultEvent);
-  const [isAttending, setIsAttending] = useState(false);
+  const [isAttending, setIsAttending] = useState<boolean>(false);
   const [attendees, setAttendees] = useState<number>(0);
-  const [isOrganizer, setIsOrganizer] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [isOrganizer, setIsOrganizer] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
     if (!id) return;
@@ -35,11 +35,11 @@ const EventDetail: React.FC = () => {
       setEvent(data);
 
       // Check if the user has RSVP'd
-      const { data: rsvpData, error: rsvpError } = await checkRsvp(id);
+      const { data: hasRsvp, error: rsvpError } = await checkRsvp(id);
       if (rsvpError) {
         console.error("Error checking RSVP:", rsvpError);
       } else {
-        setIsAttending(!!rsvpData);
+        setIsAttending(!!hasRsvp);
       }
 
       // Fetch attendees

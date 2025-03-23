@@ -163,6 +163,7 @@ export const checkRsvp = async (eventId: string) => {
       eventId,
     });
 
+    console.log("checkRsvp", response);
     if (response.status !== 200) {
       return { data: null, error: response.statusText };
     }
@@ -171,8 +172,31 @@ export const checkRsvp = async (eventId: string) => {
       return { data: null, error: response.data.error };
     }
 
-    return { data: response.data, error: null };
+    return { data: response.data.hasRsvp, error: null };
   } catch (err) {
     return { data: null, error: err };
   }
 };
+
+export const isUserOrganizer = async (eventId: string) => {
+  try {
+    const response = await axios.post(`http://localhost:5000/api/user/is-organizer`, {
+      userId : await getUserId(),
+      eventId,
+    });
+
+    console.log("isUserOrganizer", response);
+
+    if (response.status !== 200) {
+      return { isOrganizer: false, error: response.statusText };
+    }
+
+    if (response.data.error) {
+      return { isOrganizer: false, error: response.data.error };
+    }
+
+    return { isOrganizer: response.data.isOrganizer, error: null };
+  } catch (err) {
+    return { isOrganizer: false, error: err };
+  }
+}
