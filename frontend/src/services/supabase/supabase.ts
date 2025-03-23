@@ -5,29 +5,6 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Update an existing event
-// TODO: GOTTA GO TO BACKEND
-// export async function updateEvent(
-//   eventId: string,
-//   title: string,
-//   description: string,
-//   event_date: string,
-//   location: string
-// ) {
-//   const { data: userData } = await supabase.auth.getUser();
-//   if (!userData?.user) {
-//     return { error: "User not authenticated." };
-//   }
-
-//   const { data, error } = await supabase
-//     .from("events")
-//     .update({ title, description, event_date, location })
-//     .eq("id", eventId)
-//     .eq("created_by", userData.user.id); // Only allow updates by the creator
-
-//   return { data, error };
-// }
-
 
 // RSVP to an event
 // TODO: GOTTA GO TO BACKEND
