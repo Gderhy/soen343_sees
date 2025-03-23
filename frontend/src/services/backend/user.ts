@@ -28,7 +28,7 @@ export const createEvent = async (userId: string, title: string, description: st
       location,
       stakeholdersIds,
     });
-
+    
     if (response.status !== 200) {
       return { data: null, error: response.statusText };
     }
@@ -37,8 +37,28 @@ export const createEvent = async (userId: string, title: string, description: st
       return { data: null, error: response.data.error };
     }
 
-    console.log(response.data);
     return { data: response.data, error: null };
+  } catch (err) {
+    return { data: null, error: err };
+  }
+}
+
+
+export const deleteEvent = async (eventId: string) => {
+  try {
+    const response = await axios.delete(`http://localhost:5000/api/user/event/${eventId}`);
+    console.log("ssd", response.data);
+
+    if (response.status !== 200) {
+      return { error: response.statusText };
+    }
+
+    if (response.data.error) {
+      return { error: response.data.error };
+    }
+
+
+    return { error: null };
   } catch (err) {
     return { data: null, error: err };
   }

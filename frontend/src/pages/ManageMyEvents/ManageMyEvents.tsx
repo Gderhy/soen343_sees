@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase, fetchUserEvents, deleteEvent } from "../../services/supabase/supabase";
+import { supabase, fetchUserEvents } from "../../services/supabase/supabase";
+import { deleteEvent } from "../../services/backend/user";
 import "./ManageMyEvents.css";
 
 const ManageMyEvents: React.FC = () => {
@@ -53,7 +54,7 @@ const ManageMyEvents: React.FC = () => {
 
     const { error } = await deleteEvent(eventId);
     if (error) {
-      alert(error.message);
+      alert(error);
     } else {
       setEvents(events.filter((event) => event.id !== eventId));
       setFilteredEvents(filteredEvents.filter((event) => event.id !== eventId));
@@ -95,7 +96,7 @@ const ManageMyEvents: React.FC = () => {
               currentEvents.map((event) => (
                 <tr key={event.id}>
                   <td onClick={() => navigate(`/event/${event.id}`)}>{event.title}</td>
-                  <td>{new Date(event.event_date).toLocaleDateString()}</td>
+                  <td>{new Date(event.event_datetime).toLocaleDateString()}</td>
                   <td>{event.location}</td>
                   <td>
                     <button onClick={() => navigate(`/event/${event.id}`)} className="view-button">

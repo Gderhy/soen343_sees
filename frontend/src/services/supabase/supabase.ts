@@ -36,23 +36,6 @@ export async function updateEvent(
   return { data, error };
 }
 
-// Delete an event
-// TODO: GOTTA GO TO BACKEND
-export async function deleteEvent(eventId: string) {
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData?.user) {
-    return { error: "User not authenticated." };
-  }
-
-  const { data, error } = await supabase
-    .from("events")
-    .delete()
-    .eq("id", eventId)
-    .eq("created_by", userData.user.id); // Only allow deletion by the creator
-
-  return { data, error };
-}
-
 // Fetch all events
 // TODO: GOTTA GO TO BACKEND
 export async function fetchAllEvents() {

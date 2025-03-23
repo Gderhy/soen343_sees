@@ -4,7 +4,7 @@ const supabase = require("../supabaseAdmin"); // your supabase client setup
 // Function to get all stackholders pending events
 const fetchStakeholdersPendingEvents = async (stakeholderId) => {
   const { data, error } = await supabase
-    .from("stakeholder_events")
+    .from("event_stakeholders")
     .select("*")
     .eq("stakeholder_id", stakeholderId)
     .eq("status", "pending");
@@ -14,7 +14,7 @@ const fetchStakeholdersPendingEvents = async (stakeholderId) => {
 
 const updateStakeholderEventStatus = async (stakeholderId, eventId, status) => {
   const { data, error } = await supabase
-    .from("stakeholder_events")
+    .from("event_stakeholders")
     .update({ status })
     .eq("stakeholder_id", stakeholderId)
     .eq("id", eventId);
