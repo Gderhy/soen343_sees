@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchAllEvents } from "../../services/supabase/supabase";
+import { fetchALlActiveEvents } from "../../services/backend/all";
 import "./Events.css";
 
 const Events: React.FC = () => {
@@ -11,7 +11,7 @@ const Events: React.FC = () => {
 
   useEffect(() => {
     async function fetchEvents() {
-      const { data, error } = await fetchAllEvents();
+      const { data, error } = await fetchALlActiveEvents();
       if (error) {
         alert(error.message);
       }

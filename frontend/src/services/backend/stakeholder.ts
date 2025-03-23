@@ -1,4 +1,5 @@
 import axios from "axios";
+import { StakeholderEventStatusType } from "../../types";
 
 export const getPendingStakeholderEvent = async (stakeholderId: string) => {
   try {
@@ -23,7 +24,7 @@ export const getPendingStakeholderEvent = async (stakeholderId: string) => {
 export const updateStakeholderEventStatus = async (
   stakeholderId: string,
   eventId: string,
-  status: string
+  status: StakeholderEventStatusType
 ) => {
   try {
     const response = await axios.put(
@@ -39,9 +40,9 @@ export const updateStakeholderEventStatus = async (
       return { error: response.data.error };
     }
 
-    return { data: response.data, error: null };
+    return { error: null };
   } catch (err) {
-    return { data: null, error: err };
+    return { error: err };
   }
 };
 

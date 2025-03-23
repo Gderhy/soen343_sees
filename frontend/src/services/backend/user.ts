@@ -63,3 +63,21 @@ export const deleteEvent = async (eventId: string) => {
     return { data: null, error: err };
   }
 }
+
+export const fetchAllEvents = async () => {
+  try {
+    const response = await axios.get("http://localhost:5000/api/user/events");
+
+    if (response.status !== 200) {
+      return { data: null, error: response.statusText };
+    }
+
+    if (response.data.error) {
+      return { data: null, error: response.data.error };
+    }
+
+    return { data: response.data, error: null };
+  } catch (err) {
+    return { data: null, error: err };
+  }
+}

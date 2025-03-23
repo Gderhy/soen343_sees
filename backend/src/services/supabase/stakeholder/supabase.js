@@ -5,7 +5,7 @@ const supabase = require("../supabaseAdmin"); // your supabase client setup
 const fetchStakeholdersPendingEvents = async (stakeholderId) => {
   const { data, error } = await supabase
     .from("event_stakeholders")
-    .select("*")
+    .select("events (*)")
     .eq("stakeholder_id", stakeholderId)
     .eq("status", "pending");
 
@@ -17,10 +17,10 @@ const updateStakeholderEventStatus = async (stakeholderId, eventId, status) => {
     .from("event_stakeholders")
     .update({ status })
     .eq("stakeholder_id", stakeholderId)
-    .eq("id", eventId);
+    .eq("event_id", eventId);
 
   return { data, error };
-}
+};
 
 module.exports = {
   fetchStakeholdersPendingEvents,

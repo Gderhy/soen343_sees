@@ -8,6 +8,7 @@ const app = express();
 const adminRoutes = require("./src/routes/adminRoutes");
 const stakeholderRoutes = require("./src/routes/stakeholderRoutes");
 const userRoutes = require("./src/routes/userRoutes");
+const allRoutes = require("./src/routes/allRoutes");
 
 // Middleware
 app.use(cors());
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use("/api/admin", adminRoutes);
 app.use("/api/stakeholder", stakeholderRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api", allRoutes);
 
 // Test Route
 app.get("/", (req, res) => {

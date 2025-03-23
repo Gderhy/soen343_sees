@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { getPendingStakeholderEvent, updateStakeholderEventStatus } from "../../../services/backend/stakeholder";
+import {
+  getPendingStakeholderEvent,
+  updateStakeholderEventStatus,
+} from "../../../services/backend/stakeholder";
 import "./PendingEvents.css";
-import { Event, EventStatusType } from "../../../types";
+import { Event, StakeholderEventStatusType } from "../../../types";
 import { useAuth } from "../../../contexts/AuthContext";
+
+interface ReceivedEvents {
+  events: Event;
+}
 
 const PendingEvents: React.FC = () => {
   const { user } = useAuth();
-  const [pendingEvents, setPendingEvents] = useState<Event[]>([]);
+  const [pendingEvents, setPendingEvents] = useState<ReceivedEvents[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
 
@@ -20,32 +27,33 @@ const PendingEvents: React.FC = () => {
       } else if (data) {
         setPendingEvents(data);
       }
+      console.log(data);
       setLoading(false);
     };
 
     fetchPendingEvents();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleApprove = async (eventId: string) => {
-    const active: EventStatusType = "active";
     const stakeholderId = user?.id || "";
-    const { error } = await updateStakeholderEventStatus(stakeholderId, eventId, active);
+    const { error } = await updateStakeholderEventStatus(stakeholderId, eventId, "approved");
     if (error) {
       alert("Error approving event: " + error);
     } else {
-      setPendingEvents(pendingEvents.filter((event) => event.id !== eventId));
+      alert("Event approved successfully.");
+      setPendingEvents(pendingEvents.filter(({events: event}) => event.id !== eventId)); // ✅ Correctly destructuring the events object
     }
   };
 
   const handleDeny = async (eventId: string) => {
-    const denied: EventStatusType = "denied";
     const stakeholderId = user?.id || "";
-    const { error } = await updateStakeholderEventStatus(stakeholderId, eventId, denied);
+    const { error } = await updateStakeholderEventStatus(stakeholderId, eventId, "denied");
     if (error) {
       alert("Error denying event: " + error);
     } else {
-      setPendingEvents(pendingEvents.filter((event) => event.id !== eventId));
+      alert("Event denied successfully.");
+      setPendingEvents(pendingEvents.filter(({events: event}) => event.id !== eventId)); // ✅ Correctly destructuring the events object
     }
   };
 
@@ -68,21 +76,25 @@ const PendingEvents: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {pendingEvents.map((event) => (
-              <tr key={event.id}>
-                <td>{event.title}</td>
-                <td>{new Date(event.event_date).toLocaleDateString()}</td>
-                <td>{event.location}</td>
-                <td>
-                  <button className="approve-button" onClick={() => handleApprove(event.id)}>
-                    Approve
-                  </button>
-                  <button className="deny-button" onClick={() => handleDeny(event.id)}>
-                    Deny
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {pendingEvents.map(
+              (
+                { events: event } // ✅ Correctly destructure the events object
+              ) => (
+                <tr key={event.id}>
+                  <td>{event.title}</td>
+                  <td>{event.event_datetime}</td> {/* TODO: display nicely*/}
+                  <td>{event.location}</td>
+                  <td>
+                    <button className="approve-button" onClick={() => handleApprove(event.id)}>
+                      Approve
+                    </button>
+                    <button className="deny-button" onClick={() => handleDeny(event.id)}>
+                      Deny
+                    </button>
+                  </td>
+                </tr>
+              )
+            )}
           </tbody>
         </table>
       )}

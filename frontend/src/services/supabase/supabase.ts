@@ -38,11 +38,11 @@ export async function updateEvent(
 
 // Fetch all events
 // TODO: GOTTA GO TO BACKEND
-export async function fetchAllEvents() {
-  const { data, error } = await supabase.from("events").select("*");
+// export async function fetchAllEvents() {
+//   const { data, error } = await supabase.from("events").select("*");
 
-  return { data, error };
-}
+//   return { data, error };
+// }
 
 // Fetch events created by the logged-in user
 // TODO: GOTTA GO TO BACKEND
