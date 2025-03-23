@@ -17,3 +17,21 @@ export const fetchAllActiveEvents = async () => {
     return { data: null, error: err };
   }
 };
+
+export const fetchEventById = async (eventId: string) => {
+  try {
+    const response = await axios.get(`http://localhost:5000/api/events/${eventId}`);
+
+    if (response.status !== 200) {
+      return { data: null, error: response.statusText };
+    }
+
+    if (response.data.error) {
+      return { data: null, error: response.data.error };
+    }
+
+    return { data: response.data, error: null };
+  } catch (err) {
+    return { data: null, error: err };
+  }
+};

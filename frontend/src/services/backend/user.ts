@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Event } from "../../types";
 
 export const fetchAllStakeholders = async () => {
   try {
@@ -86,3 +87,26 @@ export const fetchUsersEvents = async (userId: string) => {
     return { data: null, error: err };
   }
 };
+
+export const updateEvent = async (userId: string, event: Event) => {
+  try {
+    const response = await axios.put(`http://localhost:5000/api/user/${userId}/event`, {
+      event,
+    });
+
+    console.log("updateEvent", response);
+    if (response.status !== 200) {
+      return { data: null, error: response.statusText };
+    }
+
+    if (response.data.error) {
+      return { data: null, error: response.data.error };
+    }
+
+    return { data: response.data, error: null };
+  } catch (err) {
+    console.log("updateEvent", err);
+    return { data: null, error: err };
+  }
+}
+

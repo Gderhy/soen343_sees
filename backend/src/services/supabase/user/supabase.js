@@ -14,6 +14,7 @@ const createEvent = async (obj) => {
     event_datetime: obj.event_datetime,
     location: obj.location,
     created_by: obj.userId,
+    status: "pending",
   };
 
   const { data, error } = await supabase.from("events").insert(event).select("id");
@@ -77,10 +78,47 @@ const deleteEvent = async (eventId) => {
   return { data, error };
 };
 
+const updateEvent = async (userId, obj) => {
+  try {
+    // Destructure the event object from obj
+    const { event } = obj;
+
+    // Check if the user is an organizer of the event
+    const { data: organizer, error: organizerError } = await supabase
+      .from("event_organizers")
+      .select("*")
+      .eq("organizer_id", userId)
+      .eq("event_id", event.id); 
+
+    if (organizerError !== null) {
+      return { error: organizerError.message }; // Return the error message
+    }
+
+    if (organizer.length === 0) {
+      return { error: "User is not an organizer of the event" };
+    }
+
+    // Update the event
+    const { data, error } = await supabase
+      .from("events")
+      .update(event) // Use event instead of obj
+      .eq("id", event.id); 
+
+    if (error) {
+      return { error: error.message }; // Return the error message
+    }
+
+    return { data, error: null }; // Return success with no error
+  } catch (err) {
+    return { error: err.message }; // Return the error message
+  }
+};
+
 module.exports = {
   fetchStakeholders,
   createEvent,
   fetchUsersEvents,
   deleteEvent,
+  updateEvent,
   // ... other functions
 };

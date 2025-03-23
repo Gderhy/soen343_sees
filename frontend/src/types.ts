@@ -28,6 +28,15 @@ export interface Event {
   status: EventStatusType;
   created_by: string;
 }
+export const defaultEvent: Event = {
+  id: "",
+  title: "",
+  description: "",
+  event_datetime: "",
+  location: "",
+  status: "pending",
+  created_by: "",
+};
 
 export interface Stakeholder {
   id: string;

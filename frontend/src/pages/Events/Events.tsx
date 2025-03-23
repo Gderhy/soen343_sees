@@ -66,8 +66,7 @@ const Events: React.FC = () => {
               <tr key={event.id} onClick={() => navigate(`/event/${event.id}`)}>
                 <td>{event.title}</td>
                 <td>{event.description}</td>
-                {/* TODO: Fix date */}
-                <td>{event.event_datetime}</td>
+                <td>{new Date(event.event_datetime).toISOString()}</td>
                 <td>{event.location}</td>
               </tr>
             ))

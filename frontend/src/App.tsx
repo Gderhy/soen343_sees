@@ -7,7 +7,7 @@ import Header from "./components/Header/Header";
 import { AuthProvider } from "./contexts/AuthContext";
 import CreateEvent from "./pages/CreateEvent/CreateEvent";
 import EventDetail from "./pages/EventDetail/EventDetail";
-import EditEvent from "./pages/EditCreateEvent/EditEvent";
+import EditEvent from "./pages/EditEvent/EditEvent";
 import ManageMyEvents from "./pages/ManageMyEvents/ManageMyEvents";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";

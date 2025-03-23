@@ -1,19 +1,20 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
-  getEventById,
   rsvpToEvent,
   removeRsvp,
   checkUserRsvp,
   getEventAttendees,
   isUserOrganizer,
 } from "../../services/supabase/supabase";
+import { fetchEventById } from "../../services/backend/all";
 import "./EventDetail.css";
+import { Event, defaultEvent } from "../../types";
 
 const EventDetail: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [event, setEvent] = useState<any>(null);
+  const [event, setEvent] = useState<Event>(defaultEvent);
   const [isAttending, setIsAttending] = useState(false);
   const [attendees, setAttendees] = useState<number>(0);
   const [isOrganizer, setIsOrganizer] = useState(false);
@@ -26,7 +27,7 @@ const EventDetail: React.FC = () => {
     async function fetchEventData() {
       if(!id) return;
       
-      const { data, error } = await getEventById(id);
+      const { data, error } = await fetchEventById(id);
       if (error) {
         setError("Event not found.");
       } else {
@@ -70,7 +71,7 @@ const EventDetail: React.FC = () => {
       <h1>{event.title}</h1>
       <p className="event-description">{event.description}</p>
       <p>
-        <strong>Date:</strong> {new Date(event.event_date).toLocaleDateString()}
+        <strong>Date:</strong> {new Date(event.event_datetime).toLocaleDateString()}
       </p>
       <p>
         <strong>Location:</strong> {event.location}

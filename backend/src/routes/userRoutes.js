@@ -7,6 +7,7 @@ const {
   createEvent,
   deleteEvent,
   fetchUsersEvents,
+  updateEvent,
 } = require("../services/supabase/user/supabase");
 
 // GET /api/user/stakeholders
@@ -67,6 +68,23 @@ router.delete("/event/:eventId", async (req, res) => {
     }
     console.log("Event deleted successfully: ", req.params.eventId);
     res.json({ message: `Event: ${eventId} deleted successfully` });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.put("/:userId/event/", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const { error } = await updateEvent(userId, req.body);
+
+    if (error) {
+      console.error("Error updating event:", error);
+      return res.status(500).json({ error: error.message });
+    }
+
+    console.log("Event updated successfully:", req.body.event.id);
+    res.json({ message: `Event ${req.body.event.id} updated successfully` });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
