@@ -1,8 +1,13 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { format, parseISO, isSameDay } from "date-fns";
 import "./CalendarView.css"; // We'll create this CSS file next
+import { Event } from "../../types";
 
-const CalendarView = ({ events }) => {
+interface CalendarViewProps {
+  events: Event[];
+}
+
+const CalendarView = ({ events } : CalendarViewProps) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   // Group events by date
