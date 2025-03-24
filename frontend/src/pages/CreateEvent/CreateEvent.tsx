@@ -99,7 +99,7 @@ const CreateEvent: React.FC = () => {
           onChange={(e) => setEventDatetime(e.target.value)}
           required
         />
-        <input
+        <input //TODO: Implement google map search or something similar to get the location will help with event promotion and targetting
           type="text"
           placeholder="Location"
           value={location}

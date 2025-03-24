@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "../../services/supabase/supabase";
 import { deleteEvent, fetchUsersEvents } from "../../services/backend/user";
 import "./ManageMyEvents.css";
-import { Event } from "../../types";
+import { Event, EventStatusType } from "../../types";
+import CalendarView from "../../components/Calendar/CalendarView";
+import EventsTable from "../../components/User/ManageMyEvents/EventsTable/EventsTable";
 
 const ManageMyEvents: React.FC = () => {
-  const navigate = useNavigate();
   const [events, setEvents] = useState<Event[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [activeTab, setActiveTab] = useState<"list" | "calendar">("list");
   const eventsPerPage = 5; // Number of events per page
 
   useEffect(() => {
@@ -70,73 +71,85 @@ const ManageMyEvents: React.FC = () => {
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
+  const displayEventStatus = (status: EventStatusType) => {
+    switch (status) {
+      case "active":
+        return "Active";
+      case "cancelled":
+        return "Cancelled";
+      case "completed":
+        return "Completed";
+      case "denied":
+        return "Denied by: "; // TODO: Add `name(s) of stakeholder(s) who denied the event`
+      case "pending":
+        return "Pending"; // TODO: Add "Waiting on stakeholder(s) to approve"
+      case "postponed":
+        return "Postponed";
+      default:
+        return "Unknown";
+    }
+  };
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "list":
+        return (
+          <div className="tab-content">
+            <input
+              type="text"
+              placeholder="Search events..."
+              value={searchQuery}
+              onChange={handleSearch}
+              className="search-input"
+            />
+            <EventsTable
+              events={currentEvents}
+              displayEventStatus={displayEventStatus}
+              handleDelete={handleDelete}
+            />
+            {/* Pagination Controls */}
+            <div className="pagination">
+              {Array.from({ length: Math.ceil(filteredEvents.length / eventsPerPage) }, (_, i) => (
+                <button
+                  key={i}
+                  onClick={() => paginate(i + 1)}
+                  className={`page-button ${currentPage === i + 1 ? "active" : ""}`}
+                >
+                  {i + 1}
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+      case "calendar":
+        return (
+          <div className="tab-content">
+            <CalendarView events={events} />
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div className="container">
-      <div className="header-container">
-        <h1>Manage My Events</h1>
-        <input
-          type="text"
-          placeholder="Search events..."
-          value={searchQuery}
-          onChange={handleSearch}
-          className="search-input"
-        />
+    <div className="manage-events-portal">
+      <h1>Manage My Events</h1>
+      <div className="tabs">
+        <button
+          className={`tab ${activeTab === "list" ? "active" : ""}`}
+          onClick={() => setActiveTab("list")}
+        >
+          List View
+        </button>
+        <button
+          className={`tab ${activeTab === "calendar" ? "active" : ""}`}
+          onClick={() => setActiveTab("calendar")}
+        >
+          Calendar View
+        </button>
       </div>
-
-      <div className="table-container">
-        <table className="events-table">
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Date</th>
-              <th>Location</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentEvents.length > 0 ? (
-              currentEvents.map((event) => (
-                <tr key={event.id}>
-                  <td onClick={() => navigate(`/event/${event.id}`)}>{event.title}</td>
-                  <td>{new Date(event.event_datetime).toLocaleDateString()}</td>
-                  <td>{event.location}</td>
-                  <td>
-                    <button onClick={() => navigate(`/event/${event.id}`)} className="view-button">
-                      View
-                    </button>
-                    <button
-                      onClick={() => navigate(`/edit-event/${event.id}`)}
-                      className="edit-button"
-                    >
-                      Edit
-                    </button>
-                    <button onClick={() => handleDelete(event.id)} className="delete-button">
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={4}>No events found.</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Pagination Controls */}
-      <div className="pagination">
-        {Array.from({ length: Math.ceil(filteredEvents.length / eventsPerPage) }, (_, i) => (
-          <button
-            key={i}
-            onClick={() => paginate(i + 1)}
-            className={`page-button ${currentPage === i + 1 ? "active" : ""}`}
-          >
-            {i + 1}
-          </button>
-        ))}
-      </div>
+      <div className="content">{renderTabContent()}</div>
     </div>
   );
 };
