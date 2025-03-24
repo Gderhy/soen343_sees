@@ -1,4 +1,4 @@
-import { Event, EventStatusType } from "../../types";
+import { Event, EventStatusType } from "../../../../types";
 import { useNavigate } from "react-router-dom";
 
 interface EventsTableProps {
