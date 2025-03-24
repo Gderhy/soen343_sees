@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Calendar from "react-calendar";
 import { format, parseISO, isSameDay } from "date-fns";
 import "react-calendar/dist/Calendar.css";
@@ -57,7 +57,7 @@ const CalendarView = ({ events }: { events: Event[] }) => {
   const tileClassName = ({ date, view }: { date: Date; view: string }) => {
     if (view !== "month") return null;
 
-    let classes = [];
+    const classes = [];
     if (isSameDay(date, new Date())) {
       classes.push("today");
     }
