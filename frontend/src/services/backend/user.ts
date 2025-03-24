@@ -95,7 +95,6 @@ export const updateEvent = async (userId: string, event: Event) => {
       event,
     });
 
-    console.log("updateEvent", response);
     if (response.status !== 200) {
       return { data: null, error: response.statusText };
     }
@@ -141,8 +140,6 @@ export const removeRsvp = async (eventId: string) => {
       }
     });
 
-    console.log("removeRsvp", response);
-
     if (response.status !== 200) {
       return { data: null, error: response.statusText };
     }
@@ -164,7 +161,6 @@ export const checkRsvp = async (eventId: string) => {
       eventId,
     });
 
-    console.log("checkRsvp", response);
     if (response.status !== 200) {
       return { data: null, error: response.statusText };
     }
@@ -185,8 +181,6 @@ export const isUserOrganizer = async (eventId: string) => {
       userId : await getUserId(),
       eventId,
     });
-
-    console.log("isUserOrganizer", response);
 
     if (response.status !== 200) {
       return { isOrganizer: false, error: response.statusText };
