@@ -16,7 +16,7 @@ const createEvent = async (obj) => {
     owned_by: obj.userId,
     base_price: obj.basePrice,
     participation: obj.participation,
-    status: "pending",
+    status: obj.stakeholdersIds.length > 0 ? "pending" : "active",
   };
 
   const { data, error } = await supabase.from("events").insert(event).select("id");
