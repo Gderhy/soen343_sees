@@ -59,4 +59,4 @@ export interface University {
   address: string;
 }
 
-export type Participation = "public" | "university";
+export type ParticipationType = "public" | "university";
