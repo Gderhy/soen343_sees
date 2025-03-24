@@ -35,8 +35,17 @@ router.get("/stakeholders", async (req, res) => {
 // Private for users
 router.post("/event", async (req, res) => {
   try {
-    // Pass the request body to the createEvent function which contains the event details
-    const { eventId, error } = await createEvent(req.body);
+    // insert event into the events table
+    const event = {
+      title: obj.title,
+      description: obj.description,
+      event_datetime: obj.event_datetime,
+      location: obj.location,
+      owned_by: obj.userId,
+      status: "pending",
+    };
+
+    const { eventId, error } = await createEvent(event);
     if (error) {
       return res.status(500).json({ error: error.message });
     }

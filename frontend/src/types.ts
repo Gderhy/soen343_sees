@@ -28,7 +28,7 @@ export interface Event {
   event_datetime: string;
   location: string;
   status: EventStatusType;
-  created_by: string;
+  owned_by: string;
   basePrice?: number;
 }
 export const defaultEvent: Event = {
@@ -38,7 +38,7 @@ export const defaultEvent: Event = {
   event_datetime: "",
   location: "",
   status: "pending",
-  created_by: "",
+  owned_by: "",
 };
 
 export interface Stakeholder {
@@ -49,3 +49,4 @@ export interface Stakeholder {
 }
 
 export type EventAttendanceStatus = "pending" | "accepted" | "declined";
+

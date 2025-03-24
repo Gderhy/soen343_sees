@@ -6,17 +6,7 @@ const fetchStakeholders = async () => {
   return { data, error };
 };
 
-const createEvent = async (obj) => {
-  // insert event into the events table
-  const event = {
-    title: obj.title,
-    description: obj.description,
-    event_datetime: obj.event_datetime,
-    location: obj.location,
-    created_by: obj.userId,
-    status: "pending",
-  };
-
+const createEvent = async (event) => {
   const { data, error } = await supabase.from("events").insert(event).select("id");
 
   if (error) {
