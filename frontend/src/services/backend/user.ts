@@ -1,10 +1,11 @@
 import axios from "axios";
 import { Event, ParticipationType } from "../../types";
 import { getUserId, getUsersUniversity } from "../supabase/supabase";
+import { url } from "./url";
 
 export const fetchAllStakeholders = async () => {
   try {
-    const response = await axios.get("http://localhost:5000/api/user/stakeholders");
+    const response = await axios.get(`${url}/api/user/stakeholders`);
 
     if (response.status !== 200) {
       return { data: null, error: response.statusText };
@@ -30,7 +31,7 @@ export const createEvent = async (
   stakeholdersIds: string[]
 ) => {
   try {
-    const response = await axios.post("http://localhost:5000/api/user/event", {
+    const response = await axios.post(`${url}/api/user/event`, {
       userId: await getUserId(),
       title,
       description,
@@ -57,7 +58,7 @@ export const createEvent = async (
 
 export const deleteEvent = async (eventId: string) => {
   try {
-    const response = await axios.delete(`http://localhost:5000/api/user/event/${eventId}`);
+    const response = await axios.delete(`${url}/api/user/event/${eventId}`);
 
     if (response.status !== 200) {
       return { error: response.statusText };
@@ -75,7 +76,7 @@ export const deleteEvent = async (eventId: string) => {
 
 export const fetchUsersEvents = async (userId: string) => {
   try {
-    const response = await axios.get(`http://localhost:5000/api/user/${userId}/events`);
+    const response = await axios.get(`${url}/api/user/${userId}/events`);
 
     if (response.status !== 200) {
       return { data: null, error: response.statusText };
@@ -93,7 +94,7 @@ export const fetchUsersEvents = async (userId: string) => {
 
 export const updateEvent = async (userId: string, event: Event) => {
   try {
-    const response = await axios.put(`http://localhost:5000/api/user/${userId}/event`, {
+    const response = await axios.put(`${url}/api/user/${userId}/event`, {
       event,
     });
 
@@ -114,7 +115,7 @@ export const updateEvent = async (userId: string, event: Event) => {
 
 export const rsvpToEvent = async (eventId: string) => {
   try {
-    const response = await axios.post(`http://localhost:5000/api/user/rsvp`, {
+    const response = await axios.post(`${url}/api/user/rsvp`, {
       userId : await getUserId(),
       eventId,
     });
@@ -135,7 +136,7 @@ export const rsvpToEvent = async (eventId: string) => {
 
 export const removeRsvp = async (eventId: string) => {
   try {
-    const response = await axios.delete(`http://localhost:5000/api/user/rsvp`, {
+    const response = await axios.delete(`${url}/api/user/rsvp`, {
       data: {
         userId : await getUserId(),
         eventId,
@@ -158,7 +159,7 @@ export const removeRsvp = async (eventId: string) => {
 
 export const checkRsvp = async (eventId: string) => {
   try {
-    const response = await axios.post(`http://localhost:5000/api/user/check-rsvp`, {
+    const response = await axios.post(`${url}/api/user/check-rsvp`, {
       userId : await getUserId(),
       eventId,
     });
@@ -179,7 +180,7 @@ export const checkRsvp = async (eventId: string) => {
 
 export const isUserOrganizer = async (eventId: string) => {
   try {
-    const response = await axios.post(`http://localhost:5000/api/user/is-organizer`, {
+    const response = await axios.post(`${url}/api/user/is-organizer`, {
       userId : await getUserId(),
       eventId,
     });
@@ -201,7 +202,7 @@ export const isUserOrganizer = async (eventId: string) => {
 
 export const checkEligibility = async (eventId: string, eventParticipation: ParticipationType) => {
   try {
-    const response = await axios.post(`http://localhost:5000/api/user/check-eligibility`, {
+    const response = await axios.post(`${url}/api/user/check-eligibility`, {
       userId : await getUserId(),
       usersUniversity: await getUsersUniversity(),
       eventId,

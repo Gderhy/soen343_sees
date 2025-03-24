@@ -1,10 +1,11 @@
 import axios from "axios";
 import { StakeholderEventStatusType } from "../../types";
+import { url } from "./url";
 
 export const getPendingStakeholderEvent = async (stakeholderId: string) => {
   try {
     const response = await axios.get(
-      `http://localhost:5000/api/stakeholder/${stakeholderId}/events/pending`
+      `${url}/api/stakeholder/${stakeholderId}/events/pending`
     );
 
     if (response.status !== 200) {
@@ -28,7 +29,7 @@ export const updateStakeholderEventStatus = async (
 ) => {
   try {
     const response = await axios.put(
-      `http://localhost:5000/api/stakeholder/${stakeholderId}/events/${eventId}/status`,
+      `${url}/api/stakeholder/${stakeholderId}/events/${eventId}/status`,
       { status }
     );
 
@@ -50,7 +51,7 @@ export const updateStakeholderEventStatus = async (
 export const fetchAllStakeHolderEvents = async (stakeholderId: string) => {
   try {
     const response = await axios.get(
-      `http://localhost:5000/api/stakeholder/${stakeholderId}/events`
+      `${url}/api/stakeholder/${stakeholderId}/events`
     );
 
     if (response.status !== 200) {

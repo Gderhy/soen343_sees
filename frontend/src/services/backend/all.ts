@@ -1,8 +1,9 @@
 import axios from "axios";
+import { url } from "./url";
 
 export const fetchAllActiveEvents = async () => {
   try {
-    const response = await axios.get("http://localhost:5000/api/events");
+    const response = await axios.get(`${url}/api/events`);
 
     if (response.status !== 200) {
       return { data: null, error: response.statusText };
@@ -20,7 +21,7 @@ export const fetchAllActiveEvents = async () => {
 
 export const fetchEventById = async (eventId: string) => {
   try {
-    const response = await axios.get(`http://localhost:5000/api/events/${eventId}`);
+    const response = await axios.get(`${url}/api/events/${eventId}`);
 
     if (response.status !== 200) {
       return { data: null, error: response.statusText };
@@ -38,7 +39,7 @@ export const fetchEventById = async (eventId: string) => {
 
 export const getEventAttendeesCount = async (eventId: string) => {
   try {
-    const response = await axios.get(`http://localhost:5000/api/events/${eventId}/attendees-count`);
+    const response = await axios.get(`${url}/api/events/${eventId}/attendees-count`);
 
     if (response.status !== 200) {
       return { attendees: 0, error: response.statusText };
@@ -56,7 +57,7 @@ export const getEventAttendeesCount = async (eventId: string) => {
 
 export const fetchUniversities = async () => {
   try {
-    const response = await axios.get("http://localhost:5000/api/universities");
+    const response = await axios.get("${url}/api/universities");
 
     if (response.status !== 200) {
       return { data: null, error: response.statusText };
