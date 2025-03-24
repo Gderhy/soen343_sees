@@ -190,6 +190,17 @@ const checkIfUserIsOrganizer = async (userId, eventId) => {
   }
 };
 
+// Function to check if a user is eligible to RSVP to an event
+const checkEligibility = async (userId, usersUniversity, eventId, eventParticipation) => {
+  try{
+
+
+
+  } catch (err) {
+
+  }
+};
+
 
 module.exports = {
   fetchStakeholders,
@@ -201,5 +212,6 @@ module.exports = {
   deleteRsvp,
   checkRsvp,
   checkIfUserIsOrganizer,
+  checkEligibility,
   // ... other functions
 };

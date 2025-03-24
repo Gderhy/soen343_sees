@@ -39,3 +39,13 @@ export const getUserId = async (): Promise<string | null> => {
 
   return userId;
 };
+
+export const getUsersUniversity = async (): Promise<string | null> => {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  const university = session?.user?.user_metadata?.university || null;
+
+  return university;
+}

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Event, ParticipationType } from "../../types";
-import { getUserId } from "../supabase/supabase";
+import { getUserId, getUsersUniversity } from "../supabase/supabase";
 
 export const fetchAllStakeholders = async () => {
   try {
@@ -195,5 +195,29 @@ export const isUserOrganizer = async (eventId: string) => {
     return { isOrganizer: response.data.isOrganizer, error: null };
   } catch (err) {
     return { isOrganizer: false, error: err };
+  }
+}
+
+
+export const checkEligibility = async (eventId: string, eventParticipation: ParticipationType) => {
+  try {
+    const response = await axios.post(`http://localhost:5000/api/user/check-eligibility`, {
+      userId : await getUserId(),
+      usersUniversity: await getUsersUniversity(),
+      eventId,
+      eventParticipation,
+    });
+
+    if (response.status !== 200) {
+      return { isEligible: false, error: response.statusText };
+    }
+
+    if (response.data.error) {
+      return { isEligible: false, error: response.data.error };
+    }
+
+    return { isEligible: response.data.isEligible, error: null };
+  } catch (err) {
+    return { isEligible: false, error: err };
   }
 }

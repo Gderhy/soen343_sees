@@ -4,9 +4,13 @@ import { fetchEventById, getEventAttendeesCount } from "../../services/backend/a
 import { rsvpToEvent, removeRsvp, checkRsvp, isUserOrganizer } from "../../services/backend/user";
 import "./EventDetail.css";
 import { Event, defaultEvent } from "../../types";
+import { checkEligibility } from "../../services/backend/user";
+import { getUsersUniversity } from "../../services/supabase/supabase";
+
 
 const EventDetail: React.FC = () => {
   const { id } = useParams();
+
   const navigate = useNavigate();
   const [event, setEvent] = useState<Event>(defaultEvent);
   const [isAttending, setIsAttending] = useState<boolean>(false);
@@ -57,6 +61,8 @@ const EventDetail: React.FC = () => {
         setIsOrganizer(organizerStatus);
       }
 
+      // TODO: fetch stakeholders and universities
+
       setLoading(false);
     }
 
@@ -65,6 +71,11 @@ const EventDetail: React.FC = () => {
 
   const handleRsvp = async () => {
     if (!id) return;
+
+    if (event.participation === "university" && getUsersUniversity === null) {
+      setError("You must be a member of a university to RSVP to this event.");
+      return;
+    }
 
     try {
       if (isAttending) {
@@ -79,6 +90,13 @@ const EventDetail: React.FC = () => {
         }
       } else {
         // Add RSVP
+
+        if(event.participation === "university") {
+          const eligible = checkEligibility(event.id, event.participation);
+          
+          if(!eligible) return;
+        }
+
         const { error: rsvpError } = await rsvpToEvent(id);
         if (rsvpError) {
           console.error("Error adding RSVP:", rsvpError);

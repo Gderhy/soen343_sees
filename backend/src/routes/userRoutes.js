@@ -12,6 +12,7 @@ const {
   deleteRsvp,
   checkRsvp,
   checkIfUserIsOrganizer,
+  checkEligibility,
 } = require("../services/supabase/user/supabase");
 
 // GET /api/user/stakeholders
@@ -36,7 +37,7 @@ router.get("/stakeholders", async (req, res) => {
 router.post("/event", async (req, res) => {
   try {
     const obj = req.body;
-  
+
     // insert event into the events table
     const { eventId, error } = await createEvent(obj);
     if (error) {
@@ -64,7 +65,6 @@ router.get("/:userId/events", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
 
 // DELETE /api/user/event/:eventId
 // Delete an event
@@ -181,6 +181,21 @@ router.post("/is-organizer", async (req, res) => {
 
     console.log(message);
     res.json({ message, isOrganizer });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/user/check-eligibility
+// To check the eligibility of a user to attend an event
+router.post("/check-eligibility", async (req, res) => {
+  try {
+    const { userId,  usersUniversity, eventId, eventParticipation } = req.body;
+    if (!userId || !usersUniversity || !eventId || !eventParticipation) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const { data, error } = await checkEligibility(userId, usersUniversity, eventId, eventParticipation);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

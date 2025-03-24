@@ -30,6 +30,7 @@ export interface Event {
   status: EventStatusType;
   owned_by: string;
   basePrice: number;
+  participation: ParticipationType;
 }
 export const defaultEvent: Event = {
   id: "",
@@ -40,6 +41,7 @@ export const defaultEvent: Event = {
   status: "pending",
   owned_by: "",
   basePrice: 0,
+  participation: "public",
 };
 
 export interface Stakeholder {
