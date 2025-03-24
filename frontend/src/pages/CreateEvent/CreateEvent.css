@@ -1,4 +1,8 @@
-.container {
+.create-event-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 600px;
+  justify-items: center;
   width: 100%;
   height: auto;
   margin: 50px auto;
@@ -9,14 +13,21 @@
   text-align: center;
 }
 
-.container h2 {
+.create-event-container h2 {
   color: #007bff;
   margin-bottom: 20px;
 }
 
-.container form input,
-.container form textarea,
-.container form select {
+.create-event-container form {
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+  width: 100%;
+}
+
+.create-event-container form input,
+.create-event-container form textarea,
+.create-event-container form select {
   width: 100%;
   margin-bottom: 15px;
   padding: 10px;
@@ -25,12 +36,12 @@
   border-radius: 5px;
 }
 
-.container form textarea {
+.create-event-container form textarea {
   resize: vertical;
   min-height: 80px;
 }
 
-.container form button {
+.create-event-container form button {
   background-color: #007bff;
   color: white;
   padding: 12px;
@@ -43,7 +54,7 @@
   width: 100%;
 }
 
-.container form button:hover {
+.create-event-container form button:hover {
   background-color: #0056b3;
 }
 

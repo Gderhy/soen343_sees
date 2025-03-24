@@ -2,7 +2,17 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./CreateEvent.css";
 import { fetchAllStakeholders, createEvent } from "../../services/backend/user";
-import { Stakeholder } from "../../types";
+import { Participation, Stakeholder } from "../../types";
+
+interface ParticipationOptionInterface {
+  value: Participation;
+  label: string;
+};
+
+const participatonOptions: ParticipationOptionInterface[] = [
+  { value: "public", label: "Public (Anyone can join)" },
+  { value: "university", label: "University-only" },
+];
 
 const CreateEvent: React.FC = () => {
   const navigate = useNavigate();
@@ -12,6 +22,7 @@ const CreateEvent: React.FC = () => {
   const [eventDatetime, setEventDatetime] = useState("");
   const [location, setLocation] = useState("");
   const [basePrice, setBasePrice] = useState(0);
+  const [participation, setParticipation] = useState("public");
 
   const [allStakeholders, setAllStakeholders] = useState<Stakeholder[]>([]);
   const [filteredStakeholders, setFilteredStakeholders] = useState<Stakeholder[]>([]);
@@ -64,7 +75,7 @@ const CreateEvent: React.FC = () => {
       eventDatetime,
       location,
       basePrice,
-      stakeholderIds,
+      stakeholderIds
     );
     if (error) {
       console.error(error);
@@ -74,7 +85,7 @@ const CreateEvent: React.FC = () => {
   };
 
   return (
-    <div className="container">
+    <div className="create-event-container">
       <h2>Create an Event</h2>
       <form onSubmit={handleSubmit}>
         <input
@@ -103,7 +114,6 @@ const CreateEvent: React.FC = () => {
           onChange={(e) => setLocation(e.target.value)}
           required
         />
-
         <label>Stakeholders</label>
         <div className="stakeholder-input-wrapper">
           <div className="chips">
@@ -132,7 +142,6 @@ const CreateEvent: React.FC = () => {
             </ul>
           )}
         </div>
-
         <label>Base Price $</label>
         <input
           type="number"
@@ -140,7 +149,14 @@ const CreateEvent: React.FC = () => {
           onChange={(e) => setBasePrice(Number(e.target.value))}
           required
         />
-
+        <label>Participation</label>
+        <select value={participation} onChange={(e) => setParticipation(e.target.value)}>
+          {participatonOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
         <button type="submit">Create Event</button>
       </form>
     </div>
