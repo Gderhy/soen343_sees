@@ -5,6 +5,7 @@ const {
   fetchAllEvents,
   fetchEvent,
   fetchEventAttendeeCount,
+  fetchAllUniversities,
 } = require("../services/supabase/all/supabase");
 
 // GET /api/events
@@ -54,8 +55,23 @@ router.get("/events/:eventId/attendees-count", async (req, res) => {
     }
 
     console.log(`Event: ${eventId} attendance count: ${count} fetched successfully`);
-    
+
     res.json(count);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get("/universities", async (req, res) => {
+  try {
+    const { data, error } = await fetchAllUniversities();
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    console.log("Universities fetched successfully: ");
+    res.json(data);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

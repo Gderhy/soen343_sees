@@ -35,4 +35,13 @@ const fetchEventAttendeeCount = async (eventId) => {
   }
 };
 
-module.exports = { fetchAllEvents, fetchEvent, fetchEventAttendeeCount };
+const fetchAllUniversities = async () => {
+  try{
+    const { data, error } = await supabaseAdmin.from("universities").select("id, full_name, phone, address, email");
+    return { data, error };
+  } catch (err) { 
+    return { error: err.message };
+  }
+};
+
+module.exports = { fetchAllEvents, fetchEvent, fetchEventAttendeeCount, fetchAllUniversities };

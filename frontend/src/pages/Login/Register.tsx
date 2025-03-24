@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import { useAuth } from "../../contexts/AuthContext";
+import { University } from "../../types";
+import { fetchUniversities } from "../../services/backend/all";
 
-// Define career options
 const CAREER_OPTIONS = [
   { value: "student", label: "Student" },
   { value: "faculty", label: "Faculty" },
@@ -14,12 +15,10 @@ const CAREER_OPTIONS = [
 const Register: React.FC = () => {
   const { signUp, user } = useAuth();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (user) {
-      navigate("/events");
-    }
-  }, [user, navigate]);
+  const [universities, setUniversities] = useState<University[]>([]);
+  const [universitySuggestions, setUniversitySuggestions] = useState<University[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const universityInputRef = useRef<HTMLInputElement>(null);
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -28,10 +27,58 @@ const Register: React.FC = () => {
   const [university, setUniversity] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  const [career, setCareer] = useState("student"); // Default to student
+  const [career, setCareer] = useState("student");
 
-  // Determine if university field should be shown
+  useEffect(() => {
+    if (user) {
+      navigate("/events");
+    }
+  }, [user, navigate]);
+
+  useEffect(() => {
+    const getUniversities = async () => {
+      const { data } = await fetchUniversities();
+      if (data) {
+        setUniversities(data);
+        setUniversitySuggestions(data);
+      }
+    };
+    getUniversities();
+  }, []);
+
   const showUniversityField = career === "student" || career === "faculty";
+
+  const handleUniversityInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target.value.toLowerCase();
+    setUniversity(input);
+
+    if (input.length >= 0 ) { // Filter universities based on user input -- case-insensitive -- if db is large, consider using 2 letters
+      const filtered = universities.filter((uni) => uni.full_name.toLowerCase().includes(input));
+      setUniversitySuggestions(filtered);
+      setShowSuggestions(true);
+    } else {
+      setUniversitySuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
+  const selectUniversity = (uni: University) => {
+    setUniversity(uni.full_name);
+    setUniversitySuggestions([]);
+    setShowSuggestions(false);
+    universityInputRef.current?.focus();
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (universityInputRef.current && !universityInputRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,7 +94,7 @@ const Register: React.FC = () => {
       email,
       phone,
       password,
-      university: showUniversityField ? university : "", // Only include if relevant
+      university: showUniversityField ? university : "",
       career,
     });
 
@@ -69,6 +116,7 @@ const Register: React.FC = () => {
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
           required
+          autoComplete="name"
         />
         <input
           type="email"
@@ -85,7 +133,6 @@ const Register: React.FC = () => {
           required
         />
 
-        {/* Career Selection Dropdown */}
         <div className="form-group">
           <label htmlFor="career-select">Career:</label>
           <select
@@ -102,15 +149,27 @@ const Register: React.FC = () => {
           </select>
         </div>
 
-        {/* Conditionally render university field */}
         {showUniversityField && (
-          <input
-            type="text"
-            placeholder="University"
-            value={university}
-            onChange={(e) => setUniversity(e.target.value)}
-            required={showUniversityField}
-          />
+          <div className="autocomplete-container" ref={universityInputRef}>
+            <input
+              type="text"
+              placeholder="University"
+              value={university}
+              onChange={handleUniversityInput}
+              required={showUniversityField}
+              onFocus={() => setShowSuggestions(true)}
+              // autoComplete="organization"
+            />
+            {showSuggestions && universitySuggestions.length > 0 && (
+              <ul className="suggestions-list">
+                {universitySuggestions.map((uni) => (
+                  <li key={uni.id} onClick={() => selectUniversity(uni)}>
+                    {uni.full_name}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         )}
 
         <input
@@ -119,6 +178,7 @@ const Register: React.FC = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          autoComplete="new-password"
         />
         <input
           type="password"
@@ -126,6 +186,7 @@ const Register: React.FC = () => {
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
+          autoComplete="new-password"
         />
         <p>
           Already have an account? <a href="/login">Login here</a>

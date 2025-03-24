@@ -55,3 +55,21 @@ export const getEventAttendeesCount = async (eventId: string) => {
     return { attendees: 0, error: err };
   }
 };
+
+export const fetchUniversities = async () => {
+  try {
+    const response = await axios.get("http://localhost:5000/api/universities");
+
+    if (response.status !== 200) {
+      return { data: null, error: response.statusText };
+    }
+
+    if (response.data.error) {
+      return { data: null, error: response.data.error };
+    }
+
+    return { data: response.data, error: null };
+  } catch (err) {
+    return { data: null, error: err };
+  }
+};
