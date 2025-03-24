@@ -24,6 +24,7 @@ interface AuthContextType {
     phone,
     password,
     systemRole,
+    university,
   }: SignUpProps) => Promise<{ error: AuthError | null }>;
   getUserSystemRole: () => SystemRole;
 }
@@ -92,12 +93,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     phone,
     password,
     systemRole = "user",
+    university,
+    career,
   }: SignUpProps) => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { fullName, phone, systemRole },
+        data: { fullName, phone, systemRole, university, career },
       },
     });
 

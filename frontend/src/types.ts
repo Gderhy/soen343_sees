@@ -9,6 +9,8 @@ export type SignUpProps = {
   phone: string;
   password: string;
   systemRole?: SystemRole;
+  university?: string;
+  career?: string;
 };
 
 export type SystemRole = "admin" | "stakeholder" | "user" | null;
@@ -27,6 +29,7 @@ export interface Event {
   location: string;
   status: EventStatusType;
   created_by: string;
+  basePrice?: number;
 }
 export const defaultEvent: Event = {
   id: "",
