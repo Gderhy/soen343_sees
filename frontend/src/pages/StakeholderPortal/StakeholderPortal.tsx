@@ -14,7 +14,7 @@ const StakeholderPortal: React.FC = () => {
           <div className="tab-content">
             <h2>Overview</h2>
             <p>High-level analytics and summaries will appear here.</p>
-            {/* Future integration: Add charts, KPIs, etc. */}
+            {/* TODO: Future integration: Add charts, KPIs, etc. */}
           </div>
         );
       case "events":
@@ -29,7 +29,7 @@ const StakeholderPortal: React.FC = () => {
           <div className="tab-content">
             <h2>Sponsorships</h2>
             <p>Sponsorship contributions and performance data.</p>
-            {/* Future integration: Add financial charts and tables */}
+            {/* TODO: Future integration: Add financial charts and tables */}
           </div>
         );
       case "communications":
@@ -37,7 +37,7 @@ const StakeholderPortal: React.FC = () => {
           <div className="tab-content">
             <h2>Communications</h2>
             <p>Messaging area to contact event organizers.</p>
-            {/* Future integration: Build a messaging/chat interface */}
+            {/* TODO: Future integration: Build a messaging/chat interface */}
           </div>
         );
       case "pending-events":
