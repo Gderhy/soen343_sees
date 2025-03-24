@@ -107,7 +107,7 @@ router.put("/:userId/event/", async (req, res) => {
 // Private for users
 router.post("/rsvp", async (req, res) => {
   try {
-    const { data, error } = await rsvpToEvent(req.body);
+    const { error } = await rsvpToEvent(req.body);
     if (error) {
       return res.status(500).json({ error: error.message });
     }
