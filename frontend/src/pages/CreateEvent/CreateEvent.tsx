@@ -75,6 +75,7 @@ const CreateEvent: React.FC = () => {
       eventDatetime,
       location,
       basePrice,
+      participation,
       stakeholderIds
     );
     if (error) {

@@ -15,6 +15,7 @@ const createEvent = async (obj) => {
     location: obj.location,
     owned_by: obj.userId,
     base_price: obj.basePrice,
+    participation: obj.participation,
     status: "pending",
   };
 

@@ -65,6 +65,9 @@ router.get("/:userId/events", async (req, res) => {
   }
 });
 
+
+// DELETE /api/user/event/:eventId
+// Delete an event
 router.delete("/event/:eventId", async (req, res) => {
   try {
     const eventId = req.params.eventId;

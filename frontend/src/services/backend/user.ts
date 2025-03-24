@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Event } from "../../types";
+import { Event, ParticipationType } from "../../types";
 import { getUserId } from "../supabase/supabase";
 
 export const fetchAllStakeholders = async () => {
@@ -26,6 +26,7 @@ export const createEvent = async (
   event_datetime: string,
   location: string,
   basePrice: number,
+  participation: ParticipationType,
   stakeholdersIds: string[]
 ) => {
   try {
@@ -36,6 +37,7 @@ export const createEvent = async (
       event_datetime,
       location,
       basePrice,
+      participation,
       stakeholdersIds,
     });
 
