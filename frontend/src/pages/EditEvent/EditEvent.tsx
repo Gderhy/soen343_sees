@@ -91,6 +91,12 @@ const EditEvent: React.FC = () => {
           onChange={(e) => setEvent({ ...event, location: e.target.value })}
           required
         />
+        <input
+          type="number"
+          value={event.base_price}
+          onChange={(e) => setEvent({ ...event, base_price: e.target.value })}
+          required
+        />
         <button type="submit">Update Event</button>
       </form>
     </div>
