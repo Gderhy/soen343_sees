@@ -3,17 +3,15 @@ import { useNavigate } from "react-router-dom";
 import "./CreateEvent.css";
 import { fetchAllStakeholders, createEvent } from "../../services/backend/user";
 import { Stakeholder } from "../../types";
-import { useAuth } from "../../contexts/AuthContext";
-
 
 const CreateEvent: React.FC = () => {
   const navigate = useNavigate();
-  const { user} = useAuth();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [eventDatetime, setEventDatetime] = useState("");
   const [location, setLocation] = useState("");
+  const [basePrice, setBasePrice] = useState(0);
 
   const [allStakeholders, setAllStakeholders] = useState<Stakeholder[]>([]);
   const [filteredStakeholders, setFilteredStakeholders] = useState<Stakeholder[]>([]);
@@ -59,15 +57,14 @@ const CreateEvent: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const stakeholderIds = selectedStakeholders.map((s) => s.id);
-    const userId = user?.id || "";
 
     const { data, error } = await createEvent(
-      userId,
       title,
       description,
       eventDatetime,
       location,
-      stakeholderIds
+      basePrice,
+      stakeholderIds,
     );
     if (error) {
       console.error(error);
@@ -135,6 +132,14 @@ const CreateEvent: React.FC = () => {
             </ul>
           )}
         </div>
+
+        <label>Base Price $</label>
+        <input
+          type="number"
+          value={basePrice}
+          onChange={(e) => setBasePrice(Number(e.target.value))}
+          required
+        />
 
         <button type="submit">Create Event</button>
       </form>

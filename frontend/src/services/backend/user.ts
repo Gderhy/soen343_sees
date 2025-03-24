@@ -21,20 +21,21 @@ export const fetchAllStakeholders = async () => {
 };
 
 export const createEvent = async (
-  userId: string,
   title: string,
   description: string,
-  eventDatetime: string,
+  event_datetime: string,
   location: string,
+  basePrice: number,
   stakeholdersIds: string[]
 ) => {
   try {
     const response = await axios.post("http://localhost:5000/api/user/event", {
-      userId,
+      userId: await getUserId(),
       title,
       description,
-      event_datetime: eventDatetime,
+      event_datetime,
       location,
+      basePrice,
       stakeholdersIds,
     });
 
