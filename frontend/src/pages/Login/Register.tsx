@@ -7,7 +7,7 @@ import { useAuth } from "../../contexts/AuthContext";
 const CAREER_OPTIONS = [
   { value: "student", label: "Student" },
   { value: "faculty", label: "Faculty" },
-  { value: "worker", label: "Worker" },
+  { value: "professional", label: "Professional" },
   { value: "other", label: "Other" },
 ];
 
