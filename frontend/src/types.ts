@@ -57,4 +57,6 @@ export interface University {
   email: string;
   phone: string;
   address: string;
-} 
+}
+
+export type Participation = "public" | "university";
