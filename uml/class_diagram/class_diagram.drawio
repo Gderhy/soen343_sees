@@ -298,7 +298,7 @@
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="147" value="event_attendance" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="170" y="910" width="250" height="104" as="geometry"/>
+                    <mxGeometry x="170" y="910" width="250" height="130" as="geometry"/>
                 </mxCell>
                 <mxCell id="148" value="+ id: UUID" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="147" vertex="1">
                     <mxGeometry y="26" width="250" height="26" as="geometry"/>
@@ -308,6 +308,9 @@
                 </mxCell>
                 <mxCell id="150" value="+ attendeee: User" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="147" vertex="1">
                     <mxGeometry y="78" width="250" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="161" value="+ status: EventAttendanceStatus" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="147">
+                    <mxGeometry y="104" width="250" height="26" as="geometry"/>
                 </mxCell>
                 <mxCell id="151" style="edgeStyle=none;html=1;entryX=0.974;entryY=0.122;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" parent="1" source="147" target="112" edge="1">
                     <mxGeometry relative="1" as="geometry">
@@ -334,6 +337,27 @@
                 </mxCell>
                 <mxCell id="159" value="&quot;university&quot;" style="html=1;align=left;spacing=0;spacingLeft=8;verticalAlign=middle;strokeColor=none;fillColor=none;whiteSpace=wrap;" vertex="1" parent="154">
                     <mxGeometry y="58" width="200" height="16" as="geometry"/>
+                </mxCell>
+                <mxCell id="162" value="" style="fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;marginBottom=0;" vertex="1" parent="1">
+                    <mxGeometry x="880" y="910" width="200" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="163" value="&amp;lt;&amp;lt;enumeration&amp;gt;&amp;gt;" style="html=1;align=center;spacing=0;verticalAlign=middle;strokeColor=none;fillColor=none;whiteSpace=wrap;" vertex="1" parent="162">
+                    <mxGeometry width="200" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="164" value="EventAttendanceStatusType" style="html=1;align=center;spacing=0;verticalAlign=middle;strokeColor=none;fillColor=none;whiteSpace=wrap;fontStyle=1;" vertex="1" parent="162">
+                    <mxGeometry y="20" width="200" height="14" as="geometry"/>
+                </mxCell>
+                <mxCell id="165" value="" style="line;strokeWidth=0.25;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="162">
+                    <mxGeometry y="34" width="200" height="8" as="geometry"/>
+                </mxCell>
+                <mxCell id="166" value="&quot;pending&quot;" style="html=1;align=left;spacing=0;spacingLeft=8;verticalAlign=middle;strokeColor=none;fillColor=none;whiteSpace=wrap;" vertex="1" parent="162">
+                    <mxGeometry y="42" width="200" height="16" as="geometry"/>
+                </mxCell>
+                <mxCell id="167" value="&quot;accepted&quot;" style="html=1;align=left;spacing=0;spacingLeft=8;verticalAlign=middle;strokeColor=none;fillColor=none;whiteSpace=wrap;" vertex="1" parent="162">
+                    <mxGeometry y="58" width="200" height="16" as="geometry"/>
+                </mxCell>
+                <mxCell id="168" value="&quot;declined&quot;" style="html=1;align=left;spacing=0;spacingLeft=8;verticalAlign=middle;strokeColor=none;fillColor=none;whiteSpace=wrap;" vertex="1" parent="162">
+                    <mxGeometry y="74" width="200" height="16" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
