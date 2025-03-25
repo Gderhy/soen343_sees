@@ -55,6 +55,7 @@ export const getEventAttendeesCount = async (eventId: string) => {
   }
 };
 
+// some comment
 export const fetchUniversities = async () => {
   try {
     const response = await axios.get(`${url}/api/universities`);
