@@ -103,17 +103,23 @@ router.put("/:userId/event/", async (req, res) => {
 });
 
 // POST /api/user/rsvp
-// Allow for users to rsvp to events
-// Private for users
+// Allow users to RSVP to events
 router.post("/rsvp", async (req, res) => {
   try {
-    const { error } = await rsvpToEvent(req.body);
-    if (error) {
-      return res.status(500).json({ error: error.message });
+    const { userId, eventId } = req.body;
+
+    if (!userId || !eventId) {
+      return res.status(400).json({ error: "Missing required fields" });
     }
 
-    console.log("RSVP successful for user: ", req.body.userId);
-    res.json({ message: "RSVP successful" });
+    const { data, error } = await rsvpToEvent({ userId, eventId });
+
+    if (error) {
+      return res.status(500).json({ error: error });
+    }
+
+    console.log("RSVP successful for user:", userId);
+    res.json({ message: "RSVP successful", data });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
