@@ -138,12 +138,14 @@ const EventDetail: React.FC = () => {
       }
 
       {/* RSVP Button */}
-      <button
+      {!isOrganizer && (
+        <button
         onClick={handleRsvp}
         className={isAttending ? "rsvp-button attending" : "rsvp-button"}
       >
         {isAttending ? "Cancel RSVP" : "RSVP to Event"}
       </button>
+      )}
 
       {/* Organizer Tools */}
       {isOrganizer && (
