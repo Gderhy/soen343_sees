@@ -1,5 +1,8 @@
 /* === Events Page Container === */
-.container {
+.events-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   max-width: 90%;
   margin: 40px auto;
   padding: 20px;

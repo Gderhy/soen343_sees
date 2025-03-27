@@ -38,7 +38,7 @@ const Events: React.FC = () => {
   };
 
   return (
-    <div className="container">
+    <div className="events-container">
       {/* Header with Centered Title & Right-Aligned Search */}
       <div className="header-container">
         <h1>Upcoming Events</h1>
