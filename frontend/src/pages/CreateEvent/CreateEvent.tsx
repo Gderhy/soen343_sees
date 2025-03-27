@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./CreateEvent.css";
 import { fetchAllStakeholders, createEvent } from "../../services/backend/user";
-import { ParticipationType, Stakeholder } from "../../types";
+import { ParticipationType, Stakeholder, University } from "../../types";
 import { fetchUniversities } from "../../services/backend/all";
 
 interface ParticipationOptionInterface {
@@ -81,11 +81,11 @@ const CreateEvent: React.FC = () => {
   const removeStakeholder = (id: string) =>
     setSelectedStakeholders(selectedStakeholders.filter((s) => s.id !== id));
 
-  const handleUniversityCheckboxChange = (universityId: string) => {
+  const handleUniversityCheckboxChange = (university: { id: string; full_name: string }) => {
     setSelectedUniversities((prev) =>
-      prev.includes(universityId)
-        ? prev.filter((id) => id !== universityId) // Remove if already selected
-        : [...prev, universityId] // Add if not selected
+      prev.includes(university.id)
+        ? prev.filter((id) => id !== university.id) // Remove if already selected
+        : [...prev, university.id] // Add if not selected
     );
   };
 
@@ -194,7 +194,7 @@ const CreateEvent: React.FC = () => {
                     id={`university-${uni.id}`}
                     value={uni.id}
                     checked={selectedUniversities.includes(uni.id)}
-                    onChange={() => handleUniversityCheckboxChange(uni.id)}
+                    onChange={() => handleUniversityCheckboxChange(uni)}
                   />
                   <label htmlFor={`university-${uni.id}`}>{uni.full_name}</label>
                 </div>
