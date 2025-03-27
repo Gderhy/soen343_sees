@@ -43,7 +43,7 @@ export const createEvent = async (
       basePrice,
       participation,
       stakeholdersIds,
-      selectedUniversities
+      selectedUniversitiesIds: selectedUniversities,
     });
 
     if (response.status !== 200) {

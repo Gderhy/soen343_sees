@@ -25,8 +25,8 @@ const createEvent = async (obj) => {
   }
 
   // Associate event with universities if participation is 'university'
-  if (obj.participation === "university" && obj.universityIds?.length > 0) {
-    const eventUniversities = obj.universityIds.map((universityId) => ({
+  if (obj.participation === "university" && obj.selectedUniversitiesIds?.length > 0) {
+    const eventUniversities = obj.selectedUniversitiesIds.map((universityId) => ({
       event_id: data[0].id,
       university_id: universityId,
     }));
