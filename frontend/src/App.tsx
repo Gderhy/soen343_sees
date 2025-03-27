@@ -23,7 +23,7 @@ const App: React.FC = () => {
         <Route path="/" element={<Home />} />
         <Route path="/events" element={<Events />} />
         <Route path="/event/:id" element={<EventDetail />} />
-        <Route path="/event/:id/live" element={<LiveEvent/>} />
+        <Route path="/event/live/:id" element={<LiveEvent/>} />
 
         {/* Routes that require authentication */}
         <Route element={<ProtectedRoute redirectTo="/login" requireAuth={true} />}>

@@ -133,7 +133,7 @@ const EventDetail: React.FC = () => {
       {
         isAttending==true ? 
         <button
-          onClick={()=> navigate(`/event/${id}/live`)}
+          onClick={()=> navigate(`/event/live/${id}`)}
         >Access Live Event Page</button> : null
       }
 
