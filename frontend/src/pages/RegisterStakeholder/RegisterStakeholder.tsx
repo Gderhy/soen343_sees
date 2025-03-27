@@ -74,7 +74,9 @@ const RegisterStakeholder: React.FC = () => {
     <div className="stakeholder-container">
       <h2>
         Register as a{" "}
-        {stakeholderType === "educational" ? "Educational Institution" : "Organization"}
+        {stakeholderType === "educational"
+          ? "Educational Institution"
+          : "Organization"}
       </h2>
       <form onSubmit={handleRegister} className="stakeholder-form">
         <input
@@ -118,7 +120,11 @@ const RegisterStakeholder: React.FC = () => {
         />
         {errorMsg && <p className="error">{errorMsg}</p>}
         <div className="form-actions">
-          <button type="button" className="back-btn" onClick={() => setStakeholderType(null)}>
+          <button
+            type="button"
+            className="back-btn"
+            onClick={() => setStakeholderType(null)}
+          >
             Back
           </button>
           <button type="submit" disabled={loading} className="submit-btn">

@@ -8,6 +8,22 @@
   text-align: center;
 }
 
+.send-mailing-list-button {
+  padding: 10px 15px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  background: #ea1616;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.send-mailing-list-button:hover {
+  background: #b80f0f;
+}
+
 h1 {
   color: #007bff;
 }

@@ -24,7 +24,9 @@ const App: React.FC = () => {
         <Route path="/event/:id" element={<EventDetail />} />
 
         {/* Routes that require authentication */}
-        <Route element={<ProtectedRoute redirectTo="/login" requireAuth={true} />}>
+        <Route
+          element={<ProtectedRoute redirectTo="/login" requireAuth={true} />}
+        >
           <Route path="/create-event" element={<CreateEvent />} />
           <Route path="/edit-event/:id" element={<EditEvent />} />
           <Route path="/manage-my-events" element={<ManageMyEvents />} />
@@ -34,19 +36,28 @@ const App: React.FC = () => {
         <Route element={<ProtectedRoute redirectTo="/" requireAuth={false} />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/register-stakeholder" element={<RegisterStakeholder />} />
+          <Route
+            path="/register-stakeholder"
+            element={<RegisterStakeholder />}
+          />
         </Route>
 
         {/* Admin Routes */}
-        <Route element={<ProtectedRoute redirectTo="/" requiredSystemRole="admin" />}>
+        <Route
+          element={<ProtectedRoute redirectTo="/" requiredSystemRole="admin" />}
+        >
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
         </Route>
 
         {/* Stakeholder Routes */}
-        <Route element={<ProtectedRoute redirectTo="/" requiredSystemRole="stakeholder" />}>
+        <Route
+          element={
+            <ProtectedRoute redirectTo="/" requiredSystemRole="stakeholder" />
+          }
+        >
           <Route path="/stakeholder-portal" element={<StakeholderPortal />} />
         </Route>
-        
+
         {/* Catch all route */}
         <Route path="*" element={<Home />} />
       </Routes>

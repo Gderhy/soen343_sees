@@ -44,14 +44,18 @@ const ManageMyEvents: React.FC = () => {
     if (!query) {
       setFilteredEvents(events);
     } else {
-      const filtered = events.filter((event) => event.title.toLowerCase().includes(query));
+      const filtered = events.filter((event) =>
+        event.title.toLowerCase().includes(query)
+      );
       setFilteredEvents(filtered);
     }
     setCurrentPage(1); // Reset to first page when searching
   };
 
   const handleDelete = async (eventId: string) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this event?");
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this event?"
+    );
     if (!confirmDelete) return;
 
     const { error } = await deleteEvent(eventId);
@@ -67,7 +71,10 @@ const ManageMyEvents: React.FC = () => {
   // Pagination Logic
   const indexOfLastEvent = currentPage * eventsPerPage;
   const indexOfFirstEvent = indexOfLastEvent - eventsPerPage;
-  const currentEvents = filteredEvents.slice(indexOfFirstEvent, indexOfLastEvent);
+  const currentEvents = filteredEvents.slice(
+    indexOfFirstEvent,
+    indexOfLastEvent
+  );
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
@@ -109,15 +116,20 @@ const ManageMyEvents: React.FC = () => {
             />
             {/* Pagination Controls */}
             <div className="pagination">
-              {Array.from({ length: Math.ceil(filteredEvents.length / eventsPerPage) }, (_, i) => (
-                <button
-                  key={i}
-                  onClick={() => paginate(i + 1)}
-                  className={`page-button ${currentPage === i + 1 ? "active" : ""}`}
-                >
-                  {i + 1}
-                </button>
-              ))}
+              {Array.from(
+                { length: Math.ceil(filteredEvents.length / eventsPerPage) },
+                (_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => paginate(i + 1)}
+                    className={`page-button ${
+                      currentPage === i + 1 ? "active" : ""
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                )
+              )}
             </div>
           </div>
         );

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Event, ParticipationType } from "../../types";
-import { getUserId, getUsersUniversity } from "../supabase/supabase";
+import { getUserId, getUsersUniversity, supabase } from "../supabase/supabase";
 import { url } from "./url";
 
 export const fetchAllStakeholders = async () => {
@@ -53,6 +53,35 @@ export const createEvent = async (
     return { data: response.data, error: null };
   } catch (err) {
     return { data: null, error: err };
+  }
+};
+
+export const sendMailingList = async (eventId: any) => {
+  try {
+    const response = await axios.post(
+      `${url}/api/user/event/${eventId}/send-mailing-list`
+    );
+
+    const { data: eventData, error: eventError } = await supabase
+      .from("events")
+      .select("title")
+      .eq("id", eventId)
+      .single();
+
+    if (eventError || !eventData) {
+      throw new Error("Event not found.");
+    }
+
+    if (response.status !== 200) {
+      throw new Error("Failed to send mailing list.");
+    }
+
+    return {
+      message: "Mailing list sent successfully!",
+    };
+  } catch (err) {
+    console.error("Error in sendMailingList:", (err as Error).message);
+    throw err;
   }
 };
 
@@ -116,7 +145,7 @@ export const updateEvent = async (userId: string, event: Event) => {
 export const rsvpToEvent = async (eventId: string) => {
   try {
     const response = await axios.post(`${url}/api/user/rsvp`, {
-      userId : await getUserId(),
+      userId: await getUserId(),
       eventId,
     });
 
@@ -138,9 +167,9 @@ export const removeRsvp = async (eventId: string) => {
   try {
     const response = await axios.delete(`${url}/api/user/rsvp`, {
       data: {
-        userId : await getUserId(),
+        userId: await getUserId(),
         eventId,
-      }
+      },
     });
 
     if (response.status !== 200) {
@@ -160,7 +189,7 @@ export const removeRsvp = async (eventId: string) => {
 export const checkRsvp = async (eventId: string) => {
   try {
     const response = await axios.post(`${url}/api/user/check-rsvp`, {
-      userId : await getUserId(),
+      userId: await getUserId(),
       eventId,
     });
 
@@ -181,7 +210,7 @@ export const checkRsvp = async (eventId: string) => {
 export const isUserOrganizer = async (eventId: string) => {
   try {
     const response = await axios.post(`${url}/api/user/is-organizer`, {
-      userId : await getUserId(),
+      userId: await getUserId(),
       eventId,
     });
 
@@ -197,13 +226,15 @@ export const isUserOrganizer = async (eventId: string) => {
   } catch (err) {
     return { isOrganizer: false, error: err };
   }
-}
+};
 
-
-export const checkEligibility = async (eventId: string, eventParticipation: ParticipationType) => {
+export const checkEligibility = async (
+  eventId: string,
+  eventParticipation: ParticipationType
+) => {
   try {
     const response = await axios.post(`${url}/api/user/check-eligibility`, {
-      userId : await getUserId(),
+      userId: await getUserId(),
       usersUniversity: await getUsersUniversity(),
       eventId,
       eventParticipation,
@@ -221,4 +252,4 @@ export const checkEligibility = async (eventId: string, eventParticipation: Part
   } catch (err) {
     return { isEligible: false, error: err };
   }
-}
+};

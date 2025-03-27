@@ -1,12 +1,20 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { fetchEventById, getEventAttendeesCount } from "../../services/backend/all";
-import { rsvpToEvent, removeRsvp, checkRsvp, isUserOrganizer } from "../../services/backend/user";
+import {
+  fetchEventById,
+  getEventAttendeesCount,
+} from "../../services/backend/all";
+import {
+  rsvpToEvent,
+  removeRsvp,
+  checkRsvp,
+  isUserOrganizer,
+} from "../../services/backend/user";
 import "./EventDetail.css";
 import { Event, defaultEvent } from "../../types";
+import { sendMailingList } from "../../services/backend/user";
 import { checkEligibility } from "../../services/backend/user";
 import { getUsersUniversity } from "../../services/supabase/supabase";
-
 
 const EventDetail: React.FC = () => {
   const { id } = useParams();
@@ -18,6 +26,7 @@ const EventDetail: React.FC = () => {
   const [isOrganizer, setIsOrganizer] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
+  const [message, setMessage] = useState<string>("");
 
   useEffect(() => {
     if (!id) return;
@@ -46,7 +55,9 @@ const EventDetail: React.FC = () => {
       }
 
       // Fetch attendees
-      const { attendees, error: attendeesError } = await getEventAttendeesCount(id);
+      const { attendees, error: attendeesError } = await getEventAttendeesCount(
+        id
+      );
       if (attendeesError) {
         console.error("Error fetching attendees:", attendeesError);
       } else {
@@ -54,7 +65,8 @@ const EventDetail: React.FC = () => {
       }
 
       // Check if the user is an organizer
-      const { isOrganizer: organizerStatus, error: organizerError } = await isUserOrganizer(id);
+      const { isOrganizer: organizerStatus, error: organizerError } =
+        await isUserOrganizer(id);
       if (organizerError) {
         console.error("Error checking organizer status:", organizerError);
       } else {
@@ -68,6 +80,32 @@ const EventDetail: React.FC = () => {
 
     fetchEventData();
   }, [id, navigate]);
+
+  const handleSendMailingList = async () => {
+    if (!id) {
+      setMessage("Please select an event.");
+      return;
+    }
+
+    setLoading(true);
+    setMessage("");
+
+    console.log("Sending mailing list for event:", id);
+
+    try {
+      const response = await sendMailingList(id); // Backend function to send mailing list
+      if (response.message !== "Success") {
+        setMessage("Failed to send mailing list.");
+      } else {
+        setMessage("Mailing list sent successfully!");
+      }
+    } catch (err) {
+      console.error("Error sending mailing list:", err);
+      setMessage("EMAIL LIST SENT.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleRsvp = async () => {
     if (!id) return;
@@ -91,10 +129,10 @@ const EventDetail: React.FC = () => {
       } else {
         // Add RSVP
 
-        if(event.participation === "university") {
+        if (event.participation === "university") {
           const eligible = checkEligibility(event.id, event.participation);
-          
-          if(!eligible) return;
+
+          if (!eligible) return;
         }
 
         const { error: rsvpError } = await rsvpToEvent(id);
@@ -120,7 +158,8 @@ const EventDetail: React.FC = () => {
       <h1>{event.title}</h1>
       <p className="event-description">{event.description}</p>
       <p>
-        <strong>Date:</strong> {new Date(event.event_datetime).toLocaleDateString()}
+        <strong>Date:</strong>{" "}
+        {new Date(event.event_datetime).toLocaleDateString()}
       </p>
       <p>
         <strong>Location:</strong> {event.location}
@@ -128,7 +167,10 @@ const EventDetail: React.FC = () => {
       <p>
         <strong>Attendees:</strong> {attendees}
       </p>
+      {/* Display Message */}
+      {message && <p className="message">{message}</p>}
 
+      {/* RSVP Button */}
       {/* RSVP Button */}
       <button
         onClick={handleRsvp}
@@ -140,7 +182,10 @@ const EventDetail: React.FC = () => {
       {/* Organizer Tools */}
       {isOrganizer && (
         <>
-          <button onClick={() => navigate(`/edit-event/${id}`)} className="modify-button">
+          <button
+            onClick={() => navigate(`/edit-event/${id}`)}
+            className="modify-button"
+          >
             Modify Event
           </button>
           <button
@@ -148,6 +193,12 @@ const EventDetail: React.FC = () => {
             className="manage-attendees-button"
           >
             Manage Attendees
+          </button>
+          <button
+            onClick={handleSendMailingList}
+            className="send-mailing-list-button"
+          >
+            Send Out Mailing List
           </button>
         </>
       )}

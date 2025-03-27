@@ -13,6 +13,7 @@ const {
   checkRsvp,
   checkIfUserIsOrganizer,
   checkEligibility,
+  sendMailingList,
 } = require("../services/supabase/user/supabase");
 
 // GET /api/user/stakeholders
@@ -46,6 +47,25 @@ router.post("/event", async (req, res) => {
     console.log("Event created successfully: ", eventId);
     res.json(eventId);
   } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post("/event/:eventId/send-mailing-list", async (req, res) => {
+  try {
+    const { eventId } = req.params;
+
+    if (!eventId) {
+      return res.status(400).json({ error: "Missing required field: eventId" });
+    }
+
+    // Call the Mailchimp service function
+    const result = await sendMailingList(eventId);
+
+    // Send the response back to the client
+    res.json(result);
+  } catch (err) {
+    console.error("Error in /event/:eventId/send-mailing-list:", err.message);
     res.status(500).json({ error: err.message });
   }
 });
@@ -153,9 +173,13 @@ router.post("/check-rsvp", async (req, res) => {
 
     const hasRsvp = data.length > 0;
 
-    console.log(`User: ${userId} has RSVP'd to this event: ${eventId}? ${hasRsvp}`);
+    console.log(
+      `User: ${userId} has RSVP'd to this event: ${eventId}? ${hasRsvp}`
+    );
 
-    const message = hasRsvp ? "User has RSVP'd to this event" : "User has not RSVP'd to this event";
+    const message = hasRsvp
+      ? "User has RSVP'd to this event"
+      : "User has not RSVP'd to this event";
     res.json({ message, hasRsvp });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -190,12 +214,17 @@ router.post("/is-organizer", async (req, res) => {
 // To check the eligibility of a user to attend an event
 router.post("/check-eligibility", async (req, res) => {
   try {
-    const { userId,  usersUniversity, eventId, eventParticipation } = req.body;
+    const { userId, usersUniversity, eventId, eventParticipation } = req.body;
     if (!userId || !usersUniversity || !eventId || !eventParticipation) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const { data, error } = await checkEligibility(userId, usersUniversity, eventId, eventParticipation);
+    const { data, error } = await checkEligibility(
+      userId,
+      usersUniversity,
+      eventId,
+      eventParticipation
+    );
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
