@@ -150,15 +150,6 @@ class ChatService extends ChatSubject {
           } catch (error) {
             console.error('Failed to load initial messages', error);
           }
-
-
-        // try {
-        //     const messages = await fetchMessages(eventId);
-        //     console.log(messages);
-        //     messages.post.messages.forEach((message: any) => this.sendMessage(message.content, message.userId, message.username));
-        // } catch (error) {
-        //     console.error('Failed to load initial messages', error);
-        // }
     }
 
     public async sendMessage(
