@@ -7,7 +7,6 @@ const fetchStakeholders = async () => {
 };
 
 const createEvent = async (obj) => {
-
   const event = {
     title: obj.title,
     description: obj.description,
@@ -15,7 +14,7 @@ const createEvent = async (obj) => {
     location: obj.location,
     owned_by: obj.userId,
     base_price: obj.basePrice,
-    participation: obj.participation,
+    participation: obj.participation, // 'public' or 'university'
     status: obj.stakeholdersIds.length > 0 ? "pending" : "active",
   };
 
@@ -23,6 +22,19 @@ const createEvent = async (obj) => {
 
   if (error) {
     return { error };
+  }
+
+  // Associate event with universities if participation is 'university'
+  if (obj.participation === "university" && obj.universityIds?.length > 0) {
+    const eventUniversities = obj.universityIds.map((universityId) => ({
+      event_id: data[0].id,
+      university_id: universityId,
+    }));
+
+    const universityResponse = await supabase.from("event_universities").insert(eventUniversities);
+    if (universityResponse.error) {
+      return { error: universityResponse.error };
+    }
   }
 
   // insert event into event_stakeholders table
@@ -52,7 +64,7 @@ const createEvent = async (obj) => {
     return { error: queryReponse2.error };
   }
 
-  return { eventId: data[0].id, error };
+  return { eventId: data[0].id, error: null };
 };
 
 const fetchUsersEvents = async (userId) => {
@@ -118,22 +130,71 @@ const updateEvent = async (userId, obj) => {
 
 const rsvpToEvent = async (obj) => {
   try {
+    // Check if the event is restricted to specific universities
+    const { data: eventData, error: eventError } = await supabase
+      .from("events")
+      .select("participation")
+      .eq("id", obj.eventId)
+      .single();
+
+    if (eventError) {
+      console.error("Error fetching event participation:", eventError);
+      return { error: eventError.message };
+    }
+
+    if (eventData.participation === "university") {
+      // Fetch allowed universities for the event
+      const { data: allowedUniversities, error: universityError } = await supabase
+        .from("event_universities")
+        .select("university_id")
+        .eq("event_id", obj.eventId);
+
+      if (universityError) {
+        console.error("Error fetching allowed universities:", universityError);
+        return { error: universityError.message };
+      }
+
+      // Check if the user belongs to one of the allowed universities
+      const { data: userUniversity, error: userError } = await supabase
+        .from("users")
+        .select("university_id")
+        .eq("id", obj.userId)
+        .single();
+
+      if (userError) {
+        console.error("Error fetching user's university:", userError);
+        return { error: userError.message };
+      }
+
+      const isEligible = allowedUniversities.some(
+        (entry) => entry.university_id === userUniversity.university_id
+      );
+
+      if (!isEligible) {
+        console.error("User is not eligible to RSVP for this event.");
+        return { error: "User is not eligible to RSVP for this event." };
+      }
+    }
+
+    // Proceed with RSVP
     const entry = {
       event_id: obj.eventId,
       user_id: obj.userId,
-      status: "accepted", // TODO: implement a way to accept or decline on managers portal
+      status: "accepted",
     };
 
     const { data, error } = await supabase.from("event_attendance").insert(entry);
 
     if (error) {
+      console.error("Error inserting RSVP:", error);
       return { error: error.message };
     }
 
     return { data, error: null };
   } catch (err) {
+    console.error("Unexpected error in rsvpToEvent:", err);
     return { error: err.message };
-  };
+  }
 };
 
 const deleteRsvp = async (obj) => {
@@ -201,6 +262,14 @@ const checkEligibility = async (userId, usersUniversity, eventId, eventParticipa
   }
 };
 
+const fetchAllUniversities = async () => {
+  try {
+    const { data, error } = await supabase.from("universities").select("id, full_name");
+    return { data, error };
+  } catch (err) {
+    return { error: err.message };
+  }
+};
 
 module.exports = {
   fetchStakeholders,
@@ -213,5 +282,5 @@ module.exports = {
   checkRsvp,
   checkIfUserIsOrganizer,
   checkEligibility,
-  // ... other functions
+  fetchAllUniversities,
 };

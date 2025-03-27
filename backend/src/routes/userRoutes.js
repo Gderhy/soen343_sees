@@ -13,6 +13,7 @@ const {
   checkRsvp,
   checkIfUserIsOrganizer,
   checkEligibility,
+  fetchAllUniversities,
 } = require("../services/supabase/user/supabase");
 
 // GET /api/user/stakeholders
@@ -103,17 +104,24 @@ router.put("/:userId/event/", async (req, res) => {
 });
 
 // POST /api/user/rsvp
-// Allow for users to rsvp to events
-// Private for users
+// Allow users to RSVP to events
 router.post("/rsvp", async (req, res) => {
   try {
-    const { error } = await rsvpToEvent(req.body);
-    if (error) {
-      return res.status(500).json({ error: error.message });
+    const { userId, eventId } = req.body;
+
+    if (!userId || !eventId) {
+      return res.status(400).json({ error: "Missing required fields" });
     }
 
-    console.log("RSVP successful for user: ", req.body.userId);
-    res.json({ message: "RSVP successful" });
+    const { data, error } = await rsvpToEvent({ userId, eventId });
+
+    if (error) {
+      console.error("RSVP error:", error); // Log the error
+      return res.status(500).json({ error }); // Return the error in the response
+    }
+
+    console.log("RSVP successful for user:", userId);
+    res.json({ message: "RSVP successful", data });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -196,6 +204,20 @@ router.post("/check-eligibility", async (req, res) => {
     }
 
     const { data, error } = await checkEligibility(userId, usersUniversity, eventId, eventParticipation);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/user/universities
+// Fetch all universities from the database
+router.get("/universities", async (req, res) => {
+  try {
+    const { data, error } = await fetchAllUniversities();
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+    res.json(data);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

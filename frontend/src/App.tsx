@@ -13,6 +13,7 @@ import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
 import RegisterStakeholder from "./pages/RegisterStakeholder/RegisterStakeholder";
 import StakeholderPortal from "./pages/StakeholderPortal/StakeholderPortal";
+import LiveEvent from "./pages/LiveEvent/LiveEvent";
 
 const App: React.FC = () => {
   return (
@@ -22,6 +23,7 @@ const App: React.FC = () => {
         <Route path="/" element={<Home />} />
         <Route path="/events" element={<Events />} />
         <Route path="/event/:id" element={<EventDetail />} />
+        <Route path="/event/live/:id" element={<LiveEvent/>} />
 
         {/* Routes that require authentication */}
         <Route element={<ProtectedRoute redirectTo="/login" requireAuth={true} />}>

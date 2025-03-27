@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./CreateEvent.css";
 import { fetchAllStakeholders, createEvent } from "../../services/backend/user";
-import { ParticipationType, Stakeholder } from "../../types";
+import { ParticipationType, Stakeholder, University } from "../../types";
+import { fetchUniversities } from "../../services/backend/all";
 
 interface ParticipationOptionInterface {
   value: ParticipationType;
@@ -22,12 +23,15 @@ const CreateEvent: React.FC = () => {
   const [eventDatetime, setEventDatetime] = useState("");
   const [location, setLocation] = useState("");
   const [basePrice, setBasePrice] = useState(0);
-  const [participation, setParticipation] = useState("public");
+  const [participation, setParticipation] = useState<ParticipationType>("public");
 
   const [allStakeholders, setAllStakeholders] = useState<Stakeholder[]>([]);
   const [filteredStakeholders, setFilteredStakeholders] = useState<Stakeholder[]>([]);
   const [selectedStakeholders, setSelectedStakeholders] = useState<Stakeholder[]>([]);
   const [search, setSearch] = useState("");
+
+  const [universities, setUniversities] = useState<{ id: string; full_name: string }[]>([]);
+  const [selectedUniversities, setSelectedUniversities] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchStakeholders = async () => {
@@ -42,6 +46,18 @@ const CreateEvent: React.FC = () => {
     };
 
     fetchStakeholders();
+  }, []);
+
+  useEffect(() => {
+    const fetchAllUniversities = async () => {
+      const { data, error } = await fetchUniversities();
+      if (error) {
+        console.error(error);
+        return;
+      }
+      setUniversities(data);
+    };
+    fetchAllUniversities();
   }, []);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,6 +81,14 @@ const CreateEvent: React.FC = () => {
   const removeStakeholder = (id: string) =>
     setSelectedStakeholders(selectedStakeholders.filter((s) => s.id !== id));
 
+  const handleUniversityCheckboxChange = (university: { id: string; full_name: string }) => {
+    setSelectedUniversities((prev) =>
+      prev.includes(university.id)
+        ? prev.filter((id) => id !== university.id) // Remove if already selected
+        : [...prev, university.id] // Add if not selected
+    );
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const stakeholderIds = selectedStakeholders.map((s) => s.id);
@@ -76,7 +100,8 @@ const CreateEvent: React.FC = () => {
       location,
       basePrice,
       participation as ParticipationType, 
-      stakeholderIds
+      stakeholderIds,
+      selectedUniversities // Pass selected universities
     );
     if (error) {
       console.error(error);
@@ -151,13 +176,32 @@ const CreateEvent: React.FC = () => {
           required
         />
         <label>Participation</label>
-        <select value={participation} onChange={(e) => setParticipation(e.target.value)}>
+        <select value={participation} onChange={(e) => setParticipation(e.target.value as ParticipationType)}>
           {participatonOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>
           ))}
         </select>
+        {participation === "university" && (
+          <>
+            <label>Select Universities</label>
+            <div className="university-checkboxes">
+              {universities.map((uni) => (
+                <div key={uni.id}>
+                  <input
+                    type="checkbox"
+                    id={`university-${uni.id}`}
+                    value={uni.id}
+                    checked={selectedUniversities.includes(uni.id)}
+                    onChange={() => handleUniversityCheckboxChange(uni)}
+                  />
+                  <label htmlFor={`university-${uni.id}`}>{uni.full_name}</label>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
         <button type="submit">Create Event</button>
       </form>
     </div>

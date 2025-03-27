@@ -58,18 +58,44 @@ export const getEventAttendeesCount = async (eventId: string) => {
 // some comment
 export const fetchUniversities = async () => {
   try {
-    const response = await axios.get(`${url}/api/universities`);
-
+    const response = await axios.get(`${url}/api/user/universities`);
     if (response.status !== 200) {
       return { data: null, error: response.statusText };
     }
-
-    if (response.data.error) {
-      return { data: null, error: response.data.error };
-    }
-
     return { data: response.data, error: null };
   } catch (err) {
     return { data: null, error: err };
   }
 };
+
+// storing messages in backend for demo
+export const sendChatMessage = async (message: any, eventId?: string) => {
+  try {
+    const apiEndpoint = eventId != undefined && eventId?.length > 0 ? `${url}/api/events/${eventId}/messages` : `${url}/api/events/post/messages`
+    const response = await axios.post(apiEndpoint, message);
+    return response.data;
+  } catch (err) {
+    console.error('Error sending message:', err);
+    throw err;
+  }
+};
+
+export const fetchMessages = async (eventId: string) => {
+  try {
+    const response = await axios.get(`${url}/api/events/${eventId}/messages`);
+    return response.data;
+  } catch (err) {
+    console.error('Error fetching messages:', err);
+    throw err;
+  }
+};
+
+export const getViewCount = async (eventId: string) => {
+  try{
+    const response = await axios.get(`${url}/api/event/${eventId}/message/view`)
+    return response.data;
+  }catch(err){
+    console.error('Error getting view count:', err);
+    throw err;
+  }
+}
