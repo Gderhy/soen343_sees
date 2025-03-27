@@ -129,6 +129,14 @@ const EventDetail: React.FC = () => {
         <strong>Attendees:</strong> {attendees}
       </p>
 
+      {/* Access Live Event Page */}
+      {
+        isAttending==true ? 
+        <button
+          onClick={()=> navigate(`/event/live/${id}`)}
+        >Access Live Event Page</button> : null
+      }
+
       {/* RSVP Button */}
       <button
         onClick={handleRsvp}

@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const liveChatModule = require('../local/LiveChat');
 
 const {
   fetchAllEvents,
@@ -76,5 +77,65 @@ router.get("/universities", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+/* 
+Chat Routes
+*/
+//send message
+router.post("/events/:eventId/messages", async (req, res) => {
+  try {
+    const eventId = req.params.eventId;
+    const message = req.body;
+    
+    if (!message.content || !message.userId) {
+      return res.status(400).json({ error: "Content and userId are required" });
+    }
+
+    const newMessage = liveChatModule.addMessage(eventId, message);
+    res.status(201).json(newMessage);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+//get messages
+router.get("/events/:eventId/messages", async (req, res) => {
+  try {
+    const eventId = req.params.eventId;
+    const messages = liveChatModule.getMessages(eventId);
+    res.json(messages);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+//add attendee
+router.post("/events/:eventId/chat/attendees", async (req, res) => {
+  try {
+    const eventId = req.params.eventId;
+    const { userId } = req.body;
+    
+    if (!userId) {
+      return res.status(400).json({ error: "userId is required" });
+    }
+
+    const count = liveChatModule.addAttendee(eventId, userId);
+    res.json({ count });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+//get view count
+router.get("event/:eventId/message/view", async (req, res) => {
+  try {
+    const eventId = req.params.eventId;
+    const count = liveChatModule.getViewerCount(eventId);
+    res.json({ count });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 module.exports = router;
