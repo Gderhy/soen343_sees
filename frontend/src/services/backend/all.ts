@@ -58,16 +58,10 @@ export const getEventAttendeesCount = async (eventId: string) => {
 // some comment
 export const fetchUniversities = async () => {
   try {
-    const response = await axios.get(`${url}/api/universities`);
-
+    const response = await axios.get(`${url}/api/user/universities`);
     if (response.status !== 200) {
       return { data: null, error: response.statusText };
     }
-
-    if (response.data.error) {
-      return { data: null, error: response.data.error };
-    }
-
     return { data: response.data, error: null };
   } catch (err) {
     return { data: null, error: err };

@@ -138,6 +138,7 @@ const rsvpToEvent = async (obj) => {
       .single();
 
     if (eventError) {
+      console.error("Error fetching event participation:", eventError);
       return { error: eventError.message };
     }
 
@@ -149,6 +150,7 @@ const rsvpToEvent = async (obj) => {
         .eq("event_id", obj.eventId);
 
       if (universityError) {
+        console.error("Error fetching allowed universities:", universityError);
         return { error: universityError.message };
       }
 
@@ -160,6 +162,7 @@ const rsvpToEvent = async (obj) => {
         .single();
 
       if (userError) {
+        console.error("Error fetching user's university:", userError);
         return { error: userError.message };
       }
 
@@ -168,6 +171,7 @@ const rsvpToEvent = async (obj) => {
       );
 
       if (!isEligible) {
+        console.error("User is not eligible to RSVP for this event.");
         return { error: "User is not eligible to RSVP for this event." };
       }
     }
@@ -182,11 +186,13 @@ const rsvpToEvent = async (obj) => {
     const { data, error } = await supabase.from("event_attendance").insert(entry);
 
     if (error) {
+      console.error("Error inserting RSVP:", error);
       return { error: error.message };
     }
 
     return { data, error: null };
   } catch (err) {
+    console.error("Unexpected error in rsvpToEvent:", err);
     return { error: err.message };
   }
 };
@@ -256,6 +262,14 @@ const checkEligibility = async (userId, usersUniversity, eventId, eventParticipa
   }
 };
 
+const fetchAllUniversities = async () => {
+  try {
+    const { data, error } = await supabase.from("universities").select("id, full_name");
+    return { data, error };
+  } catch (err) {
+    return { error: err.message };
+  }
+};
 
 module.exports = {
   fetchStakeholders,
@@ -268,5 +282,5 @@ module.exports = {
   checkRsvp,
   checkIfUserIsOrganizer,
   checkEligibility,
-  // ... other functions
+  fetchAllUniversities,
 };

@@ -28,8 +28,11 @@ export const createEvent = async (
   location: string,
   basePrice: number,
   participation: ParticipationType,
-  stakeholdersIds: string[]
+  stakeholdersIds: string[],
+  selectedUniversities: string[] // Added parameter
+
 ) => {
+
   try {
     const response = await axios.post(`${url}/api/user/event`, {
       userId: await getUserId(),
@@ -40,6 +43,7 @@ export const createEvent = async (
       basePrice,
       participation,
       stakeholdersIds,
+      selectedUniversities
     });
 
     if (response.status !== 200) {
