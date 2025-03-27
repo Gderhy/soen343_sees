@@ -64,7 +64,7 @@ const EditEvent: React.FC = () => {
   };
 
   return (
-    <div className="container">
+    <div className="edit-event-container">
       <h2>Edit Event</h2>
       {error && <p className="error-message">{error}</p>}
       <form onSubmit={handleSubmit}>

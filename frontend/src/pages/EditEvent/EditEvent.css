@@ -1,5 +1,4 @@
-.container {
-  max-width: 1200px;
+.edit-event-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
