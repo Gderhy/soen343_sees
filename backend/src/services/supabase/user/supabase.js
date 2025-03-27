@@ -154,10 +154,22 @@ const rsvpToEvent = async (obj) => {
         return { error: universityError.message };
       }
 
-      // Check if the user belongs to one of the allowed universities
+      // Fetch university names from the universities table
+      const universityIds = allowedUniversities.map((entry) => entry.university_id);
+      const { data: universityNames, error: universityNamesError } = await supabase
+        .from("universities")
+        .select("full_name")
+        .in("id", universityIds);
+
+      if (universityNamesError) {
+        console.error("Error fetching university names:", universityNamesError);
+        return { error: universityNamesError.message };
+      }
+
+      // Check if the user's university matches any of the allowed university names
       const { data: userUniversity, error: userError } = await supabase
         .from("users")
-        .select("university_id")
+        .select("university")
         .eq("id", obj.userId)
         .single();
 
@@ -166,8 +178,8 @@ const rsvpToEvent = async (obj) => {
         return { error: userError.message };
       }
 
-      const isEligible = allowedUniversities.some(
-        (entry) => entry.university_id === userUniversity.university_id
+      const isEligible = universityNames.some(
+        (entry) => entry.full_name === userUniversity.university
       );
 
       if (!isEligible) {
