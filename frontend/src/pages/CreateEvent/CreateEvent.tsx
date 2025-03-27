@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./CreateEvent.css";
 import { fetchAllStakeholders, createEvent } from "../../services/backend/user";
-import { ParticipationType, Stakeholder, University } from "../../types";
+import { ParticipationType, Stakeholder } from "../../types";
 import { fetchUniversities } from "../../services/backend/all";
 
 interface ParticipationOptionInterface {
