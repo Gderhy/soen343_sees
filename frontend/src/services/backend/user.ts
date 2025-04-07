@@ -274,3 +274,28 @@ export const cancelAttendance = async (userId: string, eventId: string) => {
   }
 }
 
+export const rsvpToPaidEvent = async (
+  eventId: string,
+  paymentDetails: { cardNumber: string; name: string; securityCode: string }
+) => {
+  try {
+    const response = await axios.post(`${url}/api/user/rsvp-paid`, {
+      userId: await getUserId(),
+      eventId,
+      paymentDetails,
+    });
+
+    if (response.status !== 200) {
+      return { data: null, error: response.statusText };
+    }
+
+    if (response.data.error) {
+      return { data: null, error: response.data.error };
+    }
+
+    return { data: response.data, error: null };
+  } catch (err) {
+    return { data: null, error: err };
+  }
+};
+
