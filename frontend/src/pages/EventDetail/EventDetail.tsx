@@ -7,7 +7,6 @@ import { Event, defaultEvent } from "../../types";
 import { checkEligibility } from "../../services/backend/user";
 import { getUsersUniversity } from "../../services/supabase/supabase";
 
-
 const EventDetail: React.FC = () => {
   const { id } = useParams();
 
@@ -91,10 +90,10 @@ const EventDetail: React.FC = () => {
       } else {
         // Add RSVP
 
-        if(event.participation === "university") {
+        if (event.participation === "university") {
           const eligible = checkEligibility(event.id, event.participation);
-          
-          if(!eligible) return;
+
+          if (!eligible) return;
         }
 
         const { error: rsvpError } = await rsvpToEvent(id);
@@ -125,26 +124,28 @@ const EventDetail: React.FC = () => {
       <p>
         <strong>Location:</strong> {event.location}
       </p>
+      {event.base_price > 0 && (
+        <p>
+          <strong>Price: ${event.base_price}</strong>
+        </p>
+      )}
       <p>
         <strong>Attendees:</strong> {attendees}
       </p>
 
       {/* Access Live Event Page */}
-      {
-        isAttending==true ? 
-        <button
-          onClick={()=> navigate(`/event/live/${id}`)}
-        >Access Live Event Page</button> : null
-      }
+      {isAttending == true ? (
+        <button onClick={() => navigate(`/event/live/${id}`)}>Access Live Event Page</button>
+      ) : null}
 
       {/* RSVP Button */}
       {!isOrganizer && (
         <button
-        onClick={handleRsvp}
-        className={isAttending ? "rsvp-button attending" : "rsvp-button"}
-      >
-        {isAttending ? "Cancel RSVP" : "RSVP to Event"}
-      </button>
+          onClick={handleRsvp}
+          className={isAttending ? "rsvp-button attending" : "rsvp-button"}
+        >
+          {isAttending ? "Cancel RSVP" : "RSVP to Event"}
+        </button>
       )}
 
       {/* Organizer Tools */}
