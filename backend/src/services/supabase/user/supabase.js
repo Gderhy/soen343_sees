@@ -283,6 +283,29 @@ const fetchAllUniversities = async () => {
   }
 };
 
+// Function to fetch all events a user is attending
+// This function retrieves all events a user is attending based on their user ID
+const fetchUserAttendingEvents = async (userId) => {
+  try {
+    const { data, error } = await supabase
+      .from("event_attendance")
+      .select("events (*)")
+      .eq("user_id", userId);
+
+    if (error) {
+      console.error("Error fetching user's events:", error);
+      return { error };
+    }
+
+    // Destructure the events from the array
+    const events = data.map((item) => item.events);
+
+    return { data: events, error: null };
+  } catch (err) {
+    return { error: err };
+  }
+}
+
 module.exports = {
   fetchStakeholders,
   createEvent,
@@ -295,4 +318,5 @@ module.exports = {
   checkIfUserIsOrganizer,
   checkEligibility,
   fetchAllUniversities,
+  fetchUserAttendingEvents,
 };

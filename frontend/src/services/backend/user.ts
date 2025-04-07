@@ -226,3 +226,25 @@ export const checkEligibility = async (eventId: string, eventParticipation: Part
     return { isEligible: false, error: err };
   }
 }
+
+// This function fetches the events that the user is attending
+// It uses the userId to get the events from the backend
+export const fetchUsersAttendingEvents = async (userId: string) => {
+  try {
+    const response = await axios.post(`${url}/api/user/attending-events`, {
+      userId,
+    });
+
+    if (response.status !== 200) {
+      return { data: null, error: response.statusText };
+    }
+
+    if (response.data.error) {
+      return { data: null, error: response.data.error };
+    }
+
+    return { data: response.data, error: null };
+  } catch (err) {
+    return { data: null, error: err };
+  }
+}

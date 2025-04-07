@@ -14,6 +14,7 @@ const {
   checkIfUserIsOrganizer,
   checkEligibility,
   fetchAllUniversities,
+  fetchUserAttendingEvents,
 } = require("../services/supabase/user/supabase");
 
 // GET /api/user/stakeholders
@@ -222,5 +223,25 @@ router.get("/universities", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+// POST /api/user/attending-events
+// Fetch all events a user is attending
+router.post("/attending-events", async (req, res) => {
+  try {
+    const { userId } = req.body;
+    if (!userId) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const { data, error } = await fetchUserAttendingEvents(userId);
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 module.exports = router;
