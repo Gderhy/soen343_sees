@@ -17,9 +17,15 @@ export type SystemRole = "admin" | "stakeholder" | "user" | null;
 export type EventRole = "organizer" | "attendee" | null;
 
 // Make sure to update the db schema to match the new Event type
-export type EventStatusType = "pending" | "active" | "denied" | "cancelled" | "postponed" | "completed"; 
+export type EventStatusType =
+  | "pending"
+  | "active"
+  | "denied"
+  | "cancelled"
+  | "postponed"
+  | "completed";
 // Make sure to update the db schema to match the new Event type
-export type StakeholderEventStatusType = "pending" | "denied" | "approved"; 
+export type StakeholderEventStatusType = "pending" | "denied" | "approved";
 // Make sure to update the db schema to match the new Event type
 export interface Event {
   id: string;
@@ -62,3 +68,11 @@ export interface University {
 }
 
 export type ParticipationType = "public" | "university";
+
+export interface PaymentDetails {
+  cardNumber: string;
+  name: string;
+  expiryDateMM: string;
+  expiryDateYYYY: string;
+  securityCode: string;
+}
