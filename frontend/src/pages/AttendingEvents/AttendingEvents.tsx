@@ -1,9 +1,12 @@
 import React, { useEffect } from "react";
 import { useAuth } from "../../contexts/AuthContext";
-import { fetchUsersAttendingEvents } from "../../services/backend/user";
+import { cancelAttendance, fetchUsersAttendingEvents } from "../../services/backend/user";
 import "./AttendingEvents.css"; // Ensure the CSS file is imported
+import { useNavigate } from "react-router-dom";
+import { Event } from "../../types"; // Adjust the import based on your project structure
 
 const AttendingEvents: React.FC = () => {
+  const navigate = useNavigate();
   const { user } = useAuth(); // Assuming you have a way to get the current user
   const [events, setEvents] = React.useState<Event[]>([]);
 
@@ -29,6 +32,30 @@ const AttendingEvents: React.FC = () => {
     fetchEvents();
   }, [user]); // Fetch events when user changes
 
+
+  const handleViewEvent = (eventId: string) => {
+    navigate(`/event/${eventId}`); // Navigate to the event details page
+  };
+
+  const handleCancelEvent = async (eventId: string) => {
+    if (!user) return; // Ensure user is available
+    const userId = user.id; // Assuming user has an id property
+
+    try {
+      const { error } = await cancelAttendance(userId, eventId); // Replace with your API call to cancel attendance
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      alert("Event attendance canceled successfully!"); // Notify the user
+
+      setEvents((prevEvents) => prevEvents.filter((event) => event.id !== eventId)); // Update the state to remove the canceled event
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className="container">
       <h1 className="header">Attending Events</h1>
@@ -44,6 +71,7 @@ const AttendingEvents: React.FC = () => {
               <th>Time</th>
               <th>Location</th>
               <th>Price</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -55,6 +83,10 @@ const AttendingEvents: React.FC = () => {
                 <td>{new Date(event.event_datetime).toLocaleTimeString()}</td>
                 <td>{event.location}</td>
                 <td>${event.base_price}</td>
+                <td>
+                  <button className="" onClick={() => handleViewEvent(event.id)}>View</button>
+                  <button className="cancel-button" onClick={()=>{handleCancelEvent(event.id)}}>Cancel</button>
+                </td>
               </tr>
             ))}
           </tbody>

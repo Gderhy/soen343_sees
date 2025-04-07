@@ -248,3 +248,29 @@ export const fetchUsersAttendingEvents = async (userId: string) => {
     return { data: null, error: err };
   }
 }
+
+// This function cancels the attendance of the user to an event
+// It uses the userId and eventId to cancel the attendance in the backend
+export const cancelAttendance = async (userId: string, eventId: string) => {
+  try {
+    const response = await axios.delete(`${url}/api/user/rsvp`, {
+      data: {
+        userId,
+        eventId,
+      },
+    });
+
+    if (response.status !== 200) {
+      return { data: null, error: response.statusText };
+    }
+
+    if (response.data.error) {
+      return { data: null, error: response.data.error };
+    }
+
+    return { data: response.data, error: null };
+  } catch (err) {
+    return { data: null, error: err };
+  }
+}
+
