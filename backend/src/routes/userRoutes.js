@@ -16,6 +16,8 @@ const {
   fetchAllUniversities,
   fetchUserAttendingEvents,
   rsvpToPaidEvent,
+  getEventExpenses,
+  getEventRevenue,
 } = require("../services/supabase/user/supabase");
 
 // GET /api/user/stakeholders
@@ -267,6 +269,55 @@ router.post("/rsvp-paid", async (req, res) => {
     }
 
     res.json({ message: "RSVP to paid event successful", data });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/user/event/get-expenses
+router.post("/event/get-expenses", async (req, res) => {
+  try {
+    const { eventId } = req.body;
+    if (!eventId || !expenses) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const { data, error } = await getEventExpenses(eventId);
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/user/events/financial-report`
+// Generate a financial report for an event
+router.post("/events/financial-report", async (req, res) => {
+  try {
+    const { eventId } = req.body;
+    if (!eventId) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    // Call the function to generate the financial report
+    const { data: eventExpensesData, error: eventExpensesError } = await getEventExpenses(eventId);
+    if (eventExpensesError) {
+      return res.status(500).json({ error: eventExpensesError.message });
+    }
+
+    const { data: eventRevenueData, error: eventRevenueError } = await getEventRevenue(eventId);
+    if (eventRevenueError) {
+      return res.status(500).json({ error: eventRevenueError.message });
+    }
+
+    const data = {
+      eventExpenses: eventExpensesData,
+      eventRevenue: eventRevenueData,
+    };
+
+    res.json(data);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

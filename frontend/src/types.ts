@@ -78,3 +78,19 @@ export interface PaymentDetails {
   code: string;
   amount: number;
 }
+
+export interface Revenue {
+  id: string;
+  eventId: string;
+  amount: number;
+  events_attendance_id: string;
+  created_at: string;
+}
+
+export interface Expense {
+  id: string;
+  created_at: string;
+  event_id: string;
+  amount: number;
+  description: string;
+}

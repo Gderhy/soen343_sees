@@ -7,6 +7,7 @@ import { Event, defaultEvent } from "../../types";
 import { checkEligibility } from "../../services/backend/user";
 import { getUsersUniversity } from "../../services/supabase/supabase";
 import PaymentModal from "../../components/PaymentModal/PaymentModal";
+import FinancialReportModal from "../../components/FinancialReportModal/FinancialReportModal";
 
 const EventDetail: React.FC = () => {
   const { id } = useParams();
@@ -19,6 +20,7 @@ const EventDetail: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
   const [viewPaymentModal, setViewPaymentModal] = useState<boolean>(false);
+  const [viewFinancialReportModal, setViewFinancialReportModal] = useState<boolean>(false);
 
   useEffect(() => {
     if (!id) return;
@@ -70,7 +72,7 @@ const EventDetail: React.FC = () => {
     fetchEventData();
   }, [id, navigate]);
 
-   const handleRsvp = async () => {
+  const handleRsvp = async () => {
     if (!id) return;
 
     if (event.participation === "university" && getUsersUniversity === null) {
@@ -98,13 +100,12 @@ const EventDetail: React.FC = () => {
           if (!eligible) return;
         }
 
-        if(event.base_price > 0) {
+        if (event.base_price > 0) {
           // Open payment modal here
           // Payment logic should be handled in the PaymentModal component
           setViewPaymentModal(true);
           return;
         }
-
 
         const { error: rsvpError } = await rsvpToEvent(id);
         if (rsvpError) {
@@ -115,6 +116,25 @@ const EventDetail: React.FC = () => {
           setAttendees((prev) => prev + 1);
         }
       }
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      setError("An unexpected error occurred.");
+    }
+  };
+
+  const handleGenerateFinancialReport = async () => {
+    if (!id) return;
+    try {
+      // const { data, error } = await fetchFinancialReport(id);
+      // if (error) {
+      //   setError("Failed to generate financial report.");
+      //   return;
+      // }
+      // Handle the financial report data (e.g., download it or display it)
+      // TODO: Implement the logic to handle the financial report data
+
+      setViewFinancialReportModal(true);
+      
     } catch (err) {
       console.error("Unexpected error:", err);
       setError("An unexpected error occurred.");
@@ -164,6 +184,9 @@ const EventDetail: React.FC = () => {
           <button onClick={() => navigate(`/edit-event/${id}`)} className="modify-button">
             Modify Event
           </button>
+          <button onClick={handleGenerateFinancialReport} className="financial-report-button">
+            Generate Financial Report
+          </button>
           <button
             onClick={() => navigate(`/manage-attendees/${id}`)}
             className="manage-attendees-button"
@@ -176,6 +199,14 @@ const EventDetail: React.FC = () => {
         isOpen={viewPaymentModal}
         onClose={() => setViewPaymentModal(false)}
         eventId={event.id}
+        eventCost={event.base_price}
+      />
+      <FinancialReportModal
+        isOpen={viewFinancialReportModal}
+        onClose={() => setViewFinancialReportModal(false)}
+        numberOfAttendees={attendees}
+        eventId={event.id}
+        eventBasePrice={event.base_price}
       />
     </div>
   );

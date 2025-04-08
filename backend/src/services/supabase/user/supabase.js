@@ -1,3 +1,4 @@
+const { get } = require("../../../routes/userRoutes");
 const { verifyPaymentDetails, insertPayment } = require("../paymentService/paymentService");
 const supabase = require("../supabaseAdmin");
 
@@ -374,6 +375,47 @@ const rsvpToPaidEvent = async (eventId, userId, paymentDetails) => {
   }
 };
 
+// Getting the expenses of the event
+// This function retrieves the expenses associated with an event based on its ID
+const getEventExpenses = async (eventId) => {
+  try {
+    const { data, error } = await supabase
+      .from("event_expenses")
+      .select("*")
+      .eq("event_id", eventId);
+
+    if (error) {
+      console.error("Error fetching event expenses:", error);
+      return { error };
+    }
+
+    console.log("Event expenses data:", data); // Log the fetched data
+    return { data, error: null };
+  } catch (err) {
+    return { error: err.message };
+  }
+};
+
+// Getting the revenue of the event
+// This function retrieves the revenue associated with an event based on its ID
+const getEventRevenue = async (eventId) => {
+  try {
+    const { data, error } = await supabase
+      .from("payments")
+      .select("*")
+      .eq("event_id", eventId);
+
+    if (error) {
+      console.error("Error fetching event revenue:", error);
+      return { error };
+    }
+
+    return { data, error: null };
+  } catch (err) {
+    return { error: err.message };
+  }
+};
+
 module.exports = {
   fetchStakeholders,
   createEvent,
@@ -388,4 +430,6 @@ module.exports = {
   fetchAllUniversities,
   fetchUserAttendingEvents,
   rsvpToPaidEvent,
+  getEventExpenses,
+  getEventRevenue,
 };
