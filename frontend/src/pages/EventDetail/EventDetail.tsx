@@ -8,7 +8,6 @@ import { checkEligibility } from "../../services/backend/user";
 import { getUsersUniversity } from "../../services/supabase/supabase";
 import PaymentModal from "../../components/PaymentModal/PaymentModal";
 import FinancialReportModal from "../../components/FinancialReportModal/FinancialReportModal";
-import AddExpenseModal from "../../components/AddExpenseModal/AddExpenseModal";
 import ManageExpenseModal from "../../components/ManageExpenseModal/ManageExpenseModal";
 
 
@@ -24,7 +23,7 @@ const EventDetail: React.FC = () => {
   const [error, setError] = useState<string>("");
   const [viewPaymentModal, setViewPaymentModal] = useState<boolean>(false);
   const [viewFinancialReportModal, setViewFinancialReportModal] = useState<boolean>(false);
-  const [viewExpenseModal, setViewExpenseModal] = useState<boolean>(false);
+
   const [viewManageExpenseModal, setViewManageExpenseModal] = useState<boolean>(false);
 
   useEffect(() => {
@@ -146,10 +145,6 @@ const EventDetail: React.FC = () => {
     }
   };
 
-  const handleAddExpense = () => {
-    setViewExpenseModal(true);
-  }
-
   if (loading) return <p>Loading event details...</p>;
   if (error) return <p className="error-message">{error}</p>;
 
@@ -220,16 +215,9 @@ const EventDetail: React.FC = () => {
         eventId={event.id}
         eventBasePrice={event.base_price}
       />
-      {/* Add Expense Modal */}
-      <AddExpenseModal
-        isOpen={viewExpenseModal}
-        onClose={() => setViewExpenseModal(false)}
-        eventId={event.id}
-      />
       {/* Manage Expense Modal */}
       <ManageExpenseModal
         isOpen={viewManageExpenseModal}
-        onAddExpense={handleAddExpense}
         onClose={() => setViewManageExpenseModal(false)}
         eventId={event.id}
       />
