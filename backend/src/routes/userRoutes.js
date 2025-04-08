@@ -19,6 +19,7 @@ const {
   getEventExpenses,
   getEventRevenue,
   addExpenseToEvent,
+  fetchEventAttendees,
 } = require("../services/supabase/user/supabase");
 
 // GET /api/user/stakeholders
@@ -344,5 +345,47 @@ router.post("/events/add-expense", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+// GET /api/user/event/:eventId/attendees
+// Fetch all attendees for an event
+router.get("/event/:eventId/attendees", async (req, res) => {
+  try {
+    const eventId = req.params.eventId;
+    const { data, error } = await fetchEventAttendees(eventId);
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+    console.log("Attendees fetched successfully for event: ", eventId);
+    console.log("Attendees: ", data);
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/user/event/remove-attendee
+// Remove an attendee from an event 
+router.post("/event/remove-attendee", async (req, res) => {
+  try {
+    const { eventId, userId } = req.body.eventAttendeeDetails;
+    console.log("Event ID: ", eventId);
+    console.log("User ID: ", userId);
+    if (!eventId || !userId) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    // Call the function to remove the attendee
+    const { data, error } = await deleteRsvp({eventId, userId});
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.json({ message: "Attendee removed successfully", data });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 
 module.exports = router;

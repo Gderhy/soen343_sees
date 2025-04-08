@@ -436,6 +436,25 @@ const addExpenseToEvent = async (eventId, expenseDetails) => {
 };
 
 
+const fetchEventAttendees = async (eventId) => {
+  try {
+    const { data, error } = await supabase
+      .from("event_attendance")
+      .select("users (*)")
+      .eq("event_id", eventId);
+
+    if (error) {
+      console.error("Error fetching event attendees:", error);
+      return { error };
+    }
+
+    return { data, error: null };
+  } catch (err) {
+    return { error: err.message };
+  }
+}
+
+
 module.exports = {
   fetchStakeholders,
   createEvent,
@@ -453,4 +472,5 @@ module.exports = {
   getEventExpenses,
   getEventRevenue,
   addExpenseToEvent,
+  fetchEventAttendees,
 };
