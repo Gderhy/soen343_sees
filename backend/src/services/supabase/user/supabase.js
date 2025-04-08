@@ -1,5 +1,8 @@
+const { get } = require("../../../routes/userRoutes");
+const { verifyPaymentDetails, insertPayment } = require("../paymentService/paymentService");
 const supabase = require("../supabaseAdmin");
 const crypto = require("crypto"); // Import crypto for hashing
+const axios = require("axios");
 
 // Function to get all stackholders
 const fetchStakeholders = async () => {
@@ -17,7 +20,7 @@ const createEvent = async (obj) => {
     location: obj.location,
     owned_by: obj.userId,
     base_price: obj.basePrice,
-    participation: obj.participation,
+    participation: obj.participation, // 'public' or 'university'
     status: obj.stakeholdersIds.length > 0 ? "pending" : "active",
   };
 
@@ -28,6 +31,19 @@ const createEvent = async (obj) => {
 
   if (error) {
     return { error };
+  }
+
+  // Associate event with universities if participation is 'university'
+  if (obj.participation === "university" && obj.selectedUniversitiesIds?.length > 0) {
+    const eventUniversities = obj.selectedUniversitiesIds.map((universityId) => ({
+      event_id: data[0].id,
+      university_id: universityId,
+    }));
+
+    const universityResponse = await supabase.from("event_universities").insert(eventUniversities);
+    if (universityResponse.error) {
+      return { error: universityResponse.error };
+    }
   }
 
   // insert event into event_stakeholders table
@@ -61,7 +77,7 @@ const createEvent = async (obj) => {
     return { error: queryReponse2.error };
   }
 
-  return { eventId: data[0].id, error };
+  return { eventId: data[0].id, error: null };
 };
 
 const fetchUsersEvents = async (userId) => {
@@ -130,10 +146,69 @@ const updateEvent = async (userId, obj) => {
 
 const rsvpToEvent = async (obj) => {
   try {
+    // Check if the event is restricted to specific universities
+    const { data: eventData, error: eventError } = await supabase
+      .from("events")
+      .select("participation")
+      .eq("id", obj.eventId)
+      .single();
+
+    if (eventError) {
+      console.error("Error fetching event participation:", eventError);
+      return { error: eventError.message };
+    }
+
+    if (eventData.participation === "university") {
+      // Fetch allowed universities for the event
+      const { data: allowedUniversities, error: universityError } = await supabase
+        .from("event_universities")
+        .select("university_id")
+        .eq("event_id", obj.eventId);
+
+      if (universityError) {
+        console.error("Error fetching allowed universities:", universityError);
+        return { error: universityError.message };
+      }
+
+      // Fetch university names from the universities table
+      const universityIds = allowedUniversities.map((entry) => entry.university_id);
+      const { data: universityNames, error: universityNamesError } = await supabase
+        .from("universities")
+        .select("full_name")
+        .in("id", universityIds);
+
+      if (universityNamesError) {
+        console.error("Error fetching university names:", universityNamesError);
+        return { error: universityNamesError.message };
+      }
+
+      // Check if the user's university matches any of the allowed university names
+      const { data: userUniversity, error: userError } = await supabase
+        .from("users")
+        .select("university")
+        .eq("id", obj.userId)
+        .single();
+
+      if (userError) {
+        console.error("Error fetching user's university:", userError);
+        return { error: userError.message };
+      }
+
+      const isEligible = universityNames.some(
+        (entry) => entry.full_name === userUniversity.university
+      );
+
+      if (!isEligible) {
+        console.error("User is not eligible to RSVP for this event.");
+        return { error: "User is not eligible to RSVP for this event." };
+      }
+    }
+
+    // Proceed with RSVP
     const entry = {
       event_id: obj.eventId,
       user_id: obj.userId,
-      status: "accepted", // TODO: implement a way to accept or decline on managers portal
+      status: "accepted",
     };
 
     const { data, error } = await supabase
@@ -141,11 +216,13 @@ const rsvpToEvent = async (obj) => {
       .insert(entry);
 
     if (error) {
+      console.error("Error inserting RSVP:", error);
       return { error: error.message };
     }
 
     return { data, error: null };
   } catch (err) {
+    console.error("Unexpected error in rsvpToEvent:", err);
     return { error: err.message };
   }
 };
@@ -205,17 +282,142 @@ const checkIfUserIsOrganizer = async (userId, eventId) => {
 };
 
 // Function to check if a user is eligible to RSVP to an event
-const checkEligibility = async (
-  userId,
-  usersUniversity,
-  eventId,
-  eventParticipation
-) => {
+// Function to fetch all events a user is attending
+// This function retrieves all events a user is attending based on their user ID
+const fetchUserAttendingEvents = async (userId) => {
   try {
-  } catch (err) {}
+    const { data, error } = await supabase
+      .from("event_attendance")
+      .select("events (*)")
+      .eq("user_id", userId);
+
+    if (error) {
+      console.error("Error fetching user's events:", error);
+      return { error };
+    }
+
+    // Destructure the events from the array
+    const events = data.map((item) => item.events);
+
+    return { data: events, error: null };
+  } catch (err) {
+    return { error: err };
+  }
 };
 
-const axios = require("axios");
+// Function to RSVP to a paid event
+// This function verifies payment details and RSVPs the user to the event
+const rsvpToPaidEvent = async (eventId, userId, paymentDetails) => {
+  try {
+    console.log("RSVP to paid event:", eventId, userId, paymentDetails);
+
+    // First step is to verify the payment details
+    // Allows for modular payment verification
+    // This function should return a payment ID or similar identifier
+    const { data: ccData,  error: paymentError } = await verifyPaymentDetails(paymentDetails);
+  
+    if (paymentError) {
+      console.error("Payment verification failed:", paymentError);
+      return { error: paymentError.message };
+    }
+
+    // Proceed with RSVP
+    const entry = {
+      event_id: eventId,
+      user_id: userId,
+      status: "accepted",
+    };
+
+    // Validate the entry object before inserting
+    if (!entry.event_id || !entry.user_id || !entry.status) {
+      console.error("Invalid RSVP entry:", entry);
+      return { error: "Invalid RSVP entry. Missing required fields." };
+    }
+
+    const { data: eventAttendanceData, error } = await supabase
+      .from("event_attendance")
+      .insert([entry])
+      .select("id")
+      .single();
+
+    if (error) {
+      console.error("Error inserting RSVP entry:", error);
+      return { error: error.message };
+    }
+
+
+    if (error) {
+      console.error("Error inserting RSVP:", error);
+      return { error: error.message };
+    }
+
+    // Insert payment details into the database
+    const paymentEntry = {
+      cc_id: ccData.id,
+      events_attendance_id: eventAttendanceData.id,
+      amount: paymentDetails.amount,
+      event_id: eventId,
+    };
+
+    const { data: paymentData, error: paymentInsertError } = await insertPayment(paymentEntry);
+
+    
+    if (paymentInsertError) {
+      console.error("Error inserting payment details:", paymentInsertError);
+      return { error: paymentInsertError.message };
+    }
+
+    // TODO: Maybe send a confirmation email to the user here
+
+    // Returns the event attendance data 
+    return { eventAttendanceData, error: null };
+  } catch (err) {
+    console.error("Error RSVPing to paid event:", err);
+    return { error: err.message };
+  }
+};
+
+// Getting the expenses of the event
+// This function retrieves the expenses associated with an event based on its ID
+const getEventExpenses = async (eventId) => {
+  try {
+    const { data, error } = await supabase
+      .from("event_expenses")
+      .select("*")
+      .eq("event_id", eventId);
+
+    if (error) {
+      console.error("Error fetching event expenses:", error);
+      return { error };
+    }
+
+    console.log("Event expenses data:", data); // Log the fetched data
+    return { data, error: null };
+  } catch (err) {
+    return { error: err.message };
+  }
+};
+
+// Getting the revenue of the event
+// This function retrieves the revenue associated with an event based on its ID
+const getEventRevenue = async (eventId) => {
+  try {
+    const { data, error } = await supabase
+      .from("payments")
+      .select("*")
+      .eq("event_id", eventId);
+
+    if (error) {
+      console.error("Error fetching event revenue:", error);
+      return { error };
+    }
+
+    return { data, error: null };
+  } catch (err) {
+    return { error: err.message };
+  }
+};
+
 
 const sendMailingList = async (eventId) => {
   try {
@@ -278,10 +480,7 @@ const sendMailingList = async (eventId) => {
     // Add a tag to the existing members in Mailchimp
 
     for (const email of mailchimpEmails) {
-      const hashedEmail = crypto
-        .createHash("md5")
-        .update(email.toLowerCase())
-        .digest("hex");
+      const hashedEmail = crypto.createHash("md5").update(email.toLowerCase()).digest("hex");
       console.log(`Hashed email for ${email}: ${hashedEmail}`);
       try {
         const payload = {
@@ -313,15 +512,13 @@ const sendMailingList = async (eventId) => {
     }
 
     return {
-      message:
-        "Tags updated successfully. Emails will be sent via Mailchimp Journey.",
+      message: "Tags updated successfully. Emails will be sent via Mailchimp Journey.",
     };
   } catch (err) {
     console.error("Error in sendMailingList:", err.message);
     throw err;
   }
 };
-
 module.exports = {
   fetchStakeholders,
   createEvent,
@@ -334,5 +531,9 @@ module.exports = {
   checkIfUserIsOrganizer,
   checkEligibility,
   sendMailingList,
-  // ... other functions
+  fetchAllUniversities,
+  fetchUserAttendingEvents,
+  rsvpToPaidEvent,
+  getEventExpenses,
+  getEventRevenue,
 };

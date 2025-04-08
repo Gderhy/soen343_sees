@@ -13,6 +13,11 @@ const {
   checkRsvp,
   checkIfUserIsOrganizer,
   checkEligibility,
+  fetchAllUniversities,
+  fetchUserAttendingEvents,
+  rsvpToPaidEvent,
+  getEventExpenses,
+  getEventRevenue,
   sendMailingList,
 } = require("../services/supabase/user/supabase");
 
@@ -123,17 +128,24 @@ router.put("/:userId/event/", async (req, res) => {
 });
 
 // POST /api/user/rsvp
-// Allow for users to rsvp to events
-// Private for users
+// Allow users to RSVP to events
 router.post("/rsvp", async (req, res) => {
   try {
-    const { error } = await rsvpToEvent(req.body);
-    if (error) {
-      return res.status(500).json({ error: error.message });
+    const { userId, eventId } = req.body;
+
+    if (!userId || !eventId) {
+      return res.status(400).json({ error: "Missing required fields" });
     }
 
-    console.log("RSVP successful for user: ", req.body.userId);
-    res.json({ message: "RSVP successful" });
+    const { data, error } = await rsvpToEvent({ userId, eventId });
+
+    if (error) {
+      console.error("RSVP error:", error); // Log the error
+      return res.status(500).json({ error }); // Return the error in the response
+    }
+
+    console.log("RSVP successful for user:", userId);
+    res.json({ message: "RSVP successful", data });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -225,6 +237,111 @@ router.post("/check-eligibility", async (req, res) => {
       eventId,
       eventParticipation
     );
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/user/universities
+// Fetch all universities from the database
+router.get("/universities", async (req, res) => {
+  try {
+    const { data, error } = await fetchAllUniversities();
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/user/attending-events
+// Fetch all events a user is attending
+router.post("/attending-events", async (req, res) => {
+  try {
+    const { userId } = req.body;
+    if (!userId) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const { data, error } = await fetchUserAttendingEvents(userId);
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/user/rsvp-paid
+// RSVP to a paid event
+router.post("/rsvp-paid", async (req, res) => {
+  try {
+    const { userId, eventId, paymentDetails } = req.body;
+
+    console.log("Payment Details: ", paymentDetails);
+
+    if (!userId || !eventId || !paymentDetails) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+    const { data, error } = await rsvpToPaidEvent(eventId, userId, paymentDetails);
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.json({ message: "RSVP to paid event successful", data });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/user/event/get-expenses
+router.post("/event/get-expenses", async (req, res) => {
+  try {
+    const { eventId } = req.body;
+    if (!eventId || !expenses) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const { data, error } = await getEventExpenses(eventId);
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/user/events/financial-report`
+// Generate a financial report for an event
+router.post("/events/financial-report", async (req, res) => {
+  try {
+    const { eventId } = req.body;
+    if (!eventId) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    // Call the function to generate the financial report
+    const { data: eventExpensesData, error: eventExpensesError } = await getEventExpenses(eventId);
+    if (eventExpensesError) {
+      return res.status(500).json({ error: eventExpensesError.message });
+    }
+
+    const { data: eventRevenueData, error: eventRevenueError } = await getEventRevenue(eventId);
+    if (eventRevenueError) {
+      return res.status(500).json({ error: eventRevenueError.message });
+    }
+
+    const data = {
+      eventExpenses: eventExpensesData,
+      eventRevenue: eventRevenueData,
+    };
+
+    res.json(data);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

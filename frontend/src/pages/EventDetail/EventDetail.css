@@ -83,3 +83,20 @@ p {
 .modify-button:hover {
   background: #d39e00;
 }
+
+.financial-report-button {
+  padding: 10px 15px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  background: #17a2b8;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background 0.3s ease-in-out;
+}
+
+.financial-report-button:hover {
+  background: #138496;
+}

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Event, ParticipationType } from "../../types";
+import { Event, ParticipationType, PaymentDetails } from "../../types";
 import { getUserId, getUsersUniversity, supabase } from "../supabase/supabase";
 import { url } from "./url";
 
@@ -28,8 +28,11 @@ export const createEvent = async (
   location: string,
   basePrice: number,
   participation: ParticipationType,
-  stakeholdersIds: string[]
+  stakeholdersIds: string[],
+  selectedUniversities: string[] // Added parameter
+
 ) => {
+
   try {
     const response = await axios.post(`${url}/api/user/event`, {
       userId: await getUserId(),
@@ -40,6 +43,7 @@ export const createEvent = async (
       basePrice,
       participation,
       stakeholdersIds,
+      selectedUniversitiesIds: selectedUniversities,
     });
 
     if (response.status !== 200) {
@@ -252,4 +256,78 @@ export const checkEligibility = async (
   } catch (err) {
     return { isEligible: false, error: err };
   }
+}
+
+// This function fetches the events that the user is attending
+// It uses the userId to get the events from the backend
+export const fetchUsersAttendingEvents = async (userId: string) => {
+  try {
+    const response = await axios.post(`${url}/api/user/attending-events`, {
+      userId,
+    });
+
+    if (response.status !== 200) {
+      return { data: null, error: response.statusText };
+    }
+
+    if (response.data.error) {
+      return { data: null, error: response.data.error };
+    }
+
+    return { data: response.data, error: null };
+  } catch (err) {
+    return { data: null, error: err };
+  }
+}
+
+// This function cancels the attendance of the user to an event
+// It uses the userId and eventId to cancel the attendance in the backend
+export const cancelAttendance = async (userId: string, eventId: string) => {
+  try {
+    const response = await axios.delete(`${url}/api/user/rsvp`, {
+      data: {
+        userId,
+        eventId,
+      },
+    });
+
+    if (response.status !== 200) {
+      return { data: null, error: response.statusText };
+    }
+
+    if (response.data.error) {
+      return { data: null, error: response.data.error };
+    }
+
+    return { data: response.data, error: null };
+  } catch (err) {
+    return { data: null, error: err };
+  }
+}
+
+export const rsvpToPaidEvent = async (
+  eventId: string,
+  paymentDetails: PaymentDetails
+) => {
+  try {
+    const response = await axios.post(`${url}/api/user/rsvp-paid`, {
+      userId: await getUserId(),
+      eventId,
+      paymentDetails,
+    });
+
+    if (response.status !== 200) {
+      return { data: null, error: response.statusText };
+    }
+
+    if (response.data.error) {
+      return { data: null, error: response.data.error };
+    }
+
+    return { data: response.data, error: null };
+  } catch (err) {
+    return { data: null, error: err };
+  }
 };
+
+;

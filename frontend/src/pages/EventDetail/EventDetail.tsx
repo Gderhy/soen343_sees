@@ -15,6 +15,8 @@ import { Event, defaultEvent } from "../../types";
 import { sendMailingList } from "../../services/backend/user";
 import { checkEligibility } from "../../services/backend/user";
 import { getUsersUniversity } from "../../services/supabase/supabase";
+import PaymentModal from "../../components/PaymentModal/PaymentModal";
+import FinancialReportModal from "../../components/FinancialReportModal/FinancialReportModal";
 
 const EventDetail: React.FC = () => {
   const { id } = useParams();
@@ -27,6 +29,8 @@ const EventDetail: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
   const [message, setMessage] = useState<string>("");
+  const [viewPaymentModal, setViewPaymentModal] = useState<boolean>(false);
+  const [viewFinancialReportModal, setViewFinancialReportModal] = useState<boolean>(false);
 
   useEffect(() => {
     if (!id) return;
@@ -135,6 +139,13 @@ const EventDetail: React.FC = () => {
           if (!eligible) return;
         }
 
+        if (event.base_price > 0) {
+          // Open payment modal here
+          // Payment logic should be handled in the PaymentModal component
+          setViewPaymentModal(true);
+          return;
+        }
+
         const { error: rsvpError } = await rsvpToEvent(id);
         if (rsvpError) {
           console.error("Error adding RSVP:", rsvpError);
@@ -150,6 +161,25 @@ const EventDetail: React.FC = () => {
     }
   };
 
+  const handleGenerateFinancialReport = async () => {
+    if (!id) return;
+    try {
+      // const { data, error } = await fetchFinancialReport(id);
+      // if (error) {
+      //   setError("Failed to generate financial report.");
+      //   return;
+      // }
+      // Handle the financial report data (e.g., download it or display it)
+      // TODO: Implement the logic to handle the financial report data
+
+      setViewFinancialReportModal(true);
+      
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      setError("An unexpected error occurred.");
+    }
+  };
+
   if (loading) return <p>Loading event details...</p>;
   if (error) return <p className="error-message">{error}</p>;
 
@@ -158,35 +188,45 @@ const EventDetail: React.FC = () => {
       <h1>{event.title}</h1>
       <p className="event-description">{event.description}</p>
       <p>
-        <strong>Date:</strong>{" "}
-        {new Date(event.event_datetime).toLocaleDateString()}
+        <strong>Date:</strong> {new Date(event.event_datetime).toLocaleDateString()}
       </p>
       <p>
         <strong>Location:</strong> {event.location}
       </p>
+      {event.base_price > 0 && (
+        <p>
+          <strong>Price: ${event.base_price}</strong>
+        </p>
+      )}
       <p>
         <strong>Attendees:</strong> {attendees}
       </p>
+
+      {/* Access Live Event Page */}
+      {isAttending == true ? (
+        <button onClick={() => navigate(`/event/live/${id}`)}>Access Live Event Page</button>
+      ) : null}
       {/* Display Message */}
       {message && <p className="message">{message}</p>}
 
       {/* RSVP Button */}
-      {/* RSVP Button */}
-      <button
-        onClick={handleRsvp}
-        className={isAttending ? "rsvp-button attending" : "rsvp-button"}
-      >
-        {isAttending ? "Cancel RSVP" : "RSVP to Event"}
-      </button>
+      {!isOrganizer && (
+        <button
+          onClick={handleRsvp}
+          className={isAttending ? "rsvp-button attending" : "rsvp-button"}
+        >
+          {isAttending ? "Cancel RSVP" : "RSVP to Event"}
+        </button>
+      )}
 
       {/* Organizer Tools */}
       {isOrganizer && (
         <>
-          <button
-            onClick={() => navigate(`/edit-event/${id}`)}
-            className="modify-button"
-          >
+          <button onClick={() => navigate(`/edit-event/${id}`)} className="modify-button">
             Modify Event
+          </button>
+          <button onClick={handleGenerateFinancialReport} className="financial-report-button">
+            Generate Financial Report
           </button>
           <button
             onClick={() => navigate(`/manage-attendees/${id}`)}
@@ -194,14 +234,24 @@ const EventDetail: React.FC = () => {
           >
             Manage Attendees
           </button>
-          <button
-            onClick={handleSendMailingList}
-            className="send-mailing-list-button"
-          >
+          <button onClick={handleSendMailingList} className="send-mailing-list-button">
             Send Out Mailing List
           </button>
         </>
       )}
+      <PaymentModal
+        isOpen={viewPaymentModal}
+        onClose={() => setViewPaymentModal(false)}
+        eventId={event.id}
+        eventCost={event.base_price}
+      />
+      <FinancialReportModal
+        isOpen={viewFinancialReportModal}
+        onClose={() => setViewFinancialReportModal(false)}
+        numberOfAttendees={attendees}
+        eventId={event.id}
+        eventBasePrice={event.base_price}
+      />
     </div>
   );
 };

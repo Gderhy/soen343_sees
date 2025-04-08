@@ -38,7 +38,7 @@ const Events: React.FC = () => {
   };
 
   return (
-    <div className="container">
+    <div className="events-container">
       {/* Header with Centered Title & Right-Aligned Search */}
       <div className="header-container">
         <h1>Upcoming Events</h1>
@@ -58,6 +58,7 @@ const Events: React.FC = () => {
             <th>Description</th>
             <th>Date</th>
             <th>Location</th>
+            <th>Price</th>
           </tr>
         </thead>
         <tbody>
@@ -68,6 +69,7 @@ const Events: React.FC = () => {
                 <td>{event.description}</td>
                 <td>{new Date(event.event_datetime).toISOString()}</td>
                 <td>{event.location}</td>
+                <td>{event.base_price > 0 ? `$${event.base_price}` : "Free"}</td>
               </tr>
             ))
           ) : (

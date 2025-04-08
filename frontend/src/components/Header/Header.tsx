@@ -23,6 +23,7 @@ const Header: React.FC = () => {
         {/* Normal users & organizers can manage their events */}
         {(systemRole === "user" ) && (
           <>
+          <Link to="/attending-events" className="nav-link">Attending Events</Link>
           <Link to="/create-event" className="nav-link">Create Event</Link>
           <Link to="/manage-my-events" className="nav-link">Manage My Events</Link>
           </>
