@@ -2,18 +2,16 @@ import React from "react";
 import "./PaymentModal.css";
 import { PaymentDetails } from "../../types";
 import { rsvpToPaidEvent } from "../../services/backend/user";
-import { useNavigate } from "react-router-dom";
 
 
 interface PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
   eventId: string;
+  eventCost: number;
 }
 
-const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, eventId }) => {
-  const navigate = useNavigate();
-  
+const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, eventId, eventCost=0 }) => {
   const [paymentDetails, setPaymentDetails] = React.useState<PaymentDetails>({
     name: "",
     number: "",
@@ -21,6 +19,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, eventId })
     exp_yyyy: "",
     card_type: "",
     code: "",
+    amount: eventCost,
   });
   
   const handleProceed = async () => {
@@ -36,9 +35,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, eventId })
     // Reload the page to reflect changes
     window.location.reload();
   }
-    
-
-  
+      
   if (!eventId) return null;
   if (!isOpen) return null;
 
@@ -47,6 +44,15 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, eventId })
       <div className="payment-modal">
         <h2>Payment Details</h2>
         <form>
+          <div className="form-group">
+            <label htmlFor="name">Name on Card</label>
+            <input
+              type="text"
+              id="name"
+              value={paymentDetails.name}
+              onChange={(e) => setPaymentDetails({ ...paymentDetails, name: e.target.value })}
+              placeholder="Enter the name on the card"
+            />
           <div className="form-group">
             <label htmlFor="cardNumber">Card Number</label>
             <input
@@ -57,15 +63,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, eventId })
               placeholder="Enter your card number"
             />
           </div>
-          <div className="form-group">
-            <label htmlFor="name">Name on Card</label>
-            <input
-              type="text"
-              id="name"
-              value={paymentDetails.name}
-              onChange={(e) => setPaymentDetails({ ...paymentDetails, name: e.target.value })}
-              placeholder="Enter the name on the card"
-            />
           </div>
           <div className="form-group">
             <label htmlFor="exp_mm">Expiration Month</label>

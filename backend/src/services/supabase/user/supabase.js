@@ -306,6 +306,8 @@ const fetchUserAttendingEvents = async (userId) => {
 // This function verifies payment details and RSVPs the user to the event
 const rsvpToPaidEvent = async (eventId, userId, paymentDetails) => {
   try {
+    console.log("RSVP to paid event:", eventId, userId, paymentDetails);
+
     // First step is to verify the payment details
     // Allows for modular payment verification
     // This function should return a payment ID or similar identifier
@@ -350,6 +352,7 @@ const rsvpToPaidEvent = async (eventId, userId, paymentDetails) => {
     const paymentEntry = {
       cc_id: ccData.id,
       events_attendance_id: eventAttendanceData.id,
+      amount: paymentDetails.amount,
     };
 
     const { data: paymentData, error: paymentInsertError } = await insertPayment(paymentEntry);

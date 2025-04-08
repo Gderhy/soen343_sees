@@ -76,4 +76,5 @@ export interface PaymentDetails {
   exp_yyyy: string;
   card_type: string;
   code: string;
+  amount: number;
 }

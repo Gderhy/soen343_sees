@@ -254,6 +254,9 @@ router.post("/attending-events", async (req, res) => {
 router.post("/rsvp-paid", async (req, res) => {
   try {
     const { userId, eventId, paymentDetails } = req.body;
+
+    console.log("Payment Details: ", paymentDetails);
+
     if (!userId || !eventId || !paymentDetails) {
       return res.status(400).json({ error: "Missing required fields" });
     }
