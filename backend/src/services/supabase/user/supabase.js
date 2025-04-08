@@ -385,13 +385,12 @@ const getEventExpenses = async (eventId) => {
       .from("event_expenses")
       .select("*")
       .eq("event_id", eventId);
-
+  
     if (error) {
       console.error("Error fetching event expenses:", error);
       return { error };
     }
 
-    console.log("Event expenses data:", data); // Log the fetched data
     return { data, error: null };
   } catch (err) {
     return { error: err.message };
@@ -417,6 +416,84 @@ const getEventRevenue = async (eventId) => {
     return { error: err.message };
   }
 };
+
+// Function to add an expense to an event
+// This function adds an expense to an event based on its ID
+const addExpenseToEvent = async (eventId, expenseDetails) => {
+  try {
+    const { data, error } = await supabase
+      .from("event_expenses")
+      .insert({ event_id: eventId, ...expenseDetails });
+
+    if (error) {
+      console.error("Error adding expense to event:", error);
+      return { error };
+    }
+
+    return { data, error: null };
+  } catch (err) {
+    return { error: err.message };
+  }
+};
+
+
+const fetchEventAttendees = async (eventId) => {
+  try {
+    const { data, error } = await supabase
+      .from("event_attendance")
+      .select("users (*)")
+      .eq("event_id", eventId);
+
+    if (error) {
+      console.error("Error fetching event attendees:", error);
+      return { error };
+    }
+
+    return { data, error: null };
+  } catch (err) {
+    return { error: err.message };
+  }
+}
+
+
+// Function to add an expense to an event
+// This function adds an expense to an event based on its ID
+const addExpenseToEvent = async (eventId, expenseDetails) => {
+  try {
+    const { data, error } = await supabase
+      .from("event_expenses")
+      .insert({ event_id: eventId, ...expenseDetails });
+
+    if (error) {
+      console.error("Error adding expense to event:", error);
+      return { error };
+    }
+
+    return { data, error: null };
+  } catch (err) {
+    return { error: err.message };
+  }
+};
+
+
+const fetchEventAttendees = async (eventId) => {
+  try {
+    const { data, error } = await supabase
+      .from("event_attendance")
+      .select("users (*)")
+      .eq("event_id", eventId);
+
+    if (error) {
+      console.error("Error fetching event attendees:", error);
+      return { error };
+    }
+
+    return { data, error: null };
+  } catch (err) {
+    return { error: err.message };
+  }
+}
+
 
 
 const sendMailingList = async (eventId) => {
@@ -542,6 +619,131 @@ const fetchAllUniversities = async () => {
     return { error: err.message };
   }
 }
+
+
+const sendMailingList = async (eventId) => {
+  try {
+    // Fetch the event name from your database
+    const { data: eventData, error: eventError } = await supabase
+      .from("events")
+      .select("title")
+      .eq("id", eventId)
+      .single();
+
+    if (eventError || !eventData) {
+      throw new Error("Event not found.");
+    }
+
+    const eventName = eventData.title;
+
+    const payload = {
+      tags: [
+        {
+          name: "send_event_email",
+          status: "active", // use 'inactive' if you ever want to remove it
+        },
+      ],
+    };
+
+    // Mailchimp API configuration
+    const mailchimpApiKey = "6d572f4715b1d530420b1949820f144d-us15";
+    const mailchimpServerPrefix = "us15";
+    const mailchimpListId = "89953a1ebe";
+
+    const mailchimpUrl = `https://${mailchimpServerPrefix}.api.mailchimp.com/3.0/lists/${mailchimpListId}/members/`;
+
+    // Fetch members from Mailchimp with the event tag
+    const mailchimpResponse = await axios.get(mailchimpUrl, {
+      headers: {
+        Authorization: `Bearer ${mailchimpApiKey}`,
+      },
+    });
+
+    console.log("made it hereeee");
+
+    if (mailchimpResponse.status !== 200) {
+      throw new Error("Failed to fetch Mailchimp data.");
+    }
+
+    console.log(mailchimpResponse.data.members);
+
+    console.log("HEYYYYY");
+    console.log(eventId);
+    const mailchimpEmails = mailchimpResponse.data.members
+      .filter((member) => member.merge_fields.EVENT_ID !== eventId) // Filter by EVENT_ID
+      .map((member) => member.email_address); // Extract email addresses
+
+    if (mailchimpEmails.length === 0) {
+      throw new Error("No recipients found for this event.");
+    }
+
+    console.log(mailchimpEmails.length);
+
+    // Add a tag to the existing members in Mailchimp
+
+    for (const email of mailchimpEmails) {
+      const hashedEmail = crypto.createHash("md5").update(email.toLowerCase()).digest("hex");
+      console.log(`Hashed email for ${email}: ${hashedEmail}`);
+      try {
+        const payload = {
+          tags: [
+            {
+              name: "send_event_email",
+              status: "active", // use 'inactive' if you ever want to remove it
+            },
+          ],
+        };
+
+        const tagUrl = `https://${mailchimpServerPrefix}.api.mailchimp.com/3.0/lists/${mailchimpListId}/members/${hashedEmail}/tags`;
+
+        const response = await axios.post(tagUrl, payload, {
+          headers: {
+            Authorization: `Bearer ${mailchimpApiKey}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.status !== 200 && response.status !== 204) {
+          console.error(`Failed to tag email: ${email}`, response.status);
+        } else {
+          console.log(`Successfully tagged email: ${email}`);
+        }
+      } catch (err) {
+        console.error(`Error tagging email ${email}:`, err.message);
+      }
+    }
+
+    return {
+      message: "Tags updated successfully. Emails will be sent via Mailchimp Journey.",
+    };
+  } catch (err) {
+    console.error("Error in sendMailingList:", err.message);
+    throw err;
+  }
+};
+
+const checkEligibility = async (userId, usersUniversity, eventId, eventParticipation) => {
+  try {
+  } catch (err) {}
+};
+
+const fetchAllUniversities = async () => {
+  try {
+    const { data, error } = await supabase.from("universities").select("*");
+
+    if (error) {
+      console.error("Error fetching universities:", error);
+      return { error };
+    }
+
+    return { data, error: null };
+  } catch (err) {
+    console.error("Error fetching universities:", err);
+    return { error: err.message };
+  }
+};
+
+
 module.exports = {
   fetchStakeholders,
   createEvent,
@@ -559,4 +761,6 @@ module.exports = {
   rsvpToPaidEvent,
   getEventExpenses,
   getEventRevenue,
+  addExpenseToEvent,
+  fetchEventAttendees,
 };

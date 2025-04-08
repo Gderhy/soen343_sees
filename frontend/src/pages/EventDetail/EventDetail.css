@@ -100,3 +100,20 @@ p {
 .financial-report-button:hover {
   background: #138496;
 }
+
+.manage-expense-button {
+  padding: 10px 15px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  background: grey;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background 0.3s ease-in-out;
+}
+
+.manage-expense-button:hover {
+  background: #6c757d;
+}

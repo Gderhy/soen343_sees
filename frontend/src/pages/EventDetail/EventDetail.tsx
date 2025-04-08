@@ -17,6 +17,9 @@ import { checkEligibility } from "../../services/backend/user";
 import { getUsersUniversity } from "../../services/supabase/supabase";
 import PaymentModal from "../../components/PaymentModal/PaymentModal";
 import FinancialReportModal from "../../components/FinancialReportModal/FinancialReportModal";
+import ManageExpenseModal from "../../components/ManageExpenseModal/ManageExpenseModal";
+import RegistratioTrendChart from "../../components/RegistratioTrendChart/RegistratioTrendChart";
+
 
 const EventDetail: React.FC = () => {
   const { id } = useParams();
@@ -31,6 +34,8 @@ const EventDetail: React.FC = () => {
   const [message, setMessage] = useState<string>("");
   const [viewPaymentModal, setViewPaymentModal] = useState<boolean>(false);
   const [viewFinancialReportModal, setViewFinancialReportModal] = useState<boolean>(false);
+
+  const [viewManageExpenseModal, setViewManageExpenseModal] = useState<boolean>(false);
 
   useEffect(() => {
     if (!id) return;
@@ -229,11 +234,20 @@ const EventDetail: React.FC = () => {
             Generate Financial Report
           </button>
           <button
+            onClick={() => {
+              setViewManageExpenseModal(true);
+            }}
+            className="manage-expense-button"
+          >
+            Manage Expense
+          </button>
+          <button
             onClick={() => navigate(`/manage-attendees/${id}`)}
             className="manage-attendees-button"
           >
             Manage Attendees
           </button>
+          <RegistratioTrendChart eventId={event.id} />
           <button onClick={handleSendMailingList} className="send-mailing-list-button">
             Send Out Mailing List
           </button>
@@ -251,6 +265,12 @@ const EventDetail: React.FC = () => {
         numberOfAttendees={attendees}
         eventId={event.id}
         eventBasePrice={event.base_price}
+      />
+      {/* Manage Expense Modal */}
+      <ManageExpenseModal
+        isOpen={viewManageExpenseModal}
+        onClose={() => setViewManageExpenseModal(false)}
+        eventId={event.id}
       />
     </div>
   );

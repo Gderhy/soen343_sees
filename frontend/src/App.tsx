@@ -15,12 +15,14 @@ import RegisterStakeholder from "./pages/RegisterStakeholder/RegisterStakeholder
 import StakeholderPortal from "./pages/StakeholderPortal/StakeholderPortal";
 import LiveEvent from "./pages/LiveEvent/LiveEvent";
 import AttendingEvents from "./pages/AttendingEvents/AttendingEvents";
+import ManageAttendees from "./pages/ManageAttendees/ManageAttendees";
 
 const App: React.FC = () => {
   return (
     <AuthProvider>
       <Header />
       <Routes>
+        {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/events" element={<Events />} />
         <Route path="/event/:id" element={<EventDetail />} />
@@ -32,6 +34,7 @@ const App: React.FC = () => {
           <Route path="/create-event" element={<CreateEvent />} />
           <Route path="/edit-event/:id" element={<EditEvent />} />
           <Route path="/manage-my-events" element={<ManageMyEvents />} />
+          <Route path="/manage-attendees/:id" element={<ManageAttendees />} />
         </Route>
 
         {/* Routes only for guests (unauthenticated users) */}
