@@ -4,8 +4,10 @@ import "./ViewEvents.css";
 import { Event } from "../../../types";
 import { fetchAllStakeHolderEvents } from "../../../services/backend/stakeholder";
 import { useAuth } from "../../../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const ViewEventsGrid: React.FC = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
 
   const [events, setEvents] = useState<Event[]>([]);
@@ -108,7 +110,7 @@ const ViewEventsGrid: React.FC = () => {
       <div className="events-grid">
         {filteredEvents.length > 0 ? (
           filteredEvents.map((event) => (
-            <div key={event.id} className="event-card">
+            <div key={event.id} className="event-card" onClick={() => navigate(`/event/${event.id}`)}>
               <h3>{event.title}</h3>
               <p>{event.description}</p>
               <p>

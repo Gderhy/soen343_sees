@@ -21,6 +21,7 @@ const App: React.FC = () => {
     <AuthProvider>
       <Header />
       <Routes>
+        {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/events" element={<Events />} />
         <Route path="/event/:id" element={<EventDetail />} />
