@@ -1,12 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const liveChatModule = require('../local/LiveChat');
+const liveChatModule = require("../local/LiveChat");
 
 const {
   fetchAllEvents,
   fetchEvent,
   fetchEventAttendeeCount,
   fetchAllUniversities,
+  fetchEventsStakeholders,
 } = require("../services/supabase/all/supabase");
 
 // GET /api/events
@@ -86,7 +87,7 @@ router.post("/events/:eventId/messages", async (req, res) => {
   try {
     const eventId = req.params.eventId;
     const message = req.body;
-    
+
     if (!message.content || !message.userId) {
       return res.status(400).json({ error: "Content and userId are required" });
     }
@@ -114,7 +115,7 @@ router.post("/events/:eventId/chat/attendees", async (req, res) => {
   try {
     const eventId = req.params.eventId;
     const { userId } = req.body;
-    
+
     if (!userId) {
       return res.status(400).json({ error: "userId is required" });
     }
@@ -137,5 +138,23 @@ router.get("event/:eventId/message/view", async (req, res) => {
   }
 });
 
+// POST /api/event/stakeholder
+// get the stakeholder list of an event
+router.post("/event/stakeholders", async (req, res) => {
+  try {
+    const { eventId } = req.body;
+    const { data, error } = await fetchEventsStakeholders(eventId);
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    console.log("Stakeholders fetched successfully: ", data);
+
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 module.exports = router;

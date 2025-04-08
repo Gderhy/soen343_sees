@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import {
   fetchEventById,
   getEventAttendeesCount,
+  fetchEventStakeholders,
 } from "../../services/backend/all";
 import {
   rsvpToEvent,
@@ -19,11 +20,12 @@ import PaymentModal from "../../components/PaymentModal/PaymentModal";
 import FinancialReportModal from "../../components/FinancialReportModal/FinancialReportModal";
 import ManageExpenseModal from "../../components/ManageExpenseModal/ManageExpenseModal";
 import RegistratioTrendChart from "../../components/RegistratioTrendChart/RegistratioTrendChart";
+import { Stakeholder } from "../../types";
 
 
 const EventDetail: React.FC = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { id } = useParams(); // id -> event id
 
   const [event, setEvent] = useState<Event>(defaultEvent);
   const [isAttending, setIsAttending] = useState<boolean>(false);
@@ -34,6 +36,8 @@ const EventDetail: React.FC = () => {
   const [viewPaymentModal, setViewPaymentModal] = useState<boolean>(false);
   const [viewFinancialReportModal, setViewFinancialReportModal] = useState<boolean>(false);
   const [viewManageExpenseModal, setViewManageExpenseModal] = useState<boolean>(false);
+  const [stakeholders, setStakeholders] = useState<Stakeholder[]>([]);
+
 
   useEffect(() => {
     if (!id) return;
@@ -81,6 +85,14 @@ const EventDetail: React.FC = () => {
       }
 
       // TODO: fetch stakeholders and universities
+      const { data: stakeholdersData, error: stakeholdersError } = await fetchEventStakeholders(id);
+      if (stakeholdersError) {
+        console.error("Error fetching stakeholders:", stakeholdersError);
+      } else {
+        console.log("Fetched stakeholders:", stakeholdersData);
+        setStakeholders(stakeholdersData || []);
+      }
+
 
       setLoading(false);
     }
@@ -88,10 +100,7 @@ const EventDetail: React.FC = () => {
     fetchEventData();
   }, [id, navigate]);
 
-  const handleSendMailingList = async (e: React.FormEvent) => {
-    e.preventDefault(); 
-    e.stopPropagation();
-    
+  const handleSendMailingList = async () => {
     if (!id) {
       alert("Please select an event.");
       return;
@@ -199,11 +208,24 @@ const EventDetail: React.FC = () => {
       </p>
       {event.base_price > 0 && (
         <p>
-          <strong>Price: ${event.base_price}</strong>
+          <strong>Price: </strong>${event.base_price}
         </p>
       )}
       <p>
         <strong>Attendees:</strong> {attendees}
+      </p>
+      <p>
+        <strong>Stakeholders:</strong>{" "}
+        {stakeholders.length > 0 ? (
+          stakeholders.map((stakeholder, index) => (
+            <span key={index}>
+              {stakeholder.full_name}
+              {index < stakeholders.length - 1 ? ", " : ""}
+            </span>
+          ))
+        ) : (
+          <span>No stakeholders available.</span>
+        )}
       </p>
 
       {/* Access Live Event Page */}

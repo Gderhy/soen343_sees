@@ -1,5 +1,6 @@
 import axios from "axios";
 import { url } from "./url";
+import {Stakeholder} from "../../types";
 
 export const fetchAllActiveEvents = async () => {
   try {
@@ -69,13 +70,16 @@ export const fetchUniversities = async () => {
 };
 
 // storing messages in backend for demo
-export const sendChatMessage = async (message: any, eventId?: string) => {
+export const sendChatMessage = async (message: string, eventId?: string) => {
   try {
-    const apiEndpoint = eventId != undefined && eventId?.length > 0 ? `${url}/api/events/${eventId}/messages` : `${url}/api/events/post/messages`
+    const apiEndpoint =
+      eventId != undefined && eventId?.length > 0
+        ? `${url}/api/events/${eventId}/messages`
+        : `${url}/api/events/post/messages`;
     const response = await axios.post(apiEndpoint, message);
     return response.data;
   } catch (err) {
-    console.error('Error sending message:', err);
+    console.error("Error sending message:", err);
     throw err;
   }
 };
@@ -85,17 +89,37 @@ export const fetchMessages = async (eventId: string) => {
     const response = await axios.get(`${url}/api/events/${eventId}/messages`);
     return response.data;
   } catch (err) {
-    console.error('Error fetching messages:', err);
+    console.error("Error fetching messages:", err);
     throw err;
   }
 };
 
 export const getViewCount = async (eventId: string) => {
-  try{
-    const response = await axios.get(`${url}/api/event/${eventId}/message/view`)
+  try {
+    const response = await axios.get(`${url}/api/event/${eventId}/message/view`);
     return response.data;
-  }catch(err){
-    console.error('Error getting view count:', err);
+  } catch (err) {
+    console.error("Error getting view count:", err);
     throw err;
   }
-}
+};
+
+export const fetchEventStakeholders = async (eventId: string) => {
+  try {
+    const response = await axios.post(`${url}/api/event/stakeholders`, { eventId });
+    if (response.status !== 200) {
+      return { data: null, error: response.statusText };
+    }
+
+    const stakeholders = response.data.map(({stakeholders} : {stakeholders:Stakeholder}) => ({
+      id: stakeholders.id,
+      full_name: stakeholders.full_name,
+      email: stakeholders.email,
+      phone: stakeholders.phone, 
+    }));
+
+    return { data: stakeholders, error: null };
+  } catch (err) {
+    return { data: null, error: err };
+  }
+};

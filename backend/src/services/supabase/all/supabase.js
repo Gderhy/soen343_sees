@@ -44,4 +44,23 @@ const fetchAllUniversities = async () => {
   }
 };
 
-module.exports = { fetchAllEvents, fetchEvent, fetchEventAttendeeCount, fetchAllUniversities };
+const fetchEventsStakeholders = async (eventId) => {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from("event_stakeholders")
+      .select("stakeholders(*)")
+      .eq("event_id", eventId);
+
+    return { data, error: null };
+  } catch (err) {
+    return { error: err.message };
+  }
+}
+
+module.exports = {
+  fetchAllEvents,
+  fetchEvent,
+  fetchEventAttendeeCount,
+  fetchAllUniversities,
+  fetchEventsStakeholders,
+};
