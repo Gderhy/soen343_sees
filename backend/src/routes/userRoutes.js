@@ -18,6 +18,7 @@ const {
   rsvpToPaidEvent,
   getEventExpenses,
   getEventRevenue,
+  addExpenseToEvent,
 } = require("../services/supabase/user/supabase");
 
 // GET /api/user/stakeholders
@@ -318,6 +319,27 @@ router.post("/events/financial-report", async (req, res) => {
     };
 
     res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/user/events/add-expense
+// Add an expense to an event
+router.post("/events/add-expense", async (req, res) => {
+  try {
+    const { eventId, expenseDetails } = req.body;
+    if (!eventId || !expenseDetails) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    // Call the function to add the expense
+    const { data, error } = await addExpenseToEvent(eventId, expenseDetails);
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.json({ message: "Expense added successfully", data });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

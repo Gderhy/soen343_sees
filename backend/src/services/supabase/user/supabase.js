@@ -416,6 +416,26 @@ const getEventRevenue = async (eventId) => {
   }
 };
 
+// Function to add an expense to an event
+// This function adds an expense to an event based on its ID
+const addExpenseToEvent = async (eventId, expenseDetails) => {
+  try {
+    const { data, error } = await supabase
+      .from("event_expenses")
+      .insert({ event_id: eventId, ...expenseDetails });
+
+    if (error) {
+      console.error("Error adding expense to event:", error);
+      return { error };
+    }
+
+    return { data, error: null };
+  } catch (err) {
+    return { error: err.message };
+  }
+};
+
+
 module.exports = {
   fetchStakeholders,
   createEvent,
@@ -432,4 +452,5 @@ module.exports = {
   rsvpToPaidEvent,
   getEventExpenses,
   getEventRevenue,
+  addExpenseToEvent,
 };

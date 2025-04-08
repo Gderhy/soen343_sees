@@ -8,6 +8,8 @@ import { checkEligibility } from "../../services/backend/user";
 import { getUsersUniversity } from "../../services/supabase/supabase";
 import PaymentModal from "../../components/PaymentModal/PaymentModal";
 import FinancialReportModal from "../../components/FinancialReportModal/FinancialReportModal";
+import AddExpenseModal from "../../components/AddExpenseModal/AddExpenseModal";
+
 
 const EventDetail: React.FC = () => {
   const { id } = useParams();
@@ -21,6 +23,7 @@ const EventDetail: React.FC = () => {
   const [error, setError] = useState<string>("");
   const [viewPaymentModal, setViewPaymentModal] = useState<boolean>(false);
   const [viewFinancialReportModal, setViewFinancialReportModal] = useState<boolean>(false);
+  const [viewExpenseModal, setViewExpenseModal] = useState<boolean>(false);
 
   useEffect(() => {
     if (!id) return;
@@ -141,6 +144,10 @@ const EventDetail: React.FC = () => {
     }
   };
 
+  const handleAddExpense = () => {
+    setViewExpenseModal(true);
+  }
+
   if (loading) return <p>Loading event details...</p>;
   if (error) return <p className="error-message">{error}</p>;
 
@@ -187,6 +194,9 @@ const EventDetail: React.FC = () => {
           <button onClick={handleGenerateFinancialReport} className="financial-report-button">
             Generate Financial Report
           </button>
+          <button onClick={handleAddExpense} className="add-expense-button">
+            Add Expense
+          </button>
           <button
             onClick={() => navigate(`/manage-attendees/${id}`)}
             className="manage-attendees-button"
@@ -207,6 +217,12 @@ const EventDetail: React.FC = () => {
         numberOfAttendees={attendees}
         eventId={event.id}
         eventBasePrice={event.base_price}
+      />
+      {/* Add Expense Modal */}
+      <AddExpenseModal
+        isOpen={viewExpenseModal}
+        onClose={() => setViewExpenseModal(false)}
+        eventId={event.id}
       />
     </div>
   );
