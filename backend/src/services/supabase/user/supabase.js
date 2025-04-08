@@ -509,6 +509,10 @@ const sendMailingList = async (eventId) => {
     const mailchimpServerPrefix = process.env.MAILCHIMP_SERVER_PREFIX;
     const mailchimpListId = process.env.MAILCHIMP_LIST_ID;
 
+    console.log("Mailchimp List ID:", mailchimpListId);
+    console.log("Mailchimp Server Prefix:", mailchimpServerPrefix);
+    console.log("Mailchimp API Key:", mailchimpApiKey);
+
     const mailchimpUrl = `https://${mailchimpServerPrefix}.api.mailchimp.com/3.0/lists/${mailchimpListId}/members/`;
 
     // Fetch members from Mailchimp with the event tag
