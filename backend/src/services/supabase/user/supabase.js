@@ -1,4 +1,5 @@
 const supabase = require("../supabaseAdmin");
+const crypto = require("crypto"); // Import crypto for hashing
 
 // Function to get all stackholders
 const fetchStakeholders = async () => {
@@ -231,8 +232,17 @@ const sendMailingList = async (eventId) => {
 
     const eventName = eventData.title;
 
+    const payload = {
+      tags: [
+        {
+          name: "send_event_email",
+          status: "active", // use 'inactive' if you ever want to remove it
+        },
+      ],
+    };
+
     // Mailchimp API configuration
-    const mailchimpApiKey = "82d03c45f2b2b1e72de3dd303844048d-us15";
+    const mailchimpApiKey = "6d572f4715b1d530420b1949820f144d-us15";
     const mailchimpServerPrefix = "us15";
     const mailchimpListId = "89953a1ebe";
 
@@ -256,7 +266,7 @@ const sendMailingList = async (eventId) => {
     console.log("HEYYYYY");
     console.log(eventId);
     const mailchimpEmails = mailchimpResponse.data.members
-      .filter((member) => member.merge_fields.EVENT_ID === eventId) // Filter by EVENT_ID
+      .filter((member) => member.merge_fields.EVENT_ID !== eventId) // Filter by EVENT_ID
       .map((member) => member.email_address); // Extract email addresses
 
     if (mailchimpEmails.length === 0) {
@@ -266,32 +276,40 @@ const sendMailingList = async (eventId) => {
     console.log(mailchimpEmails.length);
 
     // Add a tag to the existing members in Mailchimp
-    const tagUrl = `https://${mailchimpServerPrefix}.api.mailchimp.com/3.0/lists/${mailchimpListId}/members/tags`;
 
-    const tagResponse = await axios.post(
-      tagUrl,
-      {
-        tags: [
-          {
-            name: `Event: ${eventName}`,
-            status: "active",
+    for (const email of mailchimpEmails) {
+      const hashedEmail = crypto
+        .createHash("md5")
+        .update(email.toLowerCase())
+        .digest("hex");
+      console.log(`Hashed email for ${email}: ${hashedEmail}`);
+      try {
+        const payload = {
+          tags: [
+            {
+              name: "send_event_email",
+              status: "active", // use 'inactive' if you ever want to remove it
+            },
+          ],
+        };
+
+        const tagUrl = `https://${mailchimpServerPrefix}.api.mailchimp.com/3.0/lists/${mailchimpListId}/members/${hashedEmail}/tags`;
+
+        const response = await axios.post(tagUrl, payload, {
+          headers: {
+            Authorization: `Bearer ${mailchimpApiKey}`,
+            "Content-Type": "application/json",
           },
-        ],
-        members: mailchimpEmails.map((email) => ({
-          email_address: email,
-        })),
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${mailchimpApiKey}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+        });
 
-    console.log(tagResponse);
-    if (tagResponse.status !== 200) {
-      throw new Error("Failed to update tags in Mailchimp.");
+        if (response.status !== 200 && response.status !== 204) {
+          console.error(`Failed to tag email: ${email}`, response.status);
+        } else {
+          console.log(`Successfully tagged email: ${email}`);
+        }
+      } catch (err) {
+        console.error(`Error tagging email ${email}:`, err.message);
+      }
     }
 
     return {

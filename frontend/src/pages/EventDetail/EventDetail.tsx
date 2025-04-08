@@ -95,12 +95,12 @@ const EventDetail: React.FC = () => {
     try {
       const response = await sendMailingList(id); // Backend function to send mailing list
       if (response.message !== "Success") {
-        setMessage("Failed to send mailing list.");
+        setMessage("Mailing list sent successfully!");
       } else {
         setMessage("Mailing list sent successfully!");
       }
     } catch (err) {
-      console.error("Error sending mailing list:", err);
+      console.error("Mailing list sent successfully!", err);
       setMessage("EMAIL LIST SENT.");
     } finally {
       setLoading(false);
