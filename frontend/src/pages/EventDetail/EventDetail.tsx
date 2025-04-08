@@ -22,9 +22,9 @@ import RegistratioTrendChart from "../../components/RegistratioTrendChart/Regist
 
 
 const EventDetail: React.FC = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
 
-  const navigate = useNavigate();
   const [event, setEvent] = useState<Event>(defaultEvent);
   const [isAttending, setIsAttending] = useState<boolean>(false);
   const [attendees, setAttendees] = useState<number>(0);
@@ -33,7 +33,6 @@ const EventDetail: React.FC = () => {
   const [error, setError] = useState<string>("");
   const [viewPaymentModal, setViewPaymentModal] = useState<boolean>(false);
   const [viewFinancialReportModal, setViewFinancialReportModal] = useState<boolean>(false);
-
   const [viewManageExpenseModal, setViewManageExpenseModal] = useState<boolean>(false);
 
   useEffect(() => {
