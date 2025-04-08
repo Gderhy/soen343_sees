@@ -519,6 +519,29 @@ const sendMailingList = async (eventId) => {
     throw err;
   }
 };
+
+const checkEligibility = async (userId, usersUniversity, eventId, eventParticipation) => {
+  try {
+  } catch (err) {}
+};
+
+const fetchAllUniversities = async () => {
+  try {
+    const { data, error } = await supabase
+      .from("universities")
+      .select("*");
+
+    if (error) {
+      console.error("Error fetching universities:", error);
+      return { error };
+    }
+
+    return { data, error: null };
+  } catch (err) {
+    console.error("Error fetching universities:", err);
+    return { error: err.message };
+  }
+}
 module.exports = {
   fetchStakeholders,
   createEvent,
