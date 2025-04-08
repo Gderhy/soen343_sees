@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Event, ParticipationType } from "../../types";
+import { Event, ParticipationType, PaymentDetails } from "../../types";
 import { getUserId, getUsersUniversity } from "../supabase/supabase";
 import { url } from "./url";
 
@@ -276,7 +276,7 @@ export const cancelAttendance = async (userId: string, eventId: string) => {
 
 export const rsvpToPaidEvent = async (
   eventId: string,
-  paymentDetails: { cardNumber: string; name: string; securityCode: string }
+  paymentDetails: PaymentDetails
 ) => {
   try {
     const response = await axios.post(`${url}/api/user/rsvp-paid`, {

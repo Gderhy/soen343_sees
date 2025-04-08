@@ -70,9 +70,10 @@ export interface University {
 export type ParticipationType = "public" | "university";
 
 export interface PaymentDetails {
-  cardNumber: string;
   name: string;
-  expiryDateMM: string;
-  expiryDateYYYY: string;
-  securityCode: string;
+  number: string;
+  exp_mm: string;
+  exp_yyyy: string;
+  card_type: string;
+  code: string;
 }

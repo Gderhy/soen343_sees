@@ -6,6 +6,7 @@ import "./EventDetail.css";
 import { Event, defaultEvent } from "../../types";
 import { checkEligibility } from "../../services/backend/user";
 import { getUsersUniversity } from "../../services/supabase/supabase";
+import PaymentModal from "../../components/PaymentModal/PaymentModal";
 
 const EventDetail: React.FC = () => {
   const { id } = useParams();
@@ -17,6 +18,7 @@ const EventDetail: React.FC = () => {
   const [isOrganizer, setIsOrganizer] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
+  const [viewPaymentModal, setViewPaymentModal] = useState<boolean>(false);
 
   useEffect(() => {
     if (!id) return;
@@ -68,7 +70,7 @@ const EventDetail: React.FC = () => {
     fetchEventData();
   }, [id, navigate]);
 
-  const handleRsvp = async () => {
+   const handleRsvp = async () => {
     if (!id) return;
 
     if (event.participation === "university" && getUsersUniversity === null) {
@@ -95,6 +97,14 @@ const EventDetail: React.FC = () => {
 
           if (!eligible) return;
         }
+
+        if(event.base_price > 0) {
+          // Open payment modal here
+          // Payment logic should be handled in the PaymentModal component
+          setViewPaymentModal(true);
+          return;
+        }
+
 
         const { error: rsvpError } = await rsvpToEvent(id);
         if (rsvpError) {
@@ -162,6 +172,11 @@ const EventDetail: React.FC = () => {
           </button>
         </>
       )}
+      <PaymentModal
+        isOpen={viewPaymentModal}
+        onClose={() => setViewPaymentModal(false)}
+        eventId={event.id}
+      />
     </div>
   );
 };

@@ -1,3 +1,4 @@
+const { verifyPaymentDetails, insertPayment } = require("../paymentService/paymentService");
 const supabase = require("../supabaseAdmin");
 
 // Function to get all stackholders
@@ -232,7 +233,7 @@ const checkRsvp = async (userId, eventId) => {
     const { data, error } = await supabase
       .from("event_attendance")
       .select("*")
-      .eq("event_id",eventId)
+      .eq("event_id", eventId)
       .eq("user_id", userId);
 
     if (error) {
@@ -265,13 +266,8 @@ const checkIfUserIsOrganizer = async (userId, eventId) => {
 
 // Function to check if a user is eligible to RSVP to an event
 const checkEligibility = async (userId, usersUniversity, eventId, eventParticipation) => {
-  try{
-
-
-
-  } catch (err) {
-
-  }
+  try {
+  } catch (err) {}
 };
 
 const fetchAllUniversities = async () => {
@@ -304,7 +300,75 @@ const fetchUserAttendingEvents = async (userId) => {
   } catch (err) {
     return { error: err };
   }
-}
+};
+
+// Function to RSVP to a paid event
+// This function verifies payment details and RSVPs the user to the event
+const rsvpToPaidEvent = async (eventId, userId, paymentDetails) => {
+  try {
+    // First step is to verify the payment details
+    // Allows for modular payment verification
+    // This function should return a payment ID or similar identifier
+    const { data: ccData,  error: paymentError } = await verifyPaymentDetails(paymentDetails);
+  
+    if (paymentError) {
+      console.error("Payment verification failed:", paymentError);
+      return { error: paymentError.message };
+    }
+
+    // Proceed with RSVP
+    const entry = {
+      event_id: eventId,
+      user_id: userId,
+      status: "accepted",
+    };
+
+    // Validate the entry object before inserting
+    if (!entry.event_id || !entry.user_id || !entry.status) {
+      console.error("Invalid RSVP entry:", entry);
+      return { error: "Invalid RSVP entry. Missing required fields." };
+    }
+
+    const { data: eventAttendanceData, error } = await supabase
+      .from("event_attendance")
+      .insert([entry])
+      .select("id")
+      .single();
+
+    if (error) {
+      console.error("Error inserting RSVP entry:", error);
+      return { error: error.message };
+    }
+
+
+    if (error) {
+      console.error("Error inserting RSVP:", error);
+      return { error: error.message };
+    }
+
+    // Insert payment details into the database
+    const paymentEntry = {
+      cc_id: ccData.id,
+      events_attendance_id: eventAttendanceData.id,
+    };
+
+    const { data: paymentData, error: paymentInsertError } = await insertPayment(paymentEntry);
+
+    
+    if (paymentInsertError) {
+      console.error("Error inserting payment details:", paymentInsertError);
+      return { error: paymentInsertError.message };
+    }
+
+    // TODO: Maybe send a confirmation email to the user here
+
+    // Returns the event attendance data 
+    return { eventAttendanceData, error: null };
+  } catch (err) {
+    console.error("Error RSVPing to paid event:", err);
+    return { error: err.message };
+  }
+};
 
 module.exports = {
   fetchStakeholders,
@@ -319,4 +383,5 @@ module.exports = {
   checkEligibility,
   fetchAllUniversities,
   fetchUserAttendingEvents,
+  rsvpToPaidEvent,
 };
