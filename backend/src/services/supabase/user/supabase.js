@@ -509,10 +509,6 @@ const sendMailingList = async (eventId) => {
     const mailchimpServerPrefix = process.env.MAILCHIMP_SERVER_PREFIX;
     const mailchimpListId = process.env.MAILCHIMP_LIST_ID;
 
-    console.log("Mailchimp List ID:", mailchimpListId);
-    console.log("Mailchimp Server Prefix:", mailchimpServerPrefix);
-    console.log("Mailchimp API Key:", mailchimpApiKey);
-
     const mailchimpUrl = `https://${mailchimpServerPrefix}.api.mailchimp.com/3.0/lists/${mailchimpListId}/members/`;
 
     // Fetch members from Mailchimp with the event tag
@@ -522,16 +518,10 @@ const sendMailingList = async (eventId) => {
       },
     });
 
-    console.log("made it hereeee");
-
     if (mailchimpResponse.status !== 200) {
       throw new Error("Failed to fetch Mailchimp data.");
     }
 
-    console.log(mailchimpResponse.data.members);
-
-    console.log("HEYYYYY");
-    console.log(eventId);
     const mailchimpEmails = mailchimpResponse.data.members
       .filter((member) => member.merge_fields.EVENT_ID !== eventId) // Filter by EVENT_ID
       .map((member) => member.email_address); // Extract email addresses
@@ -540,10 +530,7 @@ const sendMailingList = async (eventId) => {
       throw new Error("No recipients found for this event.");
     }
 
-    console.log(mailchimpEmails.length);
-
     // Add a tag to the existing members in Mailchimp
-
     for (const email of mailchimpEmails) {
       const hashedEmail = crypto.createHash("md5").update(email.toLowerCase()).digest("hex");
       console.log(`Hashed email for ${email}: ${hashedEmail}`);

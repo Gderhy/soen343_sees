@@ -31,7 +31,6 @@ const EventDetail: React.FC = () => {
   const [isOrganizer, setIsOrganizer] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
-  const [message, setMessage] = useState<string>("");
   const [viewPaymentModal, setViewPaymentModal] = useState<boolean>(false);
   const [viewFinancialReportModal, setViewFinancialReportModal] = useState<boolean>(false);
 
@@ -92,25 +91,23 @@ const EventDetail: React.FC = () => {
 
   const handleSendMailingList = async () => {
     if (!id) {
-      setMessage("Please select an event.");
+      alert("Please select an event.");
       return;
     }
 
     setLoading(true);
-    setMessage("");
-
     console.log("Sending mailing list for event:", id);
 
     try {
       const response = await sendMailingList(id); // Backend function to send mailing list
-      if (response.message !== "Success") {
-        setMessage("Mailing list sent successfully!");
+      if (response.message === "Mailing list sent successfully!") {
+        alert("Mailing list sent successfully!");
       } else {
-        setMessage("Mailing list sent successfully!");
+        alert("Failed to send mailing list. Please try again.");
       }
     } catch (err) {
-      console.error("Mailing list sent successfully!", err);
-      setMessage("EMAIL LIST SENT.");
+      console.error("Error sending mailing list:", err);
+      alert("An error occurred while sending the mailing list.");
     } finally {
       setLoading(false);
     }
@@ -211,8 +208,6 @@ const EventDetail: React.FC = () => {
       {isAttending == true ? (
         <button onClick={() => navigate(`/event/live/${id}`)}>Access Live Event Page</button>
       ) : null}
-      {/* Display Message */}
-      {message && <p className="message">{message}</p>}
 
       {/* RSVP Button */}
       {!isOrganizer && (

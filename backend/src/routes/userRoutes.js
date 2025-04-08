@@ -69,7 +69,16 @@ router.post("/event/:eventId/send-mailing-list", async (req, res) => {
     // Call the Mailchimp service function
     const result = await sendMailingList(eventId);
 
+    console.log("Mailing list sent successfully for event: ", result);
     // Send the response back to the client
+
+    if (
+      result.error ||
+      result.message !== "Tags updated successfully. Emails will be sent via Mailchimp Journey."
+    ) {
+      return res.status(500).json({ error: result.error });
+    }
+
     res.json(result);
   } catch (err) {
     console.error("Error in /event/:eventId/send-mailing-list:", err.message);

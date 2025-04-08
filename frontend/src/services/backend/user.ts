@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Event, ParticipationType, PaymentDetails } from "../../types";
-import { getUserId, getUsersUniversity, supabase } from "../supabase/supabase";
+import { getUserId, getUsersUniversity } from "../supabase/supabase";
 import { url } from "./url";
 
 export const fetchAllStakeholders = async () => {
@@ -60,26 +60,23 @@ export const createEvent = async (
   }
 };
 
-export const sendMailingList = async (eventId: any) => {
+export const sendMailingList = async (eventId: string) => {
   try {
     const response = await axios.post(
       `${url}/api/user/event/${eventId}/send-mailing-list`
     );
 
-    const { data: eventData, error: eventError } = await supabase
-      .from("events")
-      .select("title")
-      .eq("id", eventId)
-      .single();
-
-    if (eventError || !eventData) {
-      throw new Error("Event not found.");
-    }
-
     if (response.status !== 200) {
       throw new Error("Failed to send mailing list.");
     }
 
+    if (
+      response.data.error ||
+      response.data.message !==
+        "Tags updated successfully. Emails will be sent via Mailchimp Journey."
+    ) {
+      throw new Error(response.data.error);
+    }
     return {
       message: "Mailing list sent successfully!",
     };
