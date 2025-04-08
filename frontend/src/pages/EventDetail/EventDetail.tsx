@@ -247,10 +247,10 @@ const EventDetail: React.FC = () => {
           >
             Manage Attendees
           </button>
-          <RegistratioTrendChart eventId={event.id} />
           <button onClick={handleSendMailingList} className="send-mailing-list-button">
             Send Out Mailing List
           </button>
+          <RegistratioTrendChart eventId={event.id} />
         </>
       )}
       <PaymentModal
