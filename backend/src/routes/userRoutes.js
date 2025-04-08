@@ -280,14 +280,18 @@ router.post("/rsvp-paid", async (req, res) => {
 router.post("/event/get-expenses", async (req, res) => {
   try {
     const { eventId } = req.body;
-    if (!eventId || !expenses) {
+    if (!eventId) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
     const { data, error } = await getEventExpenses(eventId);
+
+    console.log("Event expenses: ", data);
+
     if (error) {
       return res.status(500).json({ error: error.message });
     }
+
     res.json(data);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -364,7 +368,7 @@ router.get("/event/:eventId/attendees", async (req, res) => {
 });
 
 // POST /api/user/event/remove-attendee
-// Remove an attendee from an event 
+// Remove an attendee from an event
 router.post("/event/remove-attendee", async (req, res) => {
   try {
     const { eventId, userId } = req.body.eventAttendeeDetails;
@@ -375,7 +379,7 @@ router.post("/event/remove-attendee", async (req, res) => {
     }
 
     // Call the function to remove the attendee
-    const { data, error } = await deleteRsvp({eventId, userId});
+    const { data, error } = await deleteRsvp({ eventId, userId });
     if (error) {
       return res.status(500).json({ error: error.message });
     }
@@ -385,7 +389,5 @@ router.post("/event/remove-attendee", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
-
 
 module.exports = router;

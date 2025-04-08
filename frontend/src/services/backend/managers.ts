@@ -47,6 +47,26 @@ export const addExpenseToEvent = async (eventId: string, description: string, am
   }
 };
 
+export const fetchEventExpenses = async (eventId: string) => {
+  try {
+    const response = await axios.post(`${url}/api/user/event/get-expenses`, {
+      eventId,
+    });
+
+    if (response.status !== 200) {
+      return { data: null, error: response.statusText };
+    }
+
+    if (response.data.error) {
+      return { data: null, error: response.data.error };
+    }
+
+    return { data: response.data, error: null };
+  } catch (err) {
+    return { data: null, error: err };
+  }
+};
+
 export const fetchEventAttendees = async (eventId: string) => {
   try {
     const response = await axios.get(`${url}/api/user/event/${eventId}/attendees`);

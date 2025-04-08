@@ -9,6 +9,7 @@ import { getUsersUniversity } from "../../services/supabase/supabase";
 import PaymentModal from "../../components/PaymentModal/PaymentModal";
 import FinancialReportModal from "../../components/FinancialReportModal/FinancialReportModal";
 import AddExpenseModal from "../../components/AddExpenseModal/AddExpenseModal";
+import ManageExpenseModal from "../../components/ManageExpenseModal/ManageExpenseModal";
 
 
 const EventDetail: React.FC = () => {
@@ -24,6 +25,7 @@ const EventDetail: React.FC = () => {
   const [viewPaymentModal, setViewPaymentModal] = useState<boolean>(false);
   const [viewFinancialReportModal, setViewFinancialReportModal] = useState<boolean>(false);
   const [viewExpenseModal, setViewExpenseModal] = useState<boolean>(false);
+  const [viewManageExpenseModal, setViewManageExpenseModal] = useState<boolean>(false);
 
   useEffect(() => {
     if (!id) return;
@@ -194,8 +196,8 @@ const EventDetail: React.FC = () => {
           <button onClick={handleGenerateFinancialReport} className="financial-report-button">
             Generate Financial Report
           </button>
-          <button onClick={handleAddExpense} className="add-expense-button">
-            Add Expense
+          <button onClick={()=> {setViewManageExpenseModal(true)}} className="manage-expense-button">
+            Manage Expense
           </button>
           <button
             onClick={() => navigate(`/manage-attendees/${id}`)}
@@ -222,6 +224,13 @@ const EventDetail: React.FC = () => {
       <AddExpenseModal
         isOpen={viewExpenseModal}
         onClose={() => setViewExpenseModal(false)}
+        eventId={event.id}
+      />
+      {/* Manage Expense Modal */}
+      <ManageExpenseModal
+        isOpen={viewManageExpenseModal}
+        onAddExpense={handleAddExpense}
+        onClose={() => setViewManageExpenseModal(false)}
         eventId={event.id}
       />
     </div>

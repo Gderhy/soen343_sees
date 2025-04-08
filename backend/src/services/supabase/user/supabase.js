@@ -383,13 +383,12 @@ const getEventExpenses = async (eventId) => {
       .from("event_expenses")
       .select("*")
       .eq("event_id", eventId);
-
+  
     if (error) {
       console.error("Error fetching event expenses:", error);
       return { error };
     }
 
-    console.log("Event expenses data:", data); // Log the fetched data
     return { data, error: null };
   } catch (err) {
     return { error: err.message };
