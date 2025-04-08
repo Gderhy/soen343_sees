@@ -505,9 +505,9 @@ const sendMailingList = async (eventId) => {
     };
 
     // Mailchimp API configuration
-    const mailchimpApiKey = "6d572f4715b1d530420b1949820f144d-us15";
-    const mailchimpServerPrefix = "us15";
-    const mailchimpListId = "89953a1ebe";
+    const mailchimpApiKey = process.env.MAILCHIMP_API_KEY;
+    const mailchimpServerPrefix = process.env.MAILCHIMP_SERVER_PREFIX;
+    const mailchimpListId = process.env.MAILCHIMP_LIST_ID;
 
     const mailchimpUrl = `https://${mailchimpServerPrefix}.api.mailchimp.com/3.0/lists/${mailchimpListId}/members/`;
 
