@@ -9,6 +9,7 @@ import { getUsersUniversity } from "../../services/supabase/supabase";
 import PaymentModal from "../../components/PaymentModal/PaymentModal";
 import FinancialReportModal from "../../components/FinancialReportModal/FinancialReportModal";
 import ManageExpenseModal from "../../components/ManageExpenseModal/ManageExpenseModal";
+import RegistratioTrendChart from "../../components/RegistratioTrendChart/RegistratioTrendChart";
 
 
 const EventDetail: React.FC = () => {
@@ -191,7 +192,12 @@ const EventDetail: React.FC = () => {
           <button onClick={handleGenerateFinancialReport} className="financial-report-button">
             Generate Financial Report
           </button>
-          <button onClick={()=> {setViewManageExpenseModal(true)}} className="manage-expense-button">
+          <button
+            onClick={() => {
+              setViewManageExpenseModal(true);
+            }}
+            className="manage-expense-button"
+          >
             Manage Expense
           </button>
           <button
@@ -200,6 +206,7 @@ const EventDetail: React.FC = () => {
           >
             Manage Attendees
           </button>
+          <RegistratioTrendChart eventId={event.id} />
         </>
       )}
       <PaymentModal
