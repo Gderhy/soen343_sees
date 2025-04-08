@@ -353,6 +353,7 @@ const rsvpToPaidEvent = async (eventId, userId, paymentDetails) => {
       cc_id: ccData.id,
       events_attendance_id: eventAttendanceData.id,
       amount: paymentDetails.amount,
+      event_id: eventId,
     };
 
     const { data: paymentData, error: paymentInsertError } = await insertPayment(paymentEntry);
