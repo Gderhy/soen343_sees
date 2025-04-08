@@ -88,7 +88,10 @@ const EventDetail: React.FC = () => {
     fetchEventData();
   }, [id, navigate]);
 
-  const handleSendMailingList = async () => {
+  const handleSendMailingList = async (e: React.FormEvent) => {
+    e.preventDefault(); 
+    e.stopPropagation();
+    
     if (!id) {
       alert("Please select an event.");
       return;
@@ -241,8 +244,13 @@ const EventDetail: React.FC = () => {
           >
             Manage Attendees
           </button>
-          <button onClick={handleSendMailingList} className="send-mailing-list-button">
-            Send Out Mailing List
+          <button
+            type="button"
+            className="send-mailing-list-button"
+            onClick={handleSendMailingList}
+            disabled={loading}
+          >
+            {loading ? "Sending..." : "Send Out Mailing List"}
           </button>
           <RegistratioTrendChart eventId={event.id} />
         </>
