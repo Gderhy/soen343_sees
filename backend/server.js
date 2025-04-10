@@ -46,16 +46,15 @@ app.get("/", (req, res) => {
 io.on('connection', (socket) => {
   console.log('a user connected: ', socket.id);
 
-  socket.on('userConn', (message) => {
+  socket.once('userConn', (message) => {
 
     const returnMessage = {
       id: "server",
       user: "SERVER",
       message: `${message.user} has joined the live chat!`
     };
-
     console.log(`${message.user} has connected`);
-    io.emit('receiveMessage', returnMessage);
+    socket.broadcast.emit('receiveMessage', returnMessage);
   });
 
   socket.on('sendMessage', (message) => {
@@ -63,7 +62,7 @@ io.on('connection', (socket) => {
     console.log(`message received, ${message.user}: ${message.message}`);
   });
 
-  socket.on('disc', (message) =>{
+  socket.on('disc', (message) => {
     const returnMessage = {
       id: "server",
       user: "SERVER",
