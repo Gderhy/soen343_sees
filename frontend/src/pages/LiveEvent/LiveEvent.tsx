@@ -15,7 +15,8 @@ interface LiveEventProps {
 }
 
 interface ChatMessage {
-    id: string,
+    id: string | undefined,
+    room?: string,
     user: string,
     message: string,
 }
@@ -27,8 +28,9 @@ export default function LiveEvent(props: LiveEventProps) {
     const [connectionStatus, setConnectionStatus] = useState(false);
     const [messages, setMessages] = useState<Array<ChatMessage>>(new Array<ChatMessage>());
     const [input, setInput] = useState("");
-    const { id } = useParams();
+    const { id } = useParams() ?? "default-id";
     const userName = session?.user.user_metadata?.fullName || id;//TODO change to actual username
+    const room: string = id ?? "default-id";
 
     // Observe if connected to socket
     useEffect(() => {
@@ -37,7 +39,7 @@ export default function LiveEvent(props: LiveEventProps) {
         if (socket.disconnected) {
 
             const connMessage: ChatMessage = {
-                id: id ?? "",
+                id,
                 user: userName,
                 message: `connection of ${userName}`,
             }

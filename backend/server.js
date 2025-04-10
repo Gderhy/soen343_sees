@@ -47,33 +47,35 @@ io.on('connection', (socket) => {
   console.log('a user connected: ', socket.id);
 
   socket.once('userConn', (message) => {
-
+    const room = message.id;
     const returnMessage = {
-      id: "server",
+      id: message.id,
       user: "SERVER",
       message: `${message.user} has joined the live chat!`
     };
     console.log(`${message.user} has connected`);
-    socket.broadcast.emit('receiveMessage', returnMessage);
+    socket.join(room);
+    socket.to(room).emit('receiveMessage', returnMessage);
   });
 
   socket.on('sendMessage', (message) => {
-    io.emit('receiveMessage', message);
-    console.log(`message received, ${message.user}: ${message.message}`);
+    const room = message.id;
+    io.to(room).emit('receiveMessage', message);
+    //socket.to(room).emit('receiveMessage', message);
+    console.log(`message received[room:${message.id}], ${message.user}: ${message.message}`);
   });
 
-  socket.on('disc', (message) => {
+  socket.once('disc', (message) => {
+    const room = message.id;
     const returnMessage = {
-      id: "server",
+      id: message.id,
       user: "SERVER",
       message: `${message.user} has disconnected`
     };
-    io.emit('receiveMessage', returnMessage);
+    socket.to(room).emit('receiveMessage', returnMessage);
+
   });
 
-  socket.on('disconnect', () => {
-    console.log(`a user has disconnected`);
-  });
 });
 
 // Start Server
